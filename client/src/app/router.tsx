@@ -1,0 +1,126 @@
+import React from 'react';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+
+// Layouts
+import { PublicLayout } from '@/layouts/PublicLayout';
+import { AuthLayout } from '@/layouts/AuthLayout';
+import { DashboardLayout } from '@/layouts/DashboardLayout';
+
+// Route Guards
+import { ProtectedRoute, PublicOnlyRoute } from '@/components/routes/ProtectedRoutes';
+
+// Public Pages
+import LandingPage from '@/pages/public/LandingPage';
+import { MarketplacePage } from '@/pages/public/MarketplacePage';
+import { ListingDetailPage } from '@/pages/public/ListingDetailPage';
+import { DemandMarketplacePage } from '@/pages/public/DemandMarketplacePage';
+import { RequirementDetailPage } from '@/pages/public/RequirementDetailPage';
+import { HowItWorksPage } from '@/pages/public/HowItWorksPage';
+import { ImpactPage } from '@/pages/public/ImpactPage';
+
+// Auth & Onboarding Pages
+import { LoginPage } from '@/pages/auth/LoginPage';
+import { RegisterPage } from '@/pages/auth/RegisterPage';
+import { ForgotPasswordPage } from '@/pages/auth/ForgotPasswordPage';
+import { OnboardingPage } from '@/pages/auth/OnboardingPage';
+
+// Dashboard Pages
+import DashboardPage from '@/pages/dashboard/DashboardPage';
+import ListingsPage from '@/pages/dashboard/ListingsPage';
+import CreateListingPage from '@/pages/dashboard/CreateListingPage';
+import EditListingPage from '@/pages/dashboard/EditListingPage';
+import RequirementsPage from '@/pages/dashboard/RequirementsPage';
+import CreateRequirementPage from '@/pages/dashboard/CreateRequirementPage';
+import EditRequirementPage from '@/pages/dashboard/EditRequirementPage';
+import MatchesPage from '@/pages/dashboard/MatchesPage';
+import OffersPage from '@/pages/dashboard/OffersPage';
+import OrdersPage from '@/pages/dashboard/OrdersPage';
+import ShipmentsPage from '@/pages/dashboard/ShipmentsPage';
+import AnalyticsPage from '@/pages/dashboard/AnalyticsPage';
+import SettingsPage from '@/pages/dashboard/SettingsPage';
+import { OrganizationPage } from '@/pages/dashboard/OrganizationPage';
+import { ProfilePage } from '@/pages/dashboard/settings/ProfilePage';
+import { SecurityPage } from '@/pages/dashboard/settings/SecurityPage';
+
+// Not Found
+import NotFoundPage from '@/pages/not-found/NotFoundPage';
+
+const router = createBrowserRouter([
+  {
+    path: '/',
+    element: <LandingPage />,
+  },
+  {
+    path: '/',
+    element: <PublicLayout />,
+    children: [
+      { path: 'marketplace', element: <MarketplacePage /> },
+      { path: 'marketplace/:listingCode', element: <ListingDetailPage /> },
+      { path: 'requirements', element: <DemandMarketplacePage /> },
+      { path: 'requirements/:requirementCode', element: <RequirementDetailPage /> },
+      { path: 'how-it-works', element: <HowItWorksPage /> },
+      { path: 'impact', element: <ImpactPage /> },
+    ],
+  },
+  // Public-only Auth routes (redirect to /dashboard if already logged in)
+  {
+    path: '/',
+    element: <PublicOnlyRoute />,
+    children: [
+      {
+        element: <AuthLayout />,
+        children: [
+          { path: 'login', element: <LoginPage /> },
+          { path: 'register', element: <RegisterPage /> },
+          { path: 'forgot-password', element: <ForgotPasswordPage /> },
+        ],
+      },
+    ],
+  },
+  // Protected Onboarding
+  {
+    path: '/onboarding',
+    element: <ProtectedRoute />,
+    children: [
+      { index: true, element: <OnboardingPage /> },
+    ],
+  },
+  // Protected Dashboard Application Shell
+  {
+    path: '/dashboard',
+    element: <ProtectedRoute />,
+    children: [
+      {
+        element: <DashboardLayout />,
+        children: [
+          { index: true, element: <DashboardPage /> },
+          { path: 'marketplace', element: <MarketplacePage /> },
+          { path: 'marketplace/:listingCode', element: <ListingDetailPage /> },
+          { path: 'listings', element: <ListingsPage /> },
+          { path: 'listings/new', element: <CreateListingPage /> },
+          { path: 'listings/:id/edit', element: <EditListingPage /> },
+          { path: 'requirements', element: <RequirementsPage /> },
+          { path: 'requirements/new', element: <CreateRequirementPage /> },
+          { path: 'requirements/:id/edit', element: <EditRequirementPage /> },
+          { path: 'matches', element: <MatchesPage /> },
+          { path: 'offers', element: <OffersPage /> },
+          { path: 'orders', element: <OrdersPage /> },
+          { path: 'shipments', element: <ShipmentsPage /> },
+          { path: 'analytics', element: <AnalyticsPage /> },
+          { path: 'organization', element: <OrganizationPage /> },
+          { path: 'settings', element: <SettingsPage /> },
+          { path: 'settings/profile', element: <ProfilePage /> },
+          { path: 'settings/security', element: <SecurityPage /> },
+        ],
+      },
+    ],
+  },
+  {
+    path: '*',
+    element: <NotFoundPage />,
+  },
+]);
+
+export const AppRouter: React.FC = () => {
+  return <RouterProvider router={router} />;
+};
