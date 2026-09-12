@@ -75,6 +75,7 @@ export const DashboardLayout: React.FC = () => {
       group: 'INSIGHTS',
       items: [
         { label: 'Impact Analytics', icon: BarChart3, path: '/dashboard/analytics' },
+        { label: 'Impact Intelligence', icon: ShieldCheck, path: '/dashboard/impact' },
       ],
     },
     {

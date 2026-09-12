@@ -1,4 +1,4 @@
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1';
+import { apiRequest } from '@/lib/api';
 
 export class ApiError extends Error {
   public code: string;
@@ -12,30 +12,17 @@ export class ApiError extends Error {
 }
 
 async function request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
-  const token = localStorage.getItem('carbonloop_token');
+  const res = await apiRequest<any>(endpoint, options);
 
-  const headers: HeadersInit = {
-    'Content-Type': 'application/json',
-    ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    ...options.headers,
-  };
-
-  const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-    ...options,
-    headers,
-  });
-
-  const data = await response.json();
-
-  if (!response.ok || !data.success) {
+  if (!res.success) {
     throw new ApiError(
-      data.error?.message || 'An error occurred during API request',
-      response.status,
-      data.error?.code || 'UNKNOWN_ERROR'
+      res.error?.message || 'An error occurred during API request',
+      401,
+      res.error?.code || 'UNKNOWN_ERROR'
     );
   }
 
-  return data.data !== undefined ? data.data : data;
+  return res.data !== undefined ? res.data : (res as unknown as T);
 }
 
 export const apiClient = {
@@ -54,3 +41,4 @@ export const apiClient = {
   delete: <T>(endpoint: string, options?: RequestInit) =>
     request<T>(endpoint, { method: 'DELETE', ...options }),
 };
+

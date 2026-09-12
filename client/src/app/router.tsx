@@ -16,7 +16,7 @@ import { ListingDetailPage } from '@/pages/public/ListingDetailPage';
 import { DemandMarketplacePage } from '@/pages/public/DemandMarketplacePage';
 import { RequirementDetailPage } from '@/pages/public/RequirementDetailPage';
 import { HowItWorksPage } from '@/pages/public/HowItWorksPage';
-import { ImpactPage } from '@/pages/public/ImpactPage';
+import { PublicImpactPage } from '@/pages/public/PublicImpactPage';
 
 // Auth & Onboarding Pages
 import { LoginPage } from '@/pages/auth/LoginPage';
@@ -44,6 +44,7 @@ import { ShipmentsPage } from '@/pages/dashboard/ShipmentsPage';
 import { ShipmentDetailPage } from '@/pages/dashboard/ShipmentDetailPage';
 import { LogisticsDashboardPage } from '@/pages/dashboard/LogisticsDashboardPage';
 import AnalyticsPage from '@/pages/dashboard/AnalyticsPage';
+import ImpactReportPage from '@/pages/dashboard/ImpactReportPage';
 import SettingsPage from '@/pages/dashboard/SettingsPage';
 import { OrganizationPage } from '@/pages/dashboard/OrganizationPage';
 import { ProfilePage } from '@/pages/dashboard/settings/ProfilePage';
@@ -66,7 +67,7 @@ const router = createBrowserRouter([
       { path: 'requirements', element: <DemandMarketplacePage /> },
       { path: 'requirements/:requirementCode', element: <RequirementDetailPage /> },
       { path: 'how-it-works', element: <HowItWorksPage /> },
-      { path: 'impact', element: <ImpactPage /> },
+      { path: 'impact', element: <PublicImpactPage /> },
     ],
   },
   // Public-only Auth routes (redirect to /dashboard if already logged in)
@@ -121,6 +122,7 @@ const router = createBrowserRouter([
           { path: 'shipments', element: <ShipmentsPage /> },
           { path: 'shipments/:shipmentNumber', element: <ShipmentDetailPage /> },
           { path: 'analytics', element: <AnalyticsPage /> },
+          { path: 'impact', element: <ImpactReportPage /> },
           { path: 'organization', element: <OrganizationPage /> },
           { path: 'settings', element: <SettingsPage /> },
           { path: 'settings/profile', element: <ProfilePage /> },

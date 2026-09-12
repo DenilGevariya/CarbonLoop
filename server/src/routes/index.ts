@@ -14,6 +14,7 @@ import orderRoutes from '../modules/orders/order.routes';
 import notificationRoutes from '../modules/notifications/notification.routes';
 import logisticsRoutes from '../modules/logistics/logistics.routes';
 import shipmentRoutes from '../modules/shipments/shipment.routes';
+import analyticsRoutes from '../modules/analytics/analytics.routes';
 
 const router = Router();
 
@@ -49,6 +50,7 @@ router.use('/orders', orderRoutes);
 router.use('/notifications', notificationRoutes);
 router.use('/logistics', logisticsRoutes);
 router.use('/shipments', shipmentRoutes);
+router.use('/analytics', analyticsRoutes);
 
 // Placeholder Routes for remaining modules
 const placeholderModules = [
