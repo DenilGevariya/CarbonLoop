@@ -38,6 +38,16 @@ if (process.env.NODE_ENV === 'development') {
   });
 }
 
+// Root Route (for Render Health Checks & Ping)
+app.get('/', (req, res) => {
+  res.status(200).json({
+    status: 'ok',
+    message: 'CarbonLoop API Server is running',
+    version: '1.0.0',
+    healthCheck: '/api/v1/health',
+  });
+});
+
 // API Routes
 app.use('/api/v1', routes);
 
