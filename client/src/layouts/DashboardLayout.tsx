@@ -76,7 +76,9 @@ export const DashboardLayout: React.FC = () => {
       items: [
         { label: 'Impact Analytics', icon: BarChart3, path: '/dashboard/analytics' },
         { label: 'Impact Intelligence', icon: ShieldCheck, path: '/dashboard/impact' },
-      ],
+        { label: 'Trust & Verification', icon: ShieldCheck, path: '/dashboard/organization/verification' },
+        { label: 'Reviewer Queue', icon: ShieldCheck, path: '/admin/verification', show: isAdmin },
+      ].filter((item) => item.show !== false),
     },
     {
       group: 'ACCOUNT & SYSTEM',

@@ -1,0 +1,18 @@
+import { Router } from 'express';
+import { VerificationController } from './verification.controller';
+import { authenticateUser, requireRole } from '../../middleware/auth.middleware';
+
+const router = Router();
+const controller = new VerificationController();
+
+// Require logged in user for all verification endpoints
+router.use(authenticateUser);
+
+router.post('/requests', controller.submitRequest);
+router.get('/requests', controller.listQueue);
+router.get('/requests/:id', controller.getById);
+
+// Admin / Reviewer Endpoints
+router.post('/requests/:id/review', requireRole('platform_admin', 'admin', 'verifier'), controller.processReview);
+
+export default router;

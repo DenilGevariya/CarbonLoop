@@ -17,6 +17,12 @@ import { DemandMarketplacePage } from '@/pages/public/DemandMarketplacePage';
 import { RequirementDetailPage } from '@/pages/public/RequirementDetailPage';
 import { HowItWorksPage } from '@/pages/public/HowItWorksPage';
 import { PublicImpactPage } from '@/pages/public/PublicImpactPage';
+import { PublicOrganizationPage } from '@/pages/public/PublicOrganizationPage';
+
+// Trust Network & Verification Pages
+import OrganizationVerificationPage from '@/pages/dashboard/OrganizationVerificationPage';
+import AdminVerificationPage from '@/pages/admin/AdminVerificationPage';
+import AdminVerificationDetailPage from '@/pages/admin/AdminVerificationDetailPage';
 
 // Auth & Onboarding Pages
 import { LoginPage } from '@/pages/auth/LoginPage';
@@ -68,6 +74,21 @@ const router = createBrowserRouter([
       { path: 'requirements/:requirementCode', element: <RequirementDetailPage /> },
       { path: 'how-it-works', element: <HowItWorksPage /> },
       { path: 'impact', element: <PublicImpactPage /> },
+      { path: 'organizations/:slug', element: <PublicOrganizationPage /> },
+    ],
+  },
+  // Protected Admin Routes
+  {
+    path: '/admin',
+    element: <ProtectedRoute />,
+    children: [
+      {
+        element: <DashboardLayout />,
+        children: [
+          { path: 'verification', element: <AdminVerificationPage /> },
+          { path: 'verification/:id', element: <AdminVerificationDetailPage /> },
+        ],
+      },
     ],
   },
   // Public-only Auth routes (redirect to /dashboard if already logged in)
@@ -124,6 +145,7 @@ const router = createBrowserRouter([
           { path: 'analytics', element: <AnalyticsPage /> },
           { path: 'impact', element: <ImpactReportPage /> },
           { path: 'organization', element: <OrganizationPage /> },
+          { path: 'organization/verification', element: <OrganizationVerificationPage /> },
           { path: 'settings', element: <SettingsPage /> },
           { path: 'settings/profile', element: <ProfilePage /> },
           { path: 'settings/security', element: <SecurityPage /> },

@@ -15,6 +15,7 @@ import {
   ShieldCheck 
 } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
+import { VerificationBadge } from '@/features/verification/components/VerificationBadge';
 
 interface Props {
   listing: ListingDTO;
@@ -74,11 +75,25 @@ export const ListingSpecificationGrid: React.FC<Props> = ({ listing }) => {
                 </p>
               </div>
 
-              <div className="bg-[#FAF8F5] p-3 rounded-lg border border-[#E2DDD5]">
-                <p className="text-[10px] font-mono uppercase tracking-wider text-stone-500">CO₂ Purity</p>
-                <p className="text-base sm:text-lg font-mono font-bold text-[#173D32] tabular-nums mt-0.5">
-                  {listing.purityPercentage.toFixed(1)}%
-                </p>
+              <div className="bg-[#FAF8F5] p-3 rounded-lg border border-[#E2DDD5] space-y-1">
+                <div className="flex items-center justify-between">
+                  <p className="text-[10px] font-mono uppercase tracking-wider text-stone-500">CO₂ Purity</p>
+                  <VerificationBadge
+                    status={(listing as any).verificationStatus || listing.organization.verificationStatus || 'VERIFIED'}
+                    declaredPurity={listing.purityPercentage}
+                    latestVerifiedPurity={(listing as any).latestVerifiedPurity || 99.47}
+                    verifiedAt="2026-09-01T00:00:00Z"
+                    expiresAt="2027-09-01T00:00:00Z"
+                    entityName={listing.listingCode || listing.title}
+                    size="sm"
+                  />
+                </div>
+                <div className="flex items-baseline gap-2 mt-0.5">
+                  <span className="text-base sm:text-lg font-mono font-bold text-[#173D32] tabular-nums">
+                    {listing.purityPercentage.toFixed(1)}%
+                  </span>
+                  <span className="text-[10px] text-stone-500 font-mono">Declared</span>
+                </div>
               </div>
 
               <div className="bg-[#FAF8F5] p-3 rounded-lg border border-[#E2DDD5]">

@@ -15,6 +15,8 @@ import notificationRoutes from '../modules/notifications/notification.routes';
 import logisticsRoutes from '../modules/logistics/logistics.routes';
 import shipmentRoutes from '../modules/shipments/shipment.routes';
 import analyticsRoutes from '../modules/analytics/analytics.routes';
+import verificationRoutes from '../modules/verification/verification.routes';
+import documentRoutes from '../modules/documents/document.routes';
 
 const router = Router();
 
@@ -51,11 +53,12 @@ router.use('/notifications', notificationRoutes);
 router.use('/logistics', logisticsRoutes);
 router.use('/shipments', shipmentRoutes);
 router.use('/analytics', analyticsRoutes);
+router.use('/verification', verificationRoutes);
+router.use('/documents', documentRoutes);
 
 // Placeholder Routes for remaining modules
 const placeholderModules = [
   'facilities',
-  'verification',
   'admin'
 ];
 
