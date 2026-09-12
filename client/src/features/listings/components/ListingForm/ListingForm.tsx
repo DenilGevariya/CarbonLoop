@@ -17,7 +17,6 @@ import {
   ShieldCheck 
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { NativeSelect } from '@/components/ui/native-select';
@@ -178,10 +177,10 @@ export const ListingForm: React.FC<Props> = ({ initialListing, mode = 'create' }
   const values = form.watch();
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8 py-4">
+    <div className="max-w-4xl mx-auto space-y-8 py-4 font-sans">
       {/* Wizard Step Indicator Bar */}
-      <div className="bg-[#FAF8F5] p-4 rounded-xl border border-[#E2DDD5] shadow-2xs">
-        <div className="flex items-center justify-between overflow-x-auto pb-2 sm:pb-0 scrollbar-none">
+      <div className="bg-white p-4 rounded-xl border border-[#E5EAEF] shadow-xs">
+        <div className="flex items-center justify-between overflow-x-auto pb-2 sm:pb-0 scrollbar-none gap-2">
           {STEPS.map((step, index) => {
             const isCompleted = index < currentStep;
             const isCurrent = index === currentStep;
@@ -191,20 +190,20 @@ export const ListingForm: React.FC<Props> = ({ initialListing, mode = 'create' }
                 key={step.id}
                 type="button"
                 onClick={() => setCurrentStep(index)}
-                className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-mono transition-all shrink-0 ${
+                className={`flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold transition-all shrink-0 cursor-pointer ${
                   isCurrent
-                    ? 'bg-[#173D32] text-white font-bold'
+                    ? 'bg-[#5D87FF] text-white font-bold shadow-xs'
                     : isCompleted
-                    ? 'bg-[#173D32]/10 text-[#173D32] hover:bg-[#173D32]/20 font-medium'
-                    : 'text-stone-400 hover:text-stone-700'
+                    ? 'bg-[#ECF2FF] text-[#5D87FF] hover:bg-[#5D87FF]/20 font-semibold'
+                    : 'text-[#5A6A85] hover:text-[#2A3547] hover:bg-[#F6F9FC]'
                 }`}
               >
                 <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] ${
-                  isCurrent ? 'bg-white text-[#173D32]' : isCompleted ? 'bg-[#173D32] text-white' : 'bg-stone-200 text-stone-600'
+                  isCurrent ? 'bg-white text-[#5D87FF]' : isCompleted ? 'bg-[#5D87FF] text-white' : 'bg-[#E5EAEF] text-[#5A6A85]'
                 }`}>
                   {isCompleted ? <Check className="w-3 h-3" /> : step.id}
                 </span>
-                <span className="hidden sm:inline uppercase">{step.title}</span>
+                <span className="hidden sm:inline uppercase tracking-wider">{step.title}</span>
               </button>
             );
           })}
@@ -212,116 +211,89 @@ export const ListingForm: React.FC<Props> = ({ initialListing, mode = 'create' }
       </div>
 
       {/* Main Form Container */}
-      <form onSubmit={(e) => e.preventDefault()} className="bg-white rounded-xl border border-[#E2DDD5] p-6 sm:p-8 shadow-2xs space-y-6">
+      <form onSubmit={(e) => e.preventDefault()} className="bg-white rounded-xl border border-[#E5EAEF] p-6 sm:p-8 shadow-xs space-y-6">
         {/* Step 01: SUPPLY */}
         {currentStep === 0 && (
           <div className="space-y-6">
-            <div className="border-b border-[#E2DDD5] pb-4">
-              <span className="font-mono text-xs text-[#173D32] font-semibold uppercase tracking-wider">Step 01 • Facility & Quantity</span>
-              <h2 className="text-xl font-serif text-[#171A18] font-medium mt-1">Captured CO₂ available for utilization</h2>
-              <p className="text-xs text-stone-500 mt-1 font-sans">
+            <div className="border-b border-[#E5EAEF] pb-4">
+              <span className="text-xs text-[#5D87FF] font-semibold uppercase tracking-wider bg-[#ECF2FF] px-2.5 py-1 rounded-md">Step 01 • Facility & Quantity</span>
+              <h2 className="text-xl text-[#2A3547] font-bold mt-2">Captured CO₂ available for utilization</h2>
+              <p className="text-xs text-[#5A6A85] mt-1 font-medium">
                 Select your operating facility and specify the available carbon volume.
               </p>
             </div>
 
             <div className="space-y-4">
               <div>
-                <label className="text-xs font-mono uppercase tracking-wider text-stone-600 block mb-1.5">
+                <label className="text-xs uppercase tracking-wider text-[#5A6A85] font-semibold block mb-1.5">
                   Select Facility Stack *
                 </label>
                 {facilitiesLoading ? (
-                  <p className="text-xs font-mono text-stone-400">Loading facilities...</p>
+                  <p className="text-xs text-[#5A6A85]">Loading facilities...</p>
                 ) : facilities.length === 0 ? (
-                  <Alert className="bg-amber-50 border-amber-200">
-                    <AlertCircle className="w-4 h-4 text-amber-700" />
-                    <AlertTitle className="text-xs font-bold text-amber-900">No Facilities Registered</AlertTitle>
-                    <AlertDescription className="text-xs text-amber-800">
+                  <Alert className="bg-[#FEF5E5] border-[#FFAE1F]/30">
+                    <AlertCircle className="w-4 h-4 text-[#FFAE1F]" />
+                    <AlertTitle className="text-xs font-bold text-[#2A3547]">No Facilities Registered</AlertTitle>
+                    <AlertDescription className="text-xs text-[#5A6A85]">
                       You must register an industrial facility in your organization profile before declaring supply.
                     </AlertDescription>
                   </Alert>
                 ) : (
                   <NativeSelect
                     {...form.register('facilityId')}
-                    className="bg-[#FAF8F5] border-[#E2DDD5] font-mono text-xs"
+                    className="w-full bg-[#F6F9FC] border-[#E5EAEF] text-xs font-medium text-[#2A3547] rounded-lg"
                   >
-                    {facilities.map((fac) => (
-                      <option key={fac.id} value={fac.id}>
-                        {fac.name} — {fac.city}, {fac.state}
+                    {facilities.map((f) => (
+                      <option key={f.id} value={f.id}>
+                        {f.name} ({f.city}, {f.state})
                       </option>
                     ))}
                   </NativeSelect>
                 )}
-                {form.formState.errors.facilityId && (
-                  <p className="text-xs text-red-600 mt-1 font-mono">{form.formState.errors.facilityId.message}</p>
-                )}
               </div>
 
               <div>
-                <label className="text-xs font-mono uppercase tracking-wider text-stone-600 block mb-1.5">
-                  Supply Declaration Title *
+                <label className="text-xs uppercase tracking-wider text-[#5A6A85] font-semibold block mb-1.5">
+                  Supply Stream Title *
                 </label>
                 <Input
                   {...form.register('title')}
-                  placeholder="e.g. High-Purity Liquid CO₂ (Food & Industrial Grade)"
-                  className="bg-[#FAF8F5] border-[#E2DDD5] text-sm"
+                  placeholder="e.g. High-Purity Liquid CO2 (Amine Gas Scrubbing)"
+                  className="bg-[#F6F9FC] border-[#E5EAEF] text-xs text-[#2A3547] rounded-lg focus-visible:ring-[#5D87FF]"
                 />
                 {form.formState.errors.title && (
-                  <p className="text-xs text-red-600 mt-1 font-mono">{form.formState.errors.title.message}</p>
+                  <p className="text-xs text-[#FA896B] mt-1">{form.formState.errors.title.message}</p>
                 )}
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="text-xs font-mono uppercase tracking-wider text-stone-600 block mb-1.5">
-                    Available Volume *
+                  <label className="text-xs uppercase tracking-wider text-[#5A6A85] font-semibold block mb-1.5">
+                    Available Volume (Tonnes) *
                   </label>
                   <Input
                     type="number"
-                    step="0.01"
                     {...form.register('availableQuantity', { valueAsNumber: true })}
-                    className="bg-[#FAF8F5] border-[#E2DDD5] text-sm font-mono"
+                    className="bg-[#F6F9FC] border-[#E5EAEF] text-xs text-[#2A3547] rounded-lg focus-visible:ring-[#5D87FF]"
                   />
                   {form.formState.errors.availableQuantity && (
-                    <p className="text-xs text-red-600 mt-1 font-mono">{form.formState.errors.availableQuantity.message}</p>
+                    <p className="text-xs text-[#FA896B] mt-1">{form.formState.errors.availableQuantity.message}</p>
                   )}
                 </div>
 
                 <div>
-                  <label className="text-xs font-mono uppercase tracking-wider text-stone-600 block mb-1.5">
-                    Quantity Unit
-                  </label>
-                  <NativeSelect {...form.register('quantityUnit')} className="bg-[#FAF8F5] border-[#E2DDD5] text-xs font-mono">
-                    <option value="tonne">Metric Tonne (t)</option>
-                    <option value="kg">Kilogram (kg)</option>
-                  </NativeSelect>
-                </div>
-
-                <div>
-                  <label className="text-xs font-mono uppercase tracking-wider text-stone-600 block mb-1.5">
+                  <label className="text-xs uppercase tracking-wider text-[#5A6A85] font-semibold block mb-1.5">
                     Minimum Order Quantity (MOQ) *
                   </label>
                   <Input
                     type="number"
-                    step="0.01"
                     {...form.register('minimumOrderQuantity', { valueAsNumber: true })}
-                    className="bg-[#FAF8F5] border-[#E2DDD5] text-sm font-mono"
+                    className="bg-[#F6F9FC] border-[#E5EAEF] text-xs text-[#2A3547] rounded-lg focus-visible:ring-[#5D87FF]"
                   />
                   {form.formState.errors.minimumOrderQuantity && (
-                    <p className="text-xs text-red-600 mt-1 font-mono">{form.formState.errors.minimumOrderQuantity.message}</p>
+                    <p className="text-xs text-[#FA896B] mt-1">{form.formState.errors.minimumOrderQuantity.message}</p>
                   )}
                 </div>
-              </div>
-
-              <div>
-                <label className="text-xs font-mono uppercase tracking-wider text-stone-600 block mb-1.5">
-                  Stream Description & Handling Instructions
-                </label>
-                <Textarea
-                  {...form.register('description')}
-                  rows={3}
-                  placeholder="Provide technical overview, continuous stream notes, or special transport conditions..."
-                  className="bg-[#FAF8F5] border-[#E2DDD5] text-xs"
-                />
               </div>
             </div>
           </div>
@@ -330,94 +302,67 @@ export const ListingForm: React.FC<Props> = ({ initialListing, mode = 'create' }
         {/* Step 02: SPECIFICATION */}
         {currentStep === 1 && (
           <div className="space-y-6">
-            <div className="border-b border-[#E2DDD5] pb-4">
-              <span className="font-mono text-xs text-[#173D32] font-semibold uppercase tracking-wider">Step 02 • Composition & Characteristics</span>
-              <h2 className="text-xl font-serif text-[#171A18] font-medium mt-1">Specify stream composition & physical characteristics</h2>
-              <p className="text-xs text-stone-500 mt-1 font-sans">
-                Define the purity, physical state, and process conditions buyers evaluate for feedstock compatibility.
+            <div className="border-b border-[#E5EAEF] pb-4">
+              <span className="text-xs text-[#5D87FF] font-semibold uppercase tracking-wider bg-[#ECF2FF] px-2.5 py-1 rounded-md">Step 02 • Composition & Characteristics</span>
+              <h2 className="text-xl text-[#2A3547] font-bold mt-2">Gas purity, physical state, & temperature</h2>
+              <p className="text-xs text-[#5A6A85] mt-1 font-medium">
+                Accurate gas chromatography data ensures compatibility with industrial buyers.
               </p>
             </div>
 
             <div className="space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="text-xs font-mono uppercase tracking-wider text-stone-600 block mb-1.5">
-                    CO₂ Concentration / Purity % *
+                  <label className="text-xs uppercase tracking-wider text-[#5A6A85] font-semibold block mb-1.5">
+                    Purity Rating (%) *
                   </label>
                   <Input
                     type="number"
                     step="0.01"
                     {...form.register('purityPercentage', { valueAsNumber: true })}
-                    placeholder="99.5"
-                    className="bg-[#FAF8F5] border-[#E2DDD5] text-sm font-mono"
+                    className="bg-[#F6F9FC] border-[#E5EAEF] text-xs text-[#2A3547] rounded-lg focus-visible:ring-[#5D87FF]"
                   />
-                  <p className="text-[11px] text-stone-400 mt-1 font-mono">Range: 0.01% to 100.00%</p>
                   {form.formState.errors.purityPercentage && (
-                    <p className="text-xs text-red-600 mt-1 font-mono">{form.formState.errors.purityPercentage.message}</p>
+                    <p className="text-xs text-[#FA896B] mt-1">{form.formState.errors.purityPercentage.message}</p>
                   )}
                 </div>
 
                 <div>
-                  <label className="text-xs font-mono uppercase tracking-wider text-stone-600 block mb-1.5">
-                    Physical Form / State *
+                  <label className="text-xs uppercase tracking-wider text-[#5A6A85] font-semibold block mb-1.5">
+                    Physical Form State *
                   </label>
-                  <NativeSelect {...form.register('physicalForm')} className="bg-[#FAF8F5] border-[#E2DDD5] text-xs font-mono">
-                    <option value="liquid">Liquid (Cryogenic Tanks)</option>
-                    <option value="gaseous">Gaseous (Pipeline / Pressure Vessel)</option>
-                    <option value="supercritical">Supercritical (High Pressure)</option>
-                    <option value="solid_dry_ice">Solid / Dry Ice Pellets</option>
+                  <NativeSelect
+                    {...form.register('physicalForm')}
+                    className="w-full bg-[#F6F9FC] border-[#E5EAEF] text-xs font-medium text-[#2A3547] rounded-lg"
+                  >
+                    <option value="liquid">Liquid (Cryogenic Tanker)</option>
+                    <option value="gaseous">Gaseous (Pipeline / Cylinder)</option>
+                    <option value="supercritical">Supercritical Fluid</option>
+                    <option value="solid_dry_ice">Solid / Dry Ice</option>
                   </NativeSelect>
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="text-xs font-mono uppercase tracking-wider text-stone-600 block mb-1.5">
-                    Capture Technology / Method
+                  <label className="text-xs uppercase tracking-wider text-[#5A6A85] font-semibold block mb-1.5">
+                    Capture Process Method
                   </label>
                   <Input
                     {...form.register('captureMethod')}
-                    placeholder="e.g. Chemical Amine Absorption, Cryogenic Distillation"
-                    className="bg-[#FAF8F5] border-[#E2DDD5] text-xs"
+                    placeholder="e.g. Amine Gas Absorption"
+                    className="bg-[#F6F9FC] border-[#E5EAEF] text-xs text-[#2A3547] rounded-lg focus-visible:ring-[#5D87FF]"
                   />
                 </div>
 
                 <div>
-                  <label className="text-xs font-mono uppercase tracking-wider text-stone-600 block mb-1.5">
-                    Capture Source Stream
+                  <label className="text-xs uppercase tracking-wider text-[#5A6A85] font-semibold block mb-1.5">
+                    Industrial Flue Source
                   </label>
                   <Input
                     {...form.register('captureSource')}
-                    placeholder="e.g. Cement Calcination Kiln, Blast Furnace Off-Gas"
-                    className="bg-[#FAF8F5] border-[#E2DDD5] text-xs"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="text-xs font-mono uppercase tracking-wider text-stone-600 block mb-1.5">
-                    Operating Temperature (°C)
-                  </label>
-                  <Input
-                    type="number"
-                    step="0.1"
-                    {...form.register('temperatureCelsius', { valueAsNumber: true })}
-                    placeholder="-15"
-                    className="bg-[#FAF8F5] border-[#E2DDD5] text-xs font-mono"
-                  />
-                </div>
-
-                <div>
-                  <label className="text-xs font-mono uppercase tracking-wider text-stone-600 block mb-1.5">
-                    Operating Pressure (bar)
-                  </label>
-                  <Input
-                    type="number"
-                    step="0.1"
-                    {...form.register('pressureBar', { valueAsNumber: true })}
-                    placeholder="25"
-                    className="bg-[#FAF8F5] border-[#E2DDD5] text-xs font-mono"
+                    placeholder="e.g. Cement Kiln Flue Gas"
+                    className="bg-[#F6F9FC] border-[#E5EAEF] text-xs text-[#2A3547] rounded-lg focus-visible:ring-[#5D87FF]"
                   />
                 </div>
               </div>
@@ -428,38 +373,32 @@ export const ListingForm: React.FC<Props> = ({ initialListing, mode = 'create' }
         {/* Step 03: COMMERCIAL */}
         {currentStep === 2 && (
           <div className="space-y-6">
-            <div className="border-b border-[#E2DDD5] pb-4">
-              <span className="font-mono text-xs text-[#173D32] font-semibold uppercase tracking-wider">Step 03 • Commercial Terms</span>
-              <h2 className="text-xl font-serif text-[#171A18] font-medium mt-1">Set commercial terms for this supply</h2>
-              <p className="text-xs text-stone-500 mt-1 font-sans">
-                Define the off-take unit pricing and trading currency.
-              </p>
+            <div className="border-b border-[#E5EAEF] pb-4">
+              <span className="text-xs text-[#5D87FF] font-semibold uppercase tracking-wider bg-[#ECF2FF] px-2.5 py-1 rounded-md">Step 03 • Commercial Terms</span>
+              <h2 className="text-xl text-[#2A3547] font-bold mt-2">Off-Take pricing & unit valuation</h2>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="text-xs font-mono uppercase tracking-wider text-stone-600 block mb-1.5">
-                  Price per Unit (₹ / tonne) *
+                <label className="text-xs uppercase tracking-wider text-[#5A6A85] font-semibold block mb-1.5">
+                  Unit Price (INR per Tonne) *
                 </label>
                 <Input
                   type="number"
-                  step="1"
                   {...form.register('pricePerUnit', { valueAsNumber: true })}
-                  className="bg-[#FAF8F5] border-[#E2DDD5] text-sm font-mono"
+                  className="bg-[#F6F9FC] border-[#E5EAEF] text-xs text-[#2A3547] rounded-lg focus-visible:ring-[#5D87FF]"
                 />
-                {form.formState.errors.pricePerUnit && (
-                  <p className="text-xs text-red-600 mt-1 font-mono">{form.formState.errors.pricePerUnit.message}</p>
-                )}
               </div>
 
               <div>
-                <label className="text-xs font-mono uppercase tracking-wider text-stone-600 block mb-1.5">
-                  Currency
+                <label className="text-xs uppercase tracking-wider text-[#5A6A85] font-semibold block mb-1.5">
+                  Currency Code
                 </label>
-                <NativeSelect {...form.register('currency')} className="bg-[#FAF8F5] border-[#E2DDD5] text-xs font-mono">
-                  <option value="INR">INR (₹ Indian Rupee)</option>
-                  <option value="USD">USD ($ US Dollar)</option>
-                </NativeSelect>
+                <Input
+                  disabled
+                  value="INR (₹)"
+                  className="bg-[#F6F9FC] border-[#E5EAEF] text-xs text-[#5A6A85] rounded-lg"
+                />
               </div>
             </div>
           </div>
@@ -468,42 +407,32 @@ export const ListingForm: React.FC<Props> = ({ initialListing, mode = 'create' }
         {/* Step 04: AVAILABILITY */}
         {currentStep === 3 && (
           <div className="space-y-6">
-            <div className="border-b border-[#E2DDD5] pb-4">
-              <span className="font-mono text-xs text-[#173D32] font-semibold uppercase tracking-wider">Step 04 • Availability Timeline</span>
-              <h2 className="text-xl font-serif text-[#171A18] font-medium mt-1">Choose when this volume becomes available</h2>
-              <p className="text-xs text-stone-500 mt-1 font-sans">
-                Specify the start and optional expiration dates for this supply stream.
-              </p>
+            <div className="border-b border-[#E5EAEF] pb-4">
+              <span className="text-xs text-[#5D87FF] font-semibold uppercase tracking-wider bg-[#ECF2FF] px-2.5 py-1 rounded-md">Step 04 • Availability Timeline</span>
+              <h2 className="text-xl text-[#2A3547] font-bold mt-2">Off-Take window duration</h2>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="text-xs font-mono uppercase tracking-wider text-stone-600 block mb-1.5">
+                <label className="text-xs uppercase tracking-wider text-[#5A6A85] font-semibold block mb-1.5">
                   Available From Date *
                 </label>
                 <Input
                   type="date"
                   {...form.register('availableFrom')}
-                  className="bg-[#FAF8F5] border-[#E2DDD5] text-xs font-mono"
+                  className="bg-[#F6F9FC] border-[#E5EAEF] text-xs text-[#2A3547] rounded-lg"
                 />
-                {form.formState.errors.availableFrom && (
-                  <p className="text-xs text-red-600 mt-1 font-mono">{form.formState.errors.availableFrom.message}</p>
-                )}
               </div>
 
               <div>
-                <label className="text-xs font-mono uppercase tracking-wider text-stone-600 block mb-1.5">
-                  Available Until Date (Optional)
+                <label className="text-xs uppercase tracking-wider text-[#5A6A85] font-semibold block mb-1.5">
+                  Available Until Date
                 </label>
                 <Input
                   type="date"
                   {...form.register('availableUntil')}
-                  className="bg-[#FAF8F5] border-[#E2DDD5] text-xs font-mono"
+                  className="bg-[#F6F9FC] border-[#E5EAEF] text-xs text-[#2A3547] rounded-lg"
                 />
-                <p className="text-[10px] text-stone-400 mt-1">Leave empty for continuous supply availability</p>
-                {form.formState.errors.availableUntil && (
-                  <p className="text-xs text-red-600 mt-1 font-mono">{form.formState.errors.availableUntil.message}</p>
-                )}
               </div>
             </div>
           </div>
@@ -512,60 +441,52 @@ export const ListingForm: React.FC<Props> = ({ initialListing, mode = 'create' }
         {/* Step 05: DELIVERY */}
         {currentStep === 4 && (
           <div className="space-y-6">
-            <div className="border-b border-[#E2DDD5] pb-4">
-              <span className="font-mono text-xs text-[#173D32] font-semibold uppercase tracking-wider">Step 05 • Delivery & Pickup Options</span>
-              <h2 className="text-xl font-serif text-[#171A18] font-medium mt-1">Configure logistics availability</h2>
-              <p className="text-xs text-stone-500 mt-1 font-sans">
-                Indicate whether ISO tanker dispatch delivery or facility gate pickup is offered.
-              </p>
+            <div className="border-b border-[#E5EAEF] pb-4">
+              <span className="text-xs text-[#5D87FF] font-semibold uppercase tracking-wider bg-[#ECF2FF] px-2.5 py-1 rounded-md">Step 05 • Delivery & Pickup Options</span>
+              <h2 className="text-xl text-[#2A3547] font-bold mt-2">Logistics capability parameters</h2>
             </div>
 
             <div className="space-y-4">
-              <div className="flex items-center justify-between p-4 rounded-lg bg-[#FAF8F5] border border-[#E2DDD5]">
+              <div className="flex items-center justify-between p-4 bg-[#F6F9FC] border border-[#E5EAEF] rounded-xl">
                 <div>
-                  <p className="text-sm font-medium text-[#171A18]">Delivery Available (ISO Tanker Dispatch)</p>
-                  <p className="text-xs text-stone-500">Enable logistics network delivery directly to utilizer facilities.</p>
+                  <h4 className="text-sm font-bold text-[#2A3547]">Cryogenic ISO Tanker Delivery Available</h4>
+                  <p className="text-xs text-[#5A6A85] font-medium">Facility provides dispatch via logistics partner network.</p>
                 </div>
                 <Switch
-                  checked={form.watch('deliveryAvailable')}
-                  onCheckedChange={(checked) => form.setValue('deliveryAvailable', checked)}
+                  checked={values.deliveryAvailable}
+                  onCheckedChange={(val) => form.setValue('deliveryAvailable', val)}
                 />
               </div>
 
-              <div className="flex items-center justify-between p-4 rounded-lg bg-[#FAF8F5] border border-[#E2DDD5]">
+              <div className="flex items-center justify-between p-4 bg-[#F6F9FC] border border-[#E5EAEF] rounded-xl">
                 <div>
-                  <p className="text-sm font-medium text-[#171A18]">Facility Gate Pickup Available</p>
-                  <p className="text-xs text-stone-500">Allow buyers or freight partners to pick up directly at your facility gate.</p>
+                  <h4 className="text-sm font-bold text-[#2A3547]">Self-Organized Buyer Gate Pickup Allowed</h4>
+                  <p className="text-xs text-[#5A6A85] font-medium">Buyers can dispatch certified cryogenic tankers directly to stack gate.</p>
                 </div>
                 <Switch
-                  checked={form.watch('pickupAvailable')}
-                  onCheckedChange={(checked) => form.setValue('pickupAvailable', checked)}
+                  checked={values.pickupAvailable}
+                  onCheckedChange={(val) => form.setValue('pickupAvailable', val)}
                 />
               </div>
             </div>
           </div>
         )}
 
-        {/* Step 06: VERIFICATION & DOCUMENTS */}
+        {/* Step 06: VERIFICATION */}
         {currentStep === 5 && (
           <div className="space-y-6">
-            <div className="border-b border-[#E2DDD5] pb-4">
-              <span className="font-mono text-xs text-[#173D32] font-semibold uppercase tracking-wider">Step 06 • Technical Certificates</span>
-              <h2 className="text-xl font-serif text-[#171A18] font-medium mt-1">Add certificates or technical documentation</h2>
-              <p className="text-xs text-stone-500 mt-1 font-sans">
-                Supporting verification documents strengthen buyer confidence and accelerate off-take approval.
-              </p>
+            <div className="border-b border-[#E5EAEF] pb-4">
+              <span className="text-xs text-[#5D87FF] font-semibold uppercase tracking-wider bg-[#ECF2FF] px-2.5 py-1 rounded-md">Step 06 • Technical Certificates</span>
+              <h2 className="text-xl text-[#2A3547] font-bold mt-2">Gas Chromatography Assays</h2>
             </div>
 
-            <div className="p-6 bg-[#FAF8F5] rounded-xl border border-[#E2DDD5] space-y-4 text-xs font-mono text-stone-600">
-              <div className="flex items-center gap-3">
-                <ShieldCheck className="w-6 h-6 text-[#173D32] shrink-0" />
-                <div>
-                  <p className="font-bold text-[#171A18] text-sm font-sans">Verification Metadata Association</p>
-                  <p className="text-stone-500 text-xs font-sans mt-0.5">
-                    Your facility's registered GPCB environmental permits and ISO 14064 verification certificates will be automatically attached upon declaration.
-                  </p>
-                </div>
+            <div className="p-5 bg-[#F6F9FC] border border-[#E5EAEF] rounded-xl flex items-start gap-4">
+              <ShieldCheck className="w-6 h-6 text-[#5D87FF] shrink-0 mt-0.5" />
+              <div>
+                <h4 className="text-sm font-bold text-[#2A3547]">Automated Trust Network Verification</h4>
+                <p className="text-xs text-[#5A6A85] mt-1 font-medium leading-relaxed">
+                  Upon declaration, gas assays are cross-checked against registered ISO-certified laboratory evidence in your organization vault.
+                </p>
               </div>
             </div>
           </div>
@@ -574,69 +495,62 @@ export const ListingForm: React.FC<Props> = ({ initialListing, mode = 'create' }
         {/* Step 07: REVIEW & PREVIEW */}
         {currentStep === 6 && (
           <div className="space-y-6">
-            <div className="border-b border-[#E2DDD5] pb-4 flex items-center justify-between">
+            <div className="border-b border-[#E5EAEF] pb-4 flex items-center justify-between">
               <div>
-                <span className="font-mono text-xs text-[#173D32] font-semibold uppercase tracking-wider">Step 07 • Review Declaration</span>
-                <h2 className="text-xl font-serif text-[#171A18] font-medium mt-1">Final CO₂ Supply Declaration Preview</h2>
+                <span className="text-xs text-[#5D87FF] font-semibold uppercase tracking-wider bg-[#ECF2FF] px-2.5 py-1 rounded-md">Step 07 • Review Declaration</span>
+                <h2 className="text-xl text-[#2A3547] font-bold mt-2">Final CO₂ Supply Declaration Preview</h2>
               </div>
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-[#173D32]/10 border border-[#173D32]/20 text-[#173D32] font-mono text-xs rounded-full">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-[#E8F9F5] border border-[#13DEB9]/20 text-[#13DEB9] text-xs font-semibold rounded-full">
                 <Sparkles className="w-3.5 h-3.5" /> Declaration Ready
               </span>
             </div>
 
             {/* Industrial Specification Sheet Declaration Card */}
-            <div className="bg-[#FAF8F5] border border-[#E2DDD5] p-6 rounded-xl space-y-6">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#E2DDD5] pb-4">
+            <div className="bg-[#F6F9FC] border border-[#E5EAEF] p-6 rounded-xl space-y-6">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#E5EAEF] pb-4">
                 <div>
-                  <h3 className="font-serif text-2xl text-[#171A18] font-medium">{values.title}</h3>
-                  <p className="font-mono text-xs text-stone-500 mt-1">
-                    State: <span className="font-bold text-[#171A18] uppercase">{values.physicalForm}</span> • Purity: <span className="font-bold text-[#173D32]">{values.purityPercentage}%</span>
+                  <h3 className="text-2xl text-[#2A3547] font-bold">{values.title}</h3>
+                  <p className="text-xs text-[#5A6A85] font-medium mt-1">
+                    State: <span className="font-bold text-[#2A3547] uppercase">{values.physicalForm}</span> • Purity: <span className="font-bold text-[#5D87FF]">{values.purityPercentage}%</span>
                   </p>
                 </div>
 
-                <div className="font-mono text-right">
-                  <p className="text-xs text-stone-500 uppercase">Unit Commercial Rate</p>
-                  <p className="text-xl font-bold text-[#171A18]">₹{values.pricePerUnit} <span className="text-xs font-normal text-stone-500">/ {values.quantityUnit}</span></p>
+                <div className="text-right">
+                  <p className="text-xs text-[#5A6A85] uppercase font-medium">Unit Commercial Rate</p>
+                  <p className="text-xl font-bold text-[#2A3547]">₹{values.pricePerUnit} <span className="text-xs font-normal text-[#5A6A85]">/ {values.quantityUnit}</span></p>
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 font-mono text-xs">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs">
                 <div>
-                  <span className="text-stone-500 uppercase text-[10px]">Volume</span>
-                  <span className="font-bold text-[#171A18] block">{values.availableQuantity} {values.quantityUnit}s</span>
+                  <span className="text-[#5A6A85] uppercase text-[10px] font-semibold">Volume</span>
+                  <span className="font-bold text-[#2A3547] block">{values.availableQuantity} {values.quantityUnit}s</span>
                 </div>
                 <div>
-                  <span className="text-stone-500 uppercase text-[10px]">Minimum Order</span>
-                  <span className="font-bold text-[#171A18] block">{values.minimumOrderQuantity} {values.quantityUnit}s</span>
+                  <span className="text-[#5A6A85] uppercase text-[10px] font-semibold">Minimum Order</span>
+                  <span className="font-bold text-[#2A3547] block">{values.minimumOrderQuantity} {values.quantityUnit}s</span>
                 </div>
                 <div>
-                  <span className="text-stone-500 uppercase text-[10px]">Delivery</span>
-                  <span className="font-bold text-[#173D32] block">{values.deliveryAvailable ? 'Yes (ISO Tanker)' : 'No'}</span>
+                  <span className="text-[#5A6A85] uppercase text-[10px] font-semibold">Delivery</span>
+                  <span className="font-bold text-[#13DEB9] block">{values.deliveryAvailable ? 'Yes (ISO Tanker)' : 'No'}</span>
                 </div>
                 <div>
-                  <span className="text-stone-500 uppercase text-[10px]">Pickup</span>
-                  <span className="font-bold text-[#173D32] block">{values.pickupAvailable ? 'Yes (Gate)' : 'No'}</span>
+                  <span className="text-[#5A6A85] uppercase text-[10px] font-semibold">Pickup</span>
+                  <span className="font-bold text-[#13DEB9] block">{values.pickupAvailable ? 'Yes (Gate)' : 'No'}</span>
                 </div>
               </div>
-
-              {values.description && (
-                <div className="border-t border-[#E2DDD5] pt-4 text-xs text-stone-600">
-                  <span className="font-mono text-[10px] uppercase text-stone-500 block mb-1">Handling Description</span>
-                  {values.description}
-                </div>
-              )}
             </div>
           </div>
         )}
 
         {/* Wizard Footer Navigation Controls */}
-        <div className="border-t border-[#E2DDD5] pt-6 flex items-center justify-between">
+        <div className="border-t border-[#E5EAEF] pt-6 flex items-center justify-between">
           <Button
             type="button"
             variant="outline"
             onClick={() => setCurrentStep((prev) => Math.max(0, prev - 1))}
             disabled={currentStep === 0 || isSubmitting}
-            className="border-[#E2DDD5] text-xs gap-1.5"
+            className="border-[#E5EAEF] text-xs gap-1.5 text-[#2A3547] hover:border-[#5D87FF] rounded-lg"
           >
             <ArrowLeft className="w-3.5 h-3.5" /> Back
           </Button>
@@ -647,7 +561,7 @@ export const ListingForm: React.FC<Props> = ({ initialListing, mode = 'create' }
               variant="outline"
               onClick={handleSaveDraft}
               disabled={isSubmitting}
-              className="border-[#E2DDD5] text-xs gap-1.5 font-mono"
+              className="border-[#E5EAEF] text-xs gap-1.5 text-[#2A3547] hover:border-[#5D87FF] rounded-lg font-semibold"
             >
               <Save className="w-3.5 h-3.5" /> Save Draft
             </Button>
@@ -659,7 +573,7 @@ export const ListingForm: React.FC<Props> = ({ initialListing, mode = 'create' }
                   const isValid = await form.trigger();
                   if (isValid) setCurrentStep((prev) => Math.min(STEPS.length - 1, prev + 1));
                 }}
-                className="bg-[#173D32] hover:bg-[#123027] text-white font-mono text-xs gap-1.5 px-5"
+                className="bg-[#5D87FF] hover:bg-[#4570EA] text-white text-xs gap-1.5 px-5 font-semibold rounded-lg cursor-pointer"
               >
                 Next <ArrowRight className="w-3.5 h-3.5" />
               </Button>
@@ -668,7 +582,7 @@ export const ListingForm: React.FC<Props> = ({ initialListing, mode = 'create' }
                 type="button"
                 onClick={handlePublish}
                 disabled={isSubmitting}
-                className="bg-[#173D32] hover:bg-[#123027] text-white font-mono text-xs gap-1.5 px-6 font-bold"
+                className="bg-[#5D87FF] hover:bg-[#4570EA] text-white text-xs gap-1.5 px-6 font-semibold rounded-lg cursor-pointer"
               >
                 <Send className="w-3.5 h-3.5" /> {isSubmitting ? 'Publishing...' : 'Publish Listing'}
               </Button>

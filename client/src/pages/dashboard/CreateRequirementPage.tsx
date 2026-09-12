@@ -23,20 +23,20 @@ export const CreateRequirementPage: React.FC = () => {
   };
 
   return (
-    <div className="p-6 md:p-8 max-w-4xl mx-auto space-y-6">
-      <div className="flex items-center justify-between border-b border-[#E2DDD5] pb-4">
+    <div className="p-2 sm:p-4 max-w-5xl mx-auto space-y-6">
+      <div className="flex items-center justify-between border-b border-[#E5EAEF] pb-4">
         <div>
           <Button
             variant="ghost"
             onClick={() => navigate('/dashboard/requirements')}
-            className="text-xs font-mono text-stone-600 hover:text-[#171A18] px-0 mb-2 h-auto"
+            className="text-xs font-semibold text-[#5A6A85] hover:text-[#5D87FF] hover:bg-[#ECF2FF] px-2 mb-2 h-8 rounded-lg transition-colors"
           >
             <ArrowLeft className="w-3.5 h-3.5 mr-1" /> Back to Demand Management
           </Button>
-          <h1 className="font-sans font-bold text-2xl text-[#171A18]">
+          <h1 className="font-bold text-2xl text-[#2A3547] tracking-tight">
             Declare New CO₂ Requirement
           </h1>
-          <p className="font-sans text-xs text-stone-600 mt-0.5">
+          <p className="text-xs text-[#5A6A85] font-medium mt-0.5">
             Specify your facility's feedstock volume, purity requirements, and destination details.
           </p>
         </div>

@@ -35,25 +35,17 @@ We have transformed the visual presentation layer of **CarbonLoop** to mirror th
   - Active item highlights in `#5D87FF` font & icon with `#ECF2FF` light rounded background (`rounded-lg`).
   - Account footer with user avatar (`rounded-full`), name, email, and red logout button (`#FA896B`).
 
-### 4. Full Dashboard Theme Migration Across Requested Pages
-All 8 requested feature areas, pages, and subpages have been migrated to the Modernize theme:
-
-1. **Requirements Pages (`/requirements` & Internal)**:
-   - Updated `RequirementHeader.tsx`, `RequirementFilterBar.tsx`, and `DemandMarketplacePage.tsx` with `#F6F9FC` canvas, `#E5EAEF` borders, `#2A3547` headings, and `#ECF2FF` / `#5D87FF` category badges.
-2. **Match Engine Components**:
-   - Transformed `MatchCard.tsx`, `MatchFilters.tsx`, `MatchScore.tsx`, `MatchComparison.tsx`, `MatchBreakdown.tsx`, `DeliveryCostBreakdown.tsx`, and `MatchReasons.tsx` with clean white cards, `#5D87FF` match scores, `#13DEB9` status pills, and `#F6F9FC` inputs.
-3. **User Profile Settings (`ProfilePage.tsx`)**:
-   - Modernized profile identity cards, read-only email notices (`bg-[#F6F9FC] border-[#E5EAEF]`), and primary action buttons (`bg-[#5D87FF] hover:bg-[#4570EA]`).
-4. **Security & Session Settings (`SecurityPage.tsx`)**:
-   - Applied Modernize card styling to password change forms, session tables, and current device badges (`bg-[#E8F9F5] text-[#13DEB9] border-[#13DEB9]/20`).
-5. **Impact Analysis Components**:
-   - Updated `KpiStrip.tsx`, `CarbonFlowFunnel.tsx`, `UtilizationBreakdown.tsx`, `RegionalBalanceTable.tsx`, `MatchQualityChart.tsx`, `LogisticsPerformance.tsx`, `NetworkObservations.tsx`, and `MethodologyNote.tsx` to Modernize card structures, charts, and metrics.
-6. **Impact Intelligence Page (`ImpactReportPage.tsx`)**:
-   - Full Modernize theme overhaul with clean cards, `#5D87FF` report triggers, and `#F6F9FC` container backgrounds.
-7. **Trust & Verification Components**:
-   - Refactored `DocumentUploader.tsx`, `VerificationBadge.tsx`, and `VerificationHistoryTimeline.tsx` with Modernize dropzones (`border-[#5D87FF]/40 bg-[#F6F9FC]`), `#13DEB9` verified badges, and soft timelines.
-8. **Admin Reviewer Queue & All Subpages (`/admin`)**:
-   - Transformed `AdminLayout.tsx`, `AdminOverviewPage.tsx`, `AdminVerificationPage.tsx`, `AdminVerificationDetailPage.tsx`, `AdminOrganizationsPage.tsx`, `AdminUserDetailPage.tsx`, `AdminUsersPage.tsx`, `AdminMatchesPage.tsx`, `AdminAuditLogPage.tsx`, `AdminMatchDebuggerModal.tsx`, and `GlobalCommandSearch.tsx`.
+### 5. Follow-up UI Refinements & Enhancements
+1. **Dashboard Sidebar Button Sizing**:
+   - Expanded sidebar width to `w-72` (280px) and updated all item buttons (`px-4 py-3 h-10 rounded-lg text-xs font-semibold`) for full width, zero text clipping, and spacious touch targets.
+2. **Supply Marketplace Metrics Padding**:
+   - Refactored `MarketplaceHeader.tsx` to 4 individual white metric cards (`p-4.5 rounded-xl border border-[#E5EAEF] shadow-xs flex items-center gap-3.5`), resolving cramped borders and text clipping for large volumes (e.g. `16,050 tonnes`).
+3. **Authentication Console Loading Screen**:
+   - Transformed `AuthContext.tsx` session loading screen to Modernize theme (`bg-[#F6F9FC]`, white shadow card, `#5D87FF` animated logo badge, `#2A3547` bold typography, `#5D87FF` progress pulse bar).
+4. **Minimal Hackathon-Style Landing Page**:
+   - Redesigned `LandingPage.tsx` and `Navbar.tsx` into a high-impact, clean, minimal hackathon showcase page (`#F6F9FC` background, `#5D87FF` primary accents, `#2A3547` headings, live metric strip, 3 core architecture cards, and live console preview box).
+5. **Declare CO₂ & Create Requirement Forms**:
+   - Transformed `CreateListingPage.tsx`, `ListingForm.tsx`, `CreateRequirementPage.tsx`, and `RequirementForm.tsx` to the Modernize theme (`bg-[#F6F9FC]` canvas, `#5D87FF` active wizard steps, `#ECF2FF` soft highlights, `#2A3547` text, and `#5D87FF` action buttons).
 
 ---
 
@@ -63,4 +55,4 @@ All 8 requested feature areas, pages, and subpages have been migrated to the Mod
    - `npx tsc --noEmit` in `client`: **0 ERRORS**
    - `npx tsc --noEmit` in `server`: **0 ERRORS**
 2. **Vite Production Build**:
-   - `npm run build` in `client`: **SUCCESS (`✓ built in 807ms`)**
+   - `npm run build` in `client`: **SUCCESS (`✓ built in 808ms`)**

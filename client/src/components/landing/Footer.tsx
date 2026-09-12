@@ -4,69 +4,71 @@ import { ShieldCheck } from 'lucide-react';
 
 export const Footer: React.FC = () => {
   return (
-    <footer className="bg-[#171A18] border-t border-[#2B302C] pt-16 pb-12 px-4 md:px-8 text-sm text-[#9BA39E]">
-      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-5 gap-10 pb-12 border-b border-[#2B302C]">
+    <footer className="border-t border-[#E5EAEF] bg-white py-12 px-4 sm:px-6 lg:px-8 text-xs text-[#5A6A85] font-sans">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
         
-        {/* Brand Column */}
-        <div className="md:col-span-2 flex flex-col gap-4">
-          <Link to="/" className="flex items-center gap-2.5 group">
-            <div className="size-8 bg-[#173D32] border border-[#3C6E5C] text-[#FAF8F5] flex items-center justify-center font-mono font-bold text-sm">
+        {/* Brand Info */}
+        <div className="space-y-3 md:col-span-1">
+          <Link to="/" className="flex items-center gap-2.5">
+            <div className="size-8 bg-[#5D87FF] text-white flex items-center justify-center font-bold text-sm rounded-lg shadow-xs">
               C⟳
             </div>
-            <span className="text-xl font-black text-[#FAF8F5] tracking-tighter uppercase font-mono">
-              CARBON<span className="text-[#A3B899] font-light">LOOP</span>
+            <span className="font-bold text-base text-[#2A3547] tracking-tight">
+              CARBON<span className="text-[#5D87FF]">LOOP</span>
             </span>
           </Link>
-
-          <p className="text-xs text-[#9BA39E] font-serif leading-relaxed max-w-sm">
-            CarbonLoop is an industrial CO₂ commodity exchange and logistics dispatch engine connecting stack emitters directly with utilization off-takers.
+          <p className="text-xs text-[#5A6A85] font-medium leading-relaxed">
+            The premier B2B circular carbon infrastructure network connecting industrial CO₂ stack emitters directly with utilization off-takers.
           </p>
-
-          <div className="flex items-center gap-3 pt-2">
-            <span className="text-[11px] font-mono text-[#A3B899] uppercase tracking-widest flex items-center gap-1.5 bg-white/5 px-2.5 py-1 border border-white/10">
-              <ShieldCheck className="size-3.5" /> ISO 14064 Compliance Ready
+          <div className="pt-1">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-[#E8F9F5] border border-[#13DEB9]/30 text-[#13DEB9] text-[10px] font-bold uppercase tracking-wider">
+              <ShieldCheck className="w-3.5 h-3.5" /> ISO 14064 Verified
             </span>
           </div>
         </div>
 
         {/* Column 1: Platform */}
-        <div className="flex flex-col gap-3">
-          <h4 className="text-xs font-mono text-[#FAF8F5] font-bold uppercase tracking-widest">Platform Exchange</h4>
-          <ul className="space-y-2 text-xs font-mono">
-            <li><Link to="/marketplace" className="hover:text-white transition-colors">Supply Directory</Link></li>
-            <li><Link to="/how-it-works" className="hover:text-white transition-colors">Matchmaking Engine</Link></li>
-            <li><Link to="/impact" className="hover:text-white transition-colors">Logistics Telematics</Link></li>
-            <li><Link to="/impact" className="hover:text-white transition-colors">Impact Analytics</Link></li>
+        <div>
+          <h4 className="font-bold text-[#2A3547] text-xs uppercase tracking-wider mb-3">Platform Exchange</h4>
+          <ul className="space-y-2 font-medium">
+            <li><Link to="/marketplace" className="hover:text-[#5D87FF] transition-colors">Supply Marketplace</Link></li>
+            <li><Link to="/requirements" className="hover:text-[#5D87FF] transition-colors">Demand Network</Link></li>
+            <li><Link to="/how-it-works" className="hover:text-[#5D87FF] transition-colors">Matchmaking Engine</Link></li>
+            <li><Link to="/impact" className="hover:text-[#5D87FF] transition-colors">Impact Analytics</Link></li>
           </ul>
         </div>
 
         {/* Column 2: Solutions */}
-        <div className="flex flex-col gap-3">
-          <h4 className="text-xs font-mono text-[#FAF8F5] font-bold uppercase tracking-widest">Industries</h4>
-          <ul className="space-y-2 text-xs font-mono">
-            <li><a href="#ecosystem" className="hover:text-white transition-colors">Cement & Lime Stack</a></li>
-            <li><a href="#ecosystem" className="hover:text-white transition-colors">Steel & Power Hubs</a></li>
-            <li><a href="#ecosystem" className="hover:text-white transition-colors">Concrete Mineralization</a></li>
-            <li><a href="#ecosystem" className="hover:text-white transition-colors">Synthetic E-Fuels</a></li>
+        <div>
+          <h4 className="font-bold text-[#2A3547] text-xs uppercase tracking-wider mb-3">Industries & Logistics</h4>
+          <ul className="space-y-2 font-medium">
+            <li><span className="hover:text-[#5D87FF] transition-colors cursor-pointer">Cement & Lime Stack Capture</span></li>
+            <li><span className="hover:text-[#5D87FF] transition-colors cursor-pointer">Petrochemical & Refineries</span></li>
+            <li><span className="hover:text-[#5D87FF] transition-colors cursor-pointer">Concrete Mineralization</span></li>
+            <li><span className="hover:text-[#5D87FF] transition-colors cursor-pointer">Cryogenic Tanker Fleet</span></li>
           </ul>
         </div>
 
-        {/* Column 3: Regional Hubs */}
-        <div className="flex flex-col gap-3">
-          <h4 className="text-xs font-mono text-[#FAF8F5] font-bold uppercase tracking-widest">Regional Hubs</h4>
-          <ul className="space-y-2 text-xs font-mono text-[#9BA39E]">
-            <li>Ahmedabad Industrial Zone</li>
-            <li>Hazira Coastal Corridor</li>
-            <li>Vadodara Petrochemical Hub</li>
-            <li>Dahej Refinery Complex</li>
+        {/* Column 3: Compliance & Admin */}
+        <div>
+          <h4 className="font-bold text-[#2A3547] text-xs uppercase tracking-wider mb-3">Compliance & Governance</h4>
+          <ul className="space-y-2 font-medium">
+            <li><span className="hover:text-[#5D87FF] transition-colors cursor-pointer">ISO 14064 Standard</span></li>
+            <li><span className="hover:text-[#5D87FF] transition-colors cursor-pointer">GC Chromatography Assays</span></li>
+            <li><span className="hover:text-[#5D87FF] transition-colors cursor-pointer">Audit Ledger Vault</span></li>
+            <li><Link to="/dashboard" className="hover:text-[#5D87FF] transition-colors">Console Dashboard</Link></li>
           </ul>
         </div>
 
       </div>
 
-      <div className="max-w-7xl mx-auto pt-8 flex flex-col sm:flex-row items-center justify-between text-xs font-mono text-[#6E7772] gap-4">
-        <span>© 2026 CARBONLOOP TECHNOLOGIES INC. ALL RIGHTS RESERVED.</span>
-        <span>CAPTURE. MATCH. REUSE.</span>
+      <div className="max-w-7xl mx-auto pt-6 border-t border-[#E5EAEF] flex flex-col sm:flex-row items-center justify-between gap-4 font-medium text-xs">
+        <span>© {new Date().getFullYear()} CarbonLoop Industrial Network Inc. All rights reserved.</span>
+        <div className="flex items-center gap-6">
+          <span className="hover:text-[#5D87FF] transition-colors cursor-pointer">Privacy Policy</span>
+          <span className="hover:text-[#5D87FF] transition-colors cursor-pointer">Terms of Service</span>
+          <span className="hover:text-[#5D87FF] transition-colors cursor-pointer">Security Protocol</span>
+        </div>
       </div>
     </footer>
   );

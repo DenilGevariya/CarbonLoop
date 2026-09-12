@@ -186,14 +186,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }}
     >
       {isLoading ? (
-        <div className="min-h-screen bg-[#F7F5EF] text-[#171A18] flex flex-col items-center justify-center p-6">
-          <div className="flex flex-col items-center gap-4">
-            <div className="size-10 bg-[#173D32] border border-[#3C6E5C] text-white flex items-center justify-center font-mono font-bold text-sm animate-pulse">
+        <div className="min-h-screen bg-[#F6F9FC] text-[#2A3547] flex flex-col items-center justify-center p-6 font-sans">
+          <div className="bg-white border border-[#E5EAEF] p-8 rounded-2xl shadow-xl flex flex-col items-center gap-5 max-w-sm w-full animate-in fade-in zoom-in duration-300">
+            <div className="size-14 bg-[#5D87FF] text-white flex items-center justify-center font-bold text-xl rounded-2xl shadow-md animate-bounce">
               C⟳
             </div>
-            <span className="font-mono text-xs font-bold uppercase tracking-widest text-[#173D32]">
-              AUTHENTICATING CONSOLE SESSION...
-            </span>
+            <div className="text-center space-y-1.5">
+              <h3 className="text-base font-bold text-[#2A3547] tracking-tight">
+                Authenticating Console Session
+              </h3>
+              <p className="text-xs font-medium text-[#5A6A85]">
+                Verifying cryptographic security token & permissions...
+              </p>
+            </div>
+            <div className="w-full bg-[#ECF2FF] h-1.5 rounded-full overflow-hidden">
+              <div className="bg-[#5D87FF] h-full w-2/3 animate-pulse rounded-full" />
+            </div>
           </div>
         </div>
       ) : (

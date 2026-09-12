@@ -209,10 +209,10 @@ export const RequirementForm: React.FC<RequirementFormProps> = ({
   };
 
   return (
-    <div className="space-y-8">
-      {/* Stepper Navigation */}
-      <div className="bg-white border border-[#E2DDD5] p-4 font-mono text-xs shadow-2xs">
-        <div className="flex items-center justify-between overflow-x-auto gap-2">
+    <div className="space-y-6 font-sans">
+      {/* Step Navigation Header Bar */}
+      <div className="bg-white border border-[#E5EAEF] p-4 rounded-xl shadow-xs">
+        <div className="flex items-center justify-between overflow-x-auto gap-2 scrollbar-none">
           {STEPS.map((step) => {
             const isActive = currentStep === step.id;
             const isCompleted = currentStep > step.id;
@@ -224,16 +224,16 @@ export const RequirementForm: React.FC<RequirementFormProps> = ({
                 onClick={() => {
                   if (isCompleted || isActive) setCurrentStep(step.id);
                 }}
-                className={`flex items-center gap-2 py-1.5 px-3 rounded-none transition-colors whitespace-nowrap cursor-pointer ${
+                className={`flex items-center gap-2 py-2 px-3.5 rounded-lg text-xs font-semibold transition-all whitespace-nowrap cursor-pointer ${
                   isActive
-                    ? 'bg-[#173D32] text-white font-bold'
+                    ? 'bg-[#5D87FF] text-white font-bold shadow-xs'
                     : isCompleted
-                    ? 'bg-[#173D32]/10 text-[#173D32] font-medium hover:bg-[#173D32]/20'
-                    : 'text-stone-400 bg-stone-50'
+                    ? 'bg-[#ECF2FF] text-[#5D87FF] font-semibold hover:bg-[#5D87FF]/20'
+                    : 'text-[#5A6A85] bg-[#F6F9FC] hover:bg-[#E5EAEF]'
                 }`}
               >
                 <span>{step.name}</span>
-                {isCompleted && <Check className="w-3.5 h-3.5 text-[#173D32]" />}
+                {isCompleted && <Check className="w-3.5 h-3.5 text-[#5D87FF]" />}
               </button>
             );
           })}
@@ -241,45 +241,46 @@ export const RequirementForm: React.FC<RequirementFormProps> = ({
       </div>
 
       {/* Main Form Container */}
-      <form onSubmit={(e) => e.preventDefault()} className="bg-white border border-[#E2DDD5] p-6 sm:p-8 shadow-2xs">
+      <form onSubmit={(e) => e.preventDefault()} className="bg-white border border-[#E5EAEF] p-6 sm:p-8 rounded-xl shadow-xs space-y-6">
         {/* STEP 1: Overview */}
         {currentStep === 1 && (
           <div className="space-y-6">
             <div>
-              <span className="font-mono text-[10px] font-bold text-[#173D32] uppercase tracking-wider block mb-1">
+              <span className="text-xs font-semibold text-[#5D87FF] uppercase tracking-wider bg-[#ECF2FF] px-2.5 py-1 rounded-md block w-fit mb-2">
                 Section 01 / Requirement Overview
               </span>
-              <h2 className="font-sans font-bold text-xl text-[#171A18]">
+              <h2 className="font-bold text-xl text-[#2A3547]">
                 Define Your CO₂ Feedstock Need
               </h2>
-              <p className="font-sans text-xs text-stone-600 mt-1">
+              <p className="text-xs text-[#5A6A85] font-medium mt-1">
                 State what your manufacturing facility requires so compatible suppliers can evaluate technical feasibility.
               </p>
             </div>
 
-            <div className="space-y-4 font-mono text-xs">
+            <div className="space-y-4 text-xs">
               <div>
-                <label className="block text-[#171A18] font-bold mb-1.5">
-                  Requirement Title <span className="text-rose-600">*</span>
+                <label className="text-xs font-semibold uppercase tracking-wider text-[#5A6A85] block mb-1.5">
+                  Requirement Title *
                 </label>
                 <Input
                   {...register('title')}
-                  placeholder="e.g. High-Purity CO2 Feedstock for E-Methanol Synthesis"
-                  className="border-[#E2DDD5] rounded-none text-xs h-10 font-sans"
+                  placeholder="e.g. High-Purity CO2 Feedstock for Methanol Synthesis"
+                  className="bg-[#F6F9FC] border-[#E5EAEF] text-xs text-[#2A3547] rounded-lg focus-visible:ring-[#5D87FF]"
                 />
                 {errors.title && (
-                  <p className="text-rose-600 text-[11px] mt-1 font-sans">{errors.title.message}</p>
+                  <p className="text-xs text-[#FA896B] mt-1">{errors.title.message}</p>
                 )}
               </div>
 
               <div>
-                <label className="block text-[#171A18] font-bold mb-1.5">
-                  Detailed Operational Use Case & Specification Description
+                <label className="text-xs font-semibold uppercase tracking-wider text-[#5A6A85] block mb-1.5">
+                  Detailed Operational Description
                 </label>
                 <Textarea
                   {...register('description')}
-                  placeholder="Describe your process requirements, continuous vs batch needs, contaminant restrictions, or specific pressure/temperature requirements..."
-                  className="border-[#E2DDD5] rounded-none text-xs h-32 font-sans"
+                  rows={4}
+                  placeholder="Describe your process requirements, continuous off-take schedule, or purity tolerances..."
+                  className="bg-[#F6F9FC] border-[#E5EAEF] text-xs text-[#2A3547] rounded-lg focus-visible:ring-[#5D87FF]"
                 />
               </div>
             </div>
@@ -290,106 +291,69 @@ export const RequirementForm: React.FC<RequirementFormProps> = ({
         {currentStep === 2 && (
           <div className="space-y-6">
             <div>
-              <span className="font-mono text-[10px] font-bold text-[#173D32] uppercase tracking-wider block mb-1">
-                Section 02 / Quantity & Quality
+              <span className="text-xs font-semibold text-[#5D87FF] uppercase tracking-wider bg-[#ECF2FF] px-2.5 py-1 rounded-md block w-fit mb-2">
+                Section 02 / Volume & Purity Specifications
               </span>
-              <h2 className="font-sans font-bold text-xl text-[#171A18]">
-                Feedstock Volume & Purity Thresholds
+              <h2 className="font-bold text-xl text-[#2A3547]">
+                Set Required Volume and Purity Range
               </h2>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 font-mono text-xs">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
               <div>
-                <label className="block text-[#171A18] font-bold mb-1.5">
-                  Required Volume (Tonnes) <span className="text-rose-600">*</span>
+                <label className="text-xs font-semibold uppercase tracking-wider text-[#5A6A85] block mb-1.5">
+                  Required Volume (Tonnes) *
                 </label>
                 <Input
                   type="number"
-                  step="0.01"
                   {...register('required_quantity', { valueAsNumber: true })}
-                  className="border-[#E2DDD5] rounded-none text-xs h-10 font-sans"
+                  className="bg-[#F6F9FC] border-[#E5EAEF] text-xs text-[#2A3547] rounded-lg focus-visible:ring-[#5D87FF]"
                 />
-                {errors.required_quantity && (
-                  <p className="text-rose-600 text-[11px] mt-1 font-sans">
-                    {errors.required_quantity.message}
-                  </p>
-                )}
               </div>
 
               <div>
-                <label className="block text-[#171A18] font-bold mb-1.5">Unit</label>
-                <Select
-                  value={formValues.quantity_unit}
-                  onValueChange={(val) => val && setValue('quantity_unit', val)}
-                >
-                  <SelectTrigger className="h-10 text-xs border-[#E2DDD5] rounded-none bg-white">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent className="rounded-none border-[#E2DDD5]">
-                    <SelectItem value="tonne">Metric Tonne (t)</SelectItem>
-                    <SelectItem value="kg">Kilogram (kg)</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div>
-                <label className="block text-[#171A18] font-bold mb-1.5">
-                  Minimum Acceptable Purity (%) <span className="text-rose-600">*</span>
+                <label className="text-xs font-semibold uppercase tracking-wider text-[#5A6A85] block mb-1.5">
+                  Minimum Purity (%) *
                 </label>
                 <Input
                   type="number"
                   step="0.01"
                   {...register('minimum_purity', { valueAsNumber: true })}
-                  placeholder="e.g. 99.5"
-                  className="border-[#E2DDD5] rounded-none text-xs h-10 font-sans"
+                  className="bg-[#F6F9FC] border-[#E5EAEF] text-xs text-[#2A3547] rounded-lg focus-visible:ring-[#5D87FF]"
                 />
-                {errors.minimum_purity && (
-                  <p className="text-rose-600 text-[11px] mt-1 font-sans">
-                    {errors.minimum_purity.message}
-                  </p>
-                )}
               </div>
 
               <div>
-                <label className="block text-[#171A18] font-bold mb-1.5">
-                  Maximum Purity Cap (%) (Optional)
+                <label className="text-xs font-semibold uppercase tracking-wider text-[#5A6A85] block mb-1.5">
+                  Maximum Purity Cap (%)
                 </label>
                 <Input
                   type="number"
                   step="0.01"
                   {...register('maximum_purity', { valueAsNumber: true })}
                   placeholder="e.g. 99.9"
-                  className="border-[#E2DDD5] rounded-none text-xs h-10 font-sans"
+                  className="bg-[#F6F9FC] border-[#E5EAEF] text-xs text-[#2A3547] rounded-lg focus-visible:ring-[#5D87FF]"
                 />
               </div>
 
               <div>
-                <label className="block text-[#171A18] font-bold mb-1.5">Acceptable Physical Form</label>
+                <label className="text-xs font-semibold uppercase tracking-wider text-[#5A6A85] block mb-1.5">
+                  Acceptable Physical Form
+                </label>
                 <Select
                   value={formValues.acceptable_physical_form}
                   onValueChange={(val) => val && setValue('acceptable_physical_form', val)}
                 >
-                  <SelectTrigger className="h-10 text-xs border-[#E2DDD5] rounded-none bg-white">
+                  <SelectTrigger className="bg-[#F6F9FC] border-[#E5EAEF] text-xs text-[#2A3547] rounded-lg">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="rounded-none border-[#E2DDD5]">
+                  <SelectContent className="bg-white border-[#E5EAEF]">
                     <SelectItem value="liquid">Liquid CO₂</SelectItem>
                     <SelectItem value="gaseous">Compressed Gas</SelectItem>
                     <SelectItem value="supercritical">Supercritical Stream</SelectItem>
                     <SelectItem value="solid_dry_ice">Solid Dry Ice</SelectItem>
                   </SelectContent>
                 </Select>
-              </div>
-
-              <div>
-                <label className="block text-[#171A18] font-bold mb-1.5">
-                  Preferred Capture Method (Optional)
-                </label>
-                <Input
-                  {...register('preferred_capture_method')}
-                  placeholder="e.g. Amine Gas Absorption, Direct Air Capture..."
-                  className="border-[#E2DDD5] rounded-none text-xs h-10 font-sans"
-                />
               </div>
             </div>
           </div>

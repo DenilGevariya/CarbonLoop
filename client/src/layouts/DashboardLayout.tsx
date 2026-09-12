@@ -114,13 +114,13 @@ export const DashboardLayout: React.FC = () => {
             </Link>
           </SidebarHeader>
 
-          <SidebarContent className="p-3 space-y-4">
+          <SidebarContent className="p-4 space-y-4">
             {navSections.map((sec) => (
               <SidebarGroup key={sec.group}>
-                <SidebarGroupLabel className="text-[11px] font-bold uppercase tracking-wider text-[#5A6A85] px-3 py-1.5">
+                <SidebarGroupLabel className="text-[11px] font-bold uppercase tracking-wider text-[#5A6A85] px-3 py-1.5 mb-1">
                   {sec.group}
                 </SidebarGroupLabel>
-                <SidebarMenu>
+                <SidebarMenu className="space-y-1">
                   {sec.items.map((item) => {
                     const Icon = item.icon;
                     const isActive = location.pathname === item.path;
@@ -128,15 +128,15 @@ export const DashboardLayout: React.FC = () => {
                       <SidebarMenuItem key={item.path}>
                         <SidebarMenuButton
                           className={cn(
-                            'w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-xs font-semibold tracking-wide transition-all cursor-pointer',
+                            'w-full flex items-center gap-3 px-4 py-3 h-10 rounded-lg text-xs font-semibold tracking-wide transition-all cursor-pointer',
                             isActive
                               ? 'bg-[#ECF2FF] text-[#5D87FF] font-bold shadow-xs'
                               : 'text-[#2A3547] hover:text-[#5D87FF] hover:bg-[#F6F9FC]'
                           )}
                           onClick={() => navigate(item.path)}
                         >
-                          <Icon className={cn("size-4", isActive ? "text-[#5D87FF]" : "text-[#5A6A85]")} />
-                          <span>{item.label}</span>
+                          <Icon className={cn("size-4 shrink-0", isActive ? "text-[#5D87FF]" : "text-[#5A6A85]")} />
+                          <span className="truncate">{item.label}</span>
                         </SidebarMenuButton>
                       </SidebarMenuItem>
                     );

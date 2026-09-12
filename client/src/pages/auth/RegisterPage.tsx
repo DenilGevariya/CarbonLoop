@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { INDUSTRIAL_IMAGES } from '@/lib/images';
-import { ArrowRight, Lock, Mail, User, Phone } from 'lucide-react';
+import { ArrowRight, Lock, Mail, User, Phone, CheckCircle2 } from 'lucide-react';
 import { FadeUp } from '@/animations';
 
 export const RegisterPage: React.FC = () => {
@@ -52,35 +52,35 @@ export const RegisterPage: React.FC = () => {
   };
 
   return (
-    <FadeUp className="w-full bg-[#FAF8F5] border border-[#E2DDD5] grid grid-cols-1 md:grid-cols-12 overflow-hidden shadow-sm">
+    <FadeUp className="w-full bg-white border border-[#E5EAEF] rounded-2xl grid grid-cols-1 md:grid-cols-12 overflow-hidden shadow-lg">
       
-      {/* Left Column: Form */}
-      <div className="md:col-span-6 p-6 sm:p-10 flex flex-col justify-between gap-6 bg-[#FAF8F5]">
+      {/* Left Column: Registration Form */}
+      <div className="md:col-span-6 p-6 sm:p-10 flex flex-col justify-between gap-6 bg-white">
         
         <div className="space-y-6">
           
           {/* Header */}
-          <div className="space-y-2 border-b border-[#E2DDD5] pb-4">
-            <span className="bg-[#EBE7DF] text-[#173D32] border border-[#DCD6C9] font-mono text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 inline-block">
-              PRIMARY USER REGISTRATION
+          <div className="space-y-2 border-b border-[#E5EAEF] pb-4">
+            <span className="px-3 py-1 rounded-md bg-[#ECF2FF] border border-[#5D87FF]/20 text-[#5D87FF] text-[10px] font-bold uppercase tracking-wider inline-block">
+              ORGANIZATION REPRESENTATIVE ONBOARDING
             </span>
-            <h2 className="text-3xl font-black text-[#171A18] tracking-tight mt-2">
+            <h2 className="text-2xl sm:text-3xl font-bold text-[#2A3547] tracking-tight mt-1">
               Create Account
             </h2>
-            <p className="text-xs text-[#5C6560] font-serif">
+            <p className="text-xs text-[#5A6A85] font-medium">
               Register representative details before setting up organization parameters.
             </p>
           </div>
 
           {error && (
-            <div className="p-3 bg-[#8C6D38]/10 border border-[#8C6D38] text-[#8C6D38] text-xs font-mono font-semibold">
+            <div className="p-3.5 rounded-xl bg-[#FDEDE8] border border-[#FA896B]/30 text-[#FA896B] text-xs font-semibold">
               ⚠️ {error}
             </div>
           )}
 
           {successMsg && (
-            <div className="p-3 bg-[#173D32]/10 border border-[#173D32] text-[#173D32] text-xs font-mono font-bold">
-              ✓ {successMsg}
+            <div className="p-3.5 rounded-xl bg-[#E8F9F5] border border-[#13DEB9]/30 text-[#13DEB9] text-xs font-semibold flex items-center gap-2">
+              <CheckCircle2 className="w-4 h-4 text-[#13DEB9]" /> {successMsg}
             </div>
           )}
 
@@ -90,26 +90,26 @@ export const RegisterPage: React.FC = () => {
             {/* First Name & Last Name */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <Label className="text-xs font-mono text-[#171A18] uppercase font-bold">First Name</Label>
+                <Label className="text-xs font-bold text-[#2A3547] uppercase tracking-wider">First Name</Label>
                 <div className="relative">
-                  <User className="size-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#5C6560]" />
+                  <User className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-[#5A6A85]" />
                   <Input
                     value={formData.firstName}
                     onChange={(e) => handleChange('firstName', e.target.value)}
                     placeholder="Rajesh"
-                    className="pl-9 h-10 bg-[#EBE7DF] border-[#DCD6C9] text-[#171A18] text-xs font-mono rounded-none focus-visible:ring-[#173D32]"
+                    className="pl-10 h-11 bg-[#F6F9FC] border-[#E5EAEF] text-xs font-medium text-[#2A3547] rounded-xl focus-visible:ring-[#5D87FF]"
                     required
                   />
                 </div>
               </div>
 
               <div className="space-y-1.5">
-                <Label className="text-xs font-mono text-[#171A18] uppercase font-bold">Last Name</Label>
+                <Label className="text-xs font-bold text-[#2A3547] uppercase tracking-wider">Last Name</Label>
                 <Input
                   value={formData.lastName}
                   onChange={(e) => handleChange('lastName', e.target.value)}
                   placeholder="Patel"
-                  className="px-3 h-10 bg-[#EBE7DF] border-[#DCD6C9] text-[#171A18] text-xs font-mono rounded-none focus-visible:ring-[#173D32]"
+                  className="px-3.5 h-11 bg-[#F6F9FC] border-[#E5EAEF] text-xs font-medium text-[#2A3547] rounded-xl focus-visible:ring-[#5D87FF]"
                   required
                 />
               </div>
@@ -117,15 +117,15 @@ export const RegisterPage: React.FC = () => {
 
             {/* Work Email */}
             <div className="space-y-1.5">
-              <Label className="text-xs font-mono text-[#171A18] uppercase font-bold">Work Email</Label>
+              <Label className="text-xs font-bold text-[#2A3547] uppercase tracking-wider">Work Email</Label>
               <div className="relative">
-                <Mail className="size-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#5C6560]" />
+                <Mail className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-[#5A6A85]" />
                 <Input
                   type="email"
                   value={formData.email}
                   onChange={(e) => handleChange('email', e.target.value)}
                   placeholder="supply@organization.com"
-                  className="pl-9 h-10 bg-[#EBE7DF] border-[#DCD6C9] text-[#171A18] text-xs font-mono rounded-none focus-visible:ring-[#173D32]"
+                  className="pl-10 h-11 bg-[#F6F9FC] border-[#E5EAEF] text-xs font-medium text-[#2A3547] rounded-xl focus-visible:ring-[#5D87FF]"
                   required
                 />
               </div>
@@ -134,28 +134,28 @@ export const RegisterPage: React.FC = () => {
             {/* Password & Confirm Password */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <Label className="text-xs font-mono text-[#171A18] uppercase font-bold">Password</Label>
+                <Label className="text-xs font-bold text-[#2A3547] uppercase tracking-wider">Password</Label>
                 <div className="relative">
-                  <Lock className="size-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#5C6560]" />
+                  <Lock className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-[#5A6A85]" />
                   <Input
                     type="password"
                     value={formData.password}
                     onChange={(e) => handleChange('password', e.target.value)}
                     placeholder="••••••••"
-                    className="pl-9 h-10 bg-[#EBE7DF] border-[#DCD6C9] text-[#171A18] text-xs font-mono rounded-none focus-visible:ring-[#173D32]"
+                    className="pl-10 h-11 bg-[#F6F9FC] border-[#E5EAEF] text-xs font-medium text-[#2A3547] rounded-xl focus-visible:ring-[#5D87FF]"
                     required
                   />
                 </div>
               </div>
 
               <div className="space-y-1.5">
-                <Label className="text-xs font-mono text-[#171A18] uppercase font-bold">Confirm Password</Label>
+                <Label className="text-xs font-bold text-[#2A3547] uppercase tracking-wider">Confirm Password</Label>
                 <Input
                   type="password"
                   value={formData.confirmPassword}
                   onChange={(e) => handleChange('confirmPassword', e.target.value)}
                   placeholder="••••••••"
-                  className="px-3 h-10 bg-[#EBE7DF] border-[#DCD6C9] text-[#171A18] text-xs font-mono rounded-none focus-visible:ring-[#173D32]"
+                  className="px-3.5 h-11 bg-[#F6F9FC] border-[#E5EAEF] text-xs font-medium text-[#2A3547] rounded-xl focus-visible:ring-[#5D87FF]"
                   required
                 />
               </div>
@@ -163,14 +163,14 @@ export const RegisterPage: React.FC = () => {
 
             {/* Phone Number */}
             <div className="space-y-1.5">
-              <Label className="text-xs font-mono text-[#171A18] uppercase font-bold">Phone Number</Label>
+              <Label className="text-xs font-bold text-[#2A3547] uppercase tracking-wider">Phone Number</Label>
               <div className="relative">
-                <Phone className="size-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#5C6560]" />
+                <Phone className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-[#5A6A85]" />
                 <Input
                   value={formData.phone}
                   onChange={(e) => handleChange('phone', e.target.value)}
                   placeholder="+91 98234 56789"
-                  className="pl-9 h-10 bg-[#EBE7DF] border-[#DCD6C9] text-[#171A18] text-xs font-mono rounded-none focus-visible:ring-[#173D32]"
+                  className="pl-10 h-11 bg-[#F6F9FC] border-[#E5EAEF] text-xs font-medium text-[#2A3547] rounded-xl focus-visible:ring-[#5D87FF]"
                 />
               </div>
             </div>
@@ -179,41 +179,41 @@ export const RegisterPage: React.FC = () => {
             <Button
               type="submit"
               disabled={loading}
-              className="w-full h-11 bg-[#173D32] hover:bg-[#255244] text-white font-mono text-xs font-bold uppercase tracking-wider rounded-none flex items-center justify-center gap-2 border border-[#173D32]"
+              className="w-full h-11 bg-[#5D87FF] hover:bg-[#4570EA] text-white font-semibold text-xs rounded-xl flex items-center justify-center gap-2 transition-all cursor-pointer shadow-xs"
             >
-              {loading ? 'Creating Account...' : 'Register User Profile'} <ArrowRight className="size-4" />
+              {loading ? 'Creating Account...' : 'Register User Profile'} <ArrowRight className="w-4 h-4" />
             </Button>
           </form>
 
         </div>
 
         {/* Footer Link */}
-        <div className="border-t border-[#E2DDD5] pt-4 text-center text-xs font-serif text-[#5C6560]">
+        <div className="border-t border-[#E5EAEF] pt-4 text-center text-xs font-medium text-[#5A6A85]">
           Already registered?{' '}
-          <Link to="/login" className="text-[#173D32] font-mono font-bold hover:underline ml-1 uppercase">
+          <Link to="/login" className="text-[#5D87FF] font-bold hover:underline ml-1">
             Sign In Here
           </Link>
         </div>
 
       </div>
 
-      {/* Right Column: Editorial Photograph & Copy */}
-      <div className="md:col-span-6 relative min-h-[350px] md:min-h-[550px] hidden md:flex flex-col justify-end p-8 border-l border-[#E2DDD5] overflow-hidden">
+      {/* Right Column: Industrial Photograph & Copy */}
+      <div className="md:col-span-6 relative min-h-[350px] md:min-h-[550px] hidden md:flex flex-col justify-end p-8 border-l border-[#E5EAEF] overflow-hidden">
         <img
           src={INDUSTRIAL_IMAGES.chemicalRefinery}
           alt="Synthetic Fuel Refinery Infrastructure"
           className="absolute inset-0 w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#171A18]/95 via-[#171A18]/50 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#2A3547]/95 via-[#2A3547]/50 to-transparent" />
 
         <div className="relative z-10 space-y-3 text-white">
-          <span className="text-[10px] font-mono text-[#A3B899] uppercase tracking-widest block font-bold bg-white/10 px-2.5 py-1 w-fit border border-white/15">
+          <span className="text-[10px] font-bold text-[#13DEB9] uppercase tracking-wider block bg-white/10 px-3 py-1 rounded-md w-fit backdrop-blur-sm border border-white/15">
             COMMERCIAL CARBON NETWORK
           </span>
-          <h2 className="text-3xl font-black tracking-tight leading-tight">
-            Build your carbon network.
+          <h2 className="text-3xl font-bold tracking-tight leading-tight text-white">
+            Build your industrial carbon network.
           </h2>
-          <p className="text-sm font-serif text-[#C5D3C1] leading-relaxed">
+          <p className="text-sm text-[#949C96] font-medium leading-relaxed">
             Connect your organization to a growing network of captured carbon supply, verified off-take demand, and cryogenic logistics carriers.
           </p>
         </div>
@@ -222,3 +222,5 @@ export const RegisterPage: React.FC = () => {
     </FadeUp>
   );
 };
+
+export default RegisterPage;

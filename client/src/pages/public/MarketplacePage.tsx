@@ -45,7 +45,7 @@ export const MarketplacePage: React.FC = () => {
       />
 
       {/* Primary Data Table Section */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8 pt-0 space-y-6">
         <MarketplaceTable
           listings={items}
           isLoading={listingsLoading}

@@ -1,26 +1,29 @@
 import React from 'react';
-import { SectionHeading } from '@/components/shared/SectionHeading';
-import { StaggerContainer, StaggerItem } from '@/animations';
+import { StaggerContainer, StaggerItem, HoverLift } from '@/animations';
 import { INDUSTRIAL_IMAGES } from '@/lib/images';
-import { CheckCircle2, ArrowRight } from 'lucide-react';
+import { CheckCircle2, ArrowRight, Activity, ShieldCheck, Cpu, Truck, Factory } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
 
 const steps = [
   {
     step: '01',
     code: 'SPECIFICATION',
     title: 'Stream Onboarding',
-    subtitle: 'Stack Telematics & Chemical Fingerprinting',
+    subtitle: 'Stack Telematics & Fingerprinting',
     description: 'Emitters register verified stack parameters — mass flow rate (t/mo), purity %, pressure, temperature, and availability windows.',
     specs: ['99.5% Purity Standard', 'Liquefaction Specs', 'Telemetry Sync'],
+    icon: Factory,
     image: INDUSTRIAL_IMAGES.cementPlant
   },
   {
     step: '02',
     code: 'OPTIMIZATION',
     title: 'Algorithmic Matching',
-    subtitle: 'Distance & Quality Compatibility Engine',
+    subtitle: 'Distance & Quality Engine',
     description: 'CarbonLoop evaluates chemical suitability, haulage radius, pressure differential, and strike price bounds for optimal pairing.',
     specs: ['Radius Bounds <150km', 'Pressure Differential', 'Purity Thresholds'],
+    icon: Cpu,
     image: INDUSTRIAL_IMAGES.controlRoom
   },
   {
@@ -30,104 +33,115 @@ const steps = [
     subtitle: 'Automated Off-Take Agreements',
     description: 'Bilateral negotiations produce legally binding digital off-take contracts with strict purity guarantees and volume commitments.',
     specs: ['Automated Escrow', 'Quality Guarantees', 'Spot & Long-Term'],
+    icon: ShieldCheck,
     image: INDUSTRIAL_IMAGES.refineryPipes
   },
   {
     step: '04',
     code: 'DISPATCH',
     title: 'Logistics Scheduling',
-    subtitle: 'ISO Tank Fleet Telematics & Routing',
+    subtitle: 'ISO Tank Fleet & Routing',
     description: 'Dynamic dispatch of ISO-tank fleets or dedicated pipeline hookups with continuous temperature, pressure, and GPS telematics.',
     specs: ['GPS Telematics', 'Pressure Monitoring', 'Hazmat Compliance'],
+    icon: Truck,
     image: INDUSTRIAL_IMAGES.isoTanker
   },
   {
     step: '05',
     code: 'SEQUESTRATION',
     title: 'Productive Reuse',
-    subtitle: 'Permanent Industrial Mineralization & E-Fuels',
+    subtitle: 'Mineralization & Synthetic Fuels',
     description: 'CO₂ is permanently sequestered into green concrete, synthetic e-fuels, specialty chemicals, or greenhouse enrichment.',
     specs: ['Mineral Sequestration', 'Verified Carbon Credits', 'Audit Trail'],
+    icon: Activity,
     image: INDUSTRIAL_IMAGES.greenConcrete
   }
 ];
 
 export const HowItWorks: React.FC = () => {
-  return (
-    <section className="py-24 px-4 md:px-8 bg-[#F4F1EA] border-t border-[#E2DDD5] text-[#171A18] relative">
-      <div className="max-w-7xl mx-auto flex flex-col gap-16">
-        <SectionHeading
-          eyebrow="Operational Architecture"
-          eyebrowIcon={CheckCircle2}
-          title="From stack capture to"
-          highlightTitle="industrial off-take."
-          description="A continuous, telemetry-verified workflow connecting emitters directly with off-takers and freight logistics."
-        />
+  const navigate = useNavigate();
 
-        {/* Editorial Steps Grid */}
-        <StaggerContainer className="grid grid-cols-1 lg:grid-cols-5 gap-4">
-          {steps.map((item) => (
+  return (
+    <section className="py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full space-y-12 font-sans">
+      <div className="text-center max-w-3xl mx-auto space-y-3">
+        <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#ECF2FF] border border-[#5D87FF]/20 text-[#5D87FF] text-xs font-bold uppercase tracking-wider">
+          <CheckCircle2 className="w-3.5 h-3.5 text-[#5D87FF]" />
+          Operational Architecture
+        </div>
+        <h2 className="text-3xl sm:text-4xl font-bold text-[#2A3547] tracking-tight">
+          From Stack Capture to Industrial Off-Take
+        </h2>
+        <p className="text-sm text-[#5A6A85] font-medium leading-relaxed">
+          A continuous, telemetry-verified workflow connecting emitters directly with off-takers and freight logistics.
+        </p>
+      </div>
+
+      {/* Steps Grid */}
+      <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-5">
+        {steps.map((item) => {
+          return (
             <StaggerItem key={item.step}>
-              <div className="bg-[#FAF8F5] border border-[#E2DDD5] p-6 rounded-none flex flex-col justify-between h-full group hover:border-[#173D32] transition-colors relative">
-                {/* Step Header */}
-                <div className="flex flex-col gap-3">
-                  <div className="flex items-center justify-between border-b border-[#E2DDD5] pb-3">
-                    <span className="font-mono text-2xl font-black text-[#173D32]">
-                      {item.step}
-                    </span>
-                    <span className="font-mono text-[10px] tracking-widest text-[#5C6560] uppercase">
-                      {item.code}
-                    </span>
+              <HoverLift y={-3}>
+                <div className="bg-white border border-[#E5EAEF] p-5 rounded-2xl shadow-xs flex flex-col justify-between h-full hover:shadow-md hover:border-[#5D87FF]/40 transition-all space-y-4">
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between border-b border-[#E5EAEF] pb-3">
+                      <span className="size-9 rounded-xl bg-[#ECF2FF] text-[#5D87FF] font-bold flex items-center justify-center text-sm border border-[#5D87FF]/20">
+                        {item.step}
+                      </span>
+                      <span className="text-[10px] font-bold text-[#5A6A85] uppercase tracking-wider">
+                        {item.code}
+                      </span>
+                    </div>
+
+                    <h3 className="text-base font-bold text-[#2A3547]">
+                      {item.title}
+                    </h3>
+                    <p className="text-xs font-semibold text-[#5D87FF]">
+                      {item.subtitle}
+                    </p>
+
+                    <p className="text-xs text-[#5A6A85] font-medium leading-relaxed">
+                      {item.description}
+                    </p>
                   </div>
 
-                  <h3 className="text-lg font-bold tracking-tight text-[#171A18] mt-1">
-                    {item.title}
-                  </h3>
-                  <p className="text-xs font-mono text-[#3C6E5C]">
-                    {item.subtitle}
-                  </p>
-
-                  <p className="text-xs text-[#5C6560] leading-relaxed mt-2 font-serif">
-                    {item.description}
-                  </p>
+                  <div className="pt-3 border-t border-[#E5EAEF] space-y-1.5">
+                    {item.specs.map((spec, sIdx) => (
+                      <div key={sIdx} className="flex items-center gap-1.5 text-[11px] font-medium text-[#2A3547]">
+                        <span className="size-1.5 bg-[#5D87FF] rounded-full inline-block" />
+                        <span>{spec}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-
-                {/* Specs List */}
-                <div className="mt-6 pt-4 border-t border-[#E2DDD5]/60 flex flex-col gap-1.5">
-                  {item.specs.map((spec, sIdx) => (
-                    <div key={sIdx} className="flex items-center gap-2 text-[11px] font-mono text-[#2B302C]">
-                      <span className="size-1 bg-[#173D32] rounded-full inline-block" />
-                      <span>{spec}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
+              </HoverLift>
             </StaggerItem>
-          ))}
-        </StaggerContainer>
+          );
+        })}
+      </StaggerContainer>
 
-        {/* Process Infrastructure Image Banner */}
-        <div className="bg-[#173D32] text-white p-8 md:p-12 border border-[#173D32] relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-8">
-          <div className="flex flex-col gap-3 max-w-2xl relative z-10">
-            <span className="font-mono text-xs text-[#A3B899] uppercase tracking-widest">
-              COMMERCIAL INTEGRATION
-            </span>
-            <h3 className="text-2xl md:text-3xl font-black tracking-tight leading-tight">
-              Ready to plug your industrial stack into the CarbonLoop exchange?
-            </h3>
-            <p className="text-sm font-serif text-[#C5D3C1]">
-              Whether you generate 500 t/month or 50,000 t/month, our automated matchmaker connects your stream with verified commercial buyers.
-            </p>
-          </div>
+      {/* Modern Banner */}
+      <div className="bg-gradient-to-r from-[#2A3547] to-[#1E2735] text-white p-8 sm:p-10 rounded-3xl border border-[#34445c] shadow-lg flex flex-col md:flex-row items-center justify-between gap-6">
+        <div className="space-y-2 max-w-2xl">
+          <span className="text-xs font-bold text-[#49BEFF] uppercase tracking-wider">
+            COMMERCIAL INTEGRATION
+          </span>
+          <h3 className="text-xl sm:text-2xl font-bold tracking-tight text-white">
+            Ready to plug your industrial stack into the CarbonLoop exchange?
+          </h3>
+          <p className="text-xs sm:text-sm text-[#949C96] font-medium">
+            Whether you generate 500 t/month or 50,000 t/month, our automated matchmaker connects your stream with verified commercial buyers.
+          </p>
+        </div>
 
-          <div className="flex items-center gap-4 relative z-10 whitespace-nowrap">
-            <a
-              href="/auth/register"
-              className="bg-[#FAF8F5] hover:bg-white text-[#173D32] font-bold text-sm px-6 py-3.5 rounded-none transition-colors border border-white flex items-center gap-2"
-            >
-              Onboard Facility <ArrowRight className="size-4" />
-            </a>
-          </div>
+        <div className="whitespace-nowrap shrink-0">
+          <Button
+            onClick={() => navigate('/register')}
+            className="bg-[#5D87FF] hover:bg-[#4570EA] text-white font-semibold text-xs px-6 py-3 h-12 rounded-xl transition-all shadow-md flex items-center gap-2 cursor-pointer"
+          >
+            <span>Onboard Facility</span>
+            <ArrowRight className="w-4 h-4" />
+          </Button>
         </div>
       </div>
     </section>

@@ -26,29 +26,30 @@ export const MarketplaceFilterBar: React.FC<Props> = ({ filters, onFilterChange,
   ].filter(Boolean).length;
 
   return (
-    <div className="bg-white border-y border-[#E5EAEF] shadow-xs py-4 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <div className="bg-white border border-[#E5EAEF] rounded-2xl shadow-xs p-4 sm:p-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        
         {/* Search & Location Primary Inputs */}
         <div className="flex flex-1 flex-col sm:flex-row items-center gap-3">
           <div className="relative w-full sm:w-80">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#5A6A85]" />
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#5A6A85]" />
             <Input
               type="text"
               placeholder="Search CO₂ stream, facility, org..."
               value={filters.search || ''}
               onChange={(e) => onFilterChange({ search: e.target.value, page: 1 })}
-              className="pl-9 bg-[#F6F9FC] border-[#E5EAEF] text-xs text-[#2A3547] placeholder:text-[#5A6A85] rounded-lg focus-visible:ring-[#5D87FF]"
+              className="pl-10 bg-[#F6F9FC] border-[#E5EAEF] text-xs text-[#2A3547] placeholder:text-[#5A6A85] rounded-xl focus-visible:ring-[#5D87FF] h-10"
             />
           </div>
 
           <div className="relative w-full sm:w-56">
-            <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#5A6A85]" />
+            <MapPin className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#5A6A85]" />
             <Input
               type="text"
               placeholder="City or state..."
               value={filters.location || ''}
               onChange={(e) => onFilterChange({ location: e.target.value, page: 1 })}
-              className="pl-9 bg-[#F6F9FC] border-[#E5EAEF] text-xs text-[#2A3547] placeholder:text-[#5A6A85] rounded-lg focus-visible:ring-[#5D87FF]"
+              className="pl-10 bg-[#F6F9FC] border-[#E5EAEF] text-xs text-[#2A3547] placeholder:text-[#5A6A85] rounded-xl focus-visible:ring-[#5D87FF] h-10"
             />
           </div>
 
@@ -57,7 +58,7 @@ export const MarketplaceFilterBar: React.FC<Props> = ({ filters, onFilterChange,
             <NativeSelect
               value={filters.minPurity ? filters.minPurity.toString() : ''}
               onChange={(e) => onFilterChange({ minPurity: e.target.value ? parseFloat(e.target.value) : undefined, page: 1 })}
-              className="w-40 bg-[#F6F9FC] border-[#E5EAEF] text-xs font-semibold text-[#2A3547] rounded-lg"
+              className="w-40 bg-[#F6F9FC] border-[#E5EAEF] text-xs font-semibold text-[#2A3547] rounded-xl h-10"
             >
               <option value="">Any Purity</option>
               <option value="95">≥ 95.0% Purity</option>
@@ -69,7 +70,7 @@ export const MarketplaceFilterBar: React.FC<Props> = ({ filters, onFilterChange,
             <NativeSelect
               value={filters.physicalForm || ''}
               onChange={(e) => onFilterChange({ physicalForm: e.target.value || undefined, page: 1 })}
-              className="w-40 bg-[#F6F9FC] border-[#E5EAEF] text-xs font-semibold text-[#2A3547] rounded-lg"
+              className="w-40 bg-[#F6F9FC] border-[#E5EAEF] text-xs font-semibold text-[#2A3547] rounded-xl h-10"
             >
               <option value="">All Physical Forms</option>
               <option value="liquid">Liquid</option>
@@ -81,7 +82,7 @@ export const MarketplaceFilterBar: React.FC<Props> = ({ filters, onFilterChange,
             <NativeSelect
               value={filters.sort || 'newest'}
               onChange={(e) => onFilterChange({ sort: e.target.value, page: 1 })}
-              className="w-44 bg-[#F6F9FC] border-[#E5EAEF] text-xs font-semibold text-[#2A3547] rounded-lg"
+              className="w-44 bg-[#F6F9FC] border-[#E5EAEF] text-xs font-semibold text-[#2A3547] rounded-xl h-10"
             >
               <option value="newest">Sort: Newest Listed</option>
               <option value="purity_desc">Purity: High to Low</option>
@@ -97,7 +98,7 @@ export const MarketplaceFilterBar: React.FC<Props> = ({ filters, onFilterChange,
           {/* Mobile Sort & Filters Drawer Trigger */}
           <Sheet>
             <SheetTrigger>
-              <Button variant="outline" size="sm" className="lg:hidden gap-2 border-[#E5EAEF] text-xs font-semibold text-[#2A3547] rounded-lg">
+              <Button variant="outline" size="sm" className="lg:hidden gap-2 border-[#E5EAEF] text-xs font-semibold text-[#2A3547] rounded-xl h-10">
                 <SlidersHorizontal className="w-3.5 h-3.5" />
                 Filters
                 {activeFilterCount > 0 && (
@@ -125,7 +126,7 @@ export const MarketplaceFilterBar: React.FC<Props> = ({ filters, onFilterChange,
                     placeholder="Search listing, facility, city..."
                     value={filters.search || ''}
                     onChange={(e) => onFilterChange({ search: e.target.value, page: 1 })}
-                    className="bg-[#F6F9FC] border-[#E5EAEF] text-xs rounded-lg"
+                    className="bg-[#F6F9FC] border-[#E5EAEF] text-xs rounded-xl"
                   />
                 </div>
 
@@ -135,7 +136,7 @@ export const MarketplaceFilterBar: React.FC<Props> = ({ filters, onFilterChange,
                     placeholder="Gujarat, Ahmedabad, Surat..."
                     value={filters.location || ''}
                     onChange={(e) => onFilterChange({ location: e.target.value, page: 1 })}
-                    className="bg-[#F6F9FC] border-[#E5EAEF] text-xs rounded-lg"
+                    className="bg-[#F6F9FC] border-[#E5EAEF] text-xs rounded-xl"
                   />
                 </div>
 
@@ -144,7 +145,7 @@ export const MarketplaceFilterBar: React.FC<Props> = ({ filters, onFilterChange,
                   <NativeSelect
                     value={filters.minPurity ? filters.minPurity.toString() : ''}
                     onChange={(e) => onFilterChange({ minPurity: e.target.value ? parseFloat(e.target.value) : undefined, page: 1 })}
-                    className="bg-[#F6F9FC] border-[#E5EAEF] text-xs rounded-lg"
+                    className="bg-[#F6F9FC] border-[#E5EAEF] text-xs rounded-xl"
                   >
                     <option value="">Any Purity</option>
                     <option value="95">≥ 95.0%</option>
@@ -159,7 +160,7 @@ export const MarketplaceFilterBar: React.FC<Props> = ({ filters, onFilterChange,
                   <NativeSelect
                     value={filters.physicalForm || ''}
                     onChange={(e) => onFilterChange({ physicalForm: e.target.value || undefined, page: 1 })}
-                    className="bg-[#F6F9FC] border-[#E5EAEF] text-xs rounded-lg"
+                    className="bg-[#F6F9FC] border-[#E5EAEF] text-xs rounded-xl"
                   >
                     <option value="">All Physical Forms</option>
                     <option value="liquid">Liquid</option>
@@ -174,7 +175,7 @@ export const MarketplaceFilterBar: React.FC<Props> = ({ filters, onFilterChange,
                   <NativeSelect
                     value={filters.sort || 'newest'}
                     onChange={(e) => onFilterChange({ sort: e.target.value, page: 1 })}
-                    className="bg-[#F6F9FC] border-[#E5EAEF] text-xs rounded-lg"
+                    className="bg-[#F6F9FC] border-[#E5EAEF] text-xs rounded-xl"
                   >
                     <option value="newest">Newest Listed</option>
                     <option value="purity_desc">Highest Purity</option>
@@ -186,7 +187,7 @@ export const MarketplaceFilterBar: React.FC<Props> = ({ filters, onFilterChange,
               </div>
               <SheetFooter className="mt-4">
                 <SheetClose>
-                  <Button className="w-full bg-[#5D87FF] hover:bg-[#4570EA] text-white font-semibold text-xs rounded-lg">
+                  <Button className="w-full bg-[#5D87FF] hover:bg-[#4570EA] text-white font-semibold text-xs rounded-xl">
                     Apply & View Results
                   </Button>
                 </SheetClose>
@@ -199,13 +200,14 @@ export const MarketplaceFilterBar: React.FC<Props> = ({ filters, onFilterChange,
               variant="ghost"
               size="sm"
               onClick={onReset}
-              className="text-xs text-[#5A6A85] hover:text-[#2A3547] gap-1.5 rounded-lg"
+              className="text-xs text-[#5A6A85] hover:text-[#2A3547] gap-1.5 rounded-xl h-10"
             >
               <RotateCcw className="w-3.5 h-3.5" />
               Reset Filters
             </Button>
           )}
         </div>
+
       </div>
     </div>
   );
