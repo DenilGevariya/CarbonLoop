@@ -40,7 +40,9 @@ import OfferDetailPage from '@/pages/dashboard/OfferDetailPage';
 import OrdersPage from '@/pages/dashboard/OrdersPage';
 import OrderDetailPage from '@/pages/dashboard/OrderDetailPage';
 import NotificationsPage from '@/pages/dashboard/NotificationsPage';
-import ShipmentsPage from '@/pages/dashboard/ShipmentsPage';
+import { ShipmentsPage } from '@/pages/dashboard/ShipmentsPage';
+import { ShipmentDetailPage } from '@/pages/dashboard/ShipmentDetailPage';
+import { LogisticsDashboardPage } from '@/pages/dashboard/LogisticsDashboardPage';
 import AnalyticsPage from '@/pages/dashboard/AnalyticsPage';
 import SettingsPage from '@/pages/dashboard/SettingsPage';
 import { OrganizationPage } from '@/pages/dashboard/OrganizationPage';
@@ -115,7 +117,9 @@ const router = createBrowserRouter([
           { path: 'orders', element: <OrdersPage /> },
           { path: 'orders/:id', element: <OrderDetailPage /> },
           { path: 'notifications', element: <NotificationsPage /> },
+          { path: 'logistics', element: <LogisticsDashboardPage /> },
           { path: 'shipments', element: <ShipmentsPage /> },
+          { path: 'shipments/:shipmentNumber', element: <ShipmentDetailPage /> },
           { path: 'analytics', element: <AnalyticsPage /> },
           { path: 'organization', element: <OrganizationPage /> },
           { path: 'settings', element: <SettingsPage /> },

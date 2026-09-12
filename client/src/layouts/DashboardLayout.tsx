@@ -67,7 +67,8 @@ export const DashboardLayout: React.FC = () => {
         { label: 'Commercial Inquiries', icon: MessageSquare, path: '/dashboard/inquiries' },
         { label: 'Offers & Proposals', icon: Handshake, path: '/dashboard/offers' },
         { label: 'Off-Take Orders', icon: ShoppingBag, path: '/dashboard/orders' },
-        { label: 'Logistics Telematics', icon: Truck, path: '/dashboard/shipments' },
+        { label: 'Logistics Network', icon: Truck, path: '/dashboard/logistics' },
+        { label: 'Shipment Tracking', icon: Truck, path: '/dashboard/shipments' },
       ],
     },
     {

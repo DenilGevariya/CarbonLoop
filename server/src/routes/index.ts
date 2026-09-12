@@ -12,6 +12,8 @@ import inquiryRoutes from '../modules/inquiries/inquiry.routes';
 import offerRoutes from '../modules/offers/offer.routes';
 import orderRoutes from '../modules/orders/order.routes';
 import notificationRoutes from '../modules/notifications/notification.routes';
+import logisticsRoutes from '../modules/logistics/logistics.routes';
+import shipmentRoutes from '../modules/shipments/shipment.routes';
 
 const router = Router();
 
@@ -45,12 +47,12 @@ router.use('/inquiries', inquiryRoutes);
 router.use('/offers', offerRoutes);
 router.use('/orders', orderRoutes);
 router.use('/notifications', notificationRoutes);
+router.use('/logistics', logisticsRoutes);
+router.use('/shipments', shipmentRoutes);
 
 // Placeholder Routes for remaining modules
 const placeholderModules = [
   'facilities',
-  'logistics',
-  'shipments',
   'verification',
   'admin'
 ];
