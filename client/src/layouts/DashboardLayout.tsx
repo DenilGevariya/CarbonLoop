@@ -35,11 +35,14 @@ import {
   Building2,
   User,
   Lock,
+  MessageSquare,
 } from 'lucide-react';
+import { useNotifications } from '@/features/notifications/hooks/useNotifications';
 import { cn } from '@/lib/utils';
 
 export const DashboardLayout: React.FC = () => {
   const { user, activeOrg, logout, switchOrganization } = useAuth();
+  const { unreadCount } = useNotifications();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -61,7 +64,8 @@ export const DashboardLayout: React.FC = () => {
     {
       group: 'OPERATIONS',
       items: [
-        { label: 'Offers & Negotiations', icon: Handshake, path: '/dashboard/offers' },
+        { label: 'Commercial Inquiries', icon: MessageSquare, path: '/dashboard/inquiries' },
+        { label: 'Offers & Proposals', icon: Handshake, path: '/dashboard/offers' },
         { label: 'Off-Take Orders', icon: ShoppingBag, path: '/dashboard/orders' },
         { label: 'Logistics Telematics', icon: Truck, path: '/dashboard/shipments' },
       ],
@@ -211,9 +215,19 @@ export const DashboardLayout: React.FC = () => {
                 {activeOrg ? activeOrg.orgType : 'VERIFIED'}
               </Badge>
 
-              <Button variant="ghost" size="icon" className="relative text-[#171A18] hover:bg-[#EBE7DF] rounded-none size-8">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => navigate('/dashboard/notifications')}
+                className="relative text-[#171A18] hover:bg-[#EBE7DF] rounded-none size-8 cursor-pointer"
+                title="Notifications"
+              >
                 <Bell className="size-4 text-[#5C6560]" />
-                <span className="size-1.5 bg-[#173D32] absolute top-2 right-2" />
+                {unreadCount > 0 && (
+                  <span className="absolute -top-0.5 -right-0.5 min-w-4 h-4 bg-[#173D32] text-white font-mono text-[9px] font-bold rounded-full flex items-center justify-center px-1">
+                    {unreadCount}
+                  </span>
+                )}
               </Button>
             </div>
           </header>

@@ -15,6 +15,8 @@ import { Badge } from '@/components/ui/badge';
 import { Cpu, RefreshCw, Handshake, AlertCircle, ArrowLeft } from 'lucide-react';
 import { FadeUp, StaggerContainer, StaggerItem } from '@/animations';
 
+import { InquiryComposerModal } from '@/features/inquiries/components/InquiryComposerModal';
+
 const SEEDED_REQUIREMENTS = [
   { id: '70000000-0000-4000-a000-000000000001', code: 'REQ-01', title: 'GreenForge Concrete Mineralization Curing (Vadodara)' },
   { id: '70000000-0000-4000-a000-000000000002', code: 'REQ-02', title: 'CarbonArc E-Methanol Catalytic Synthesis (Dahej)' },
@@ -30,6 +32,7 @@ export const MatchesPage: React.FC = () => {
   const [activeFilter, setActiveFilter] = useState('all');
   const [sortBy, setSortBy] = useState('score_desc');
   const [inspectMatch, setInspectMatch] = useState<MatchRecord | null>(null);
+  const [inquiryMatch, setInquiryMatch] = useState<MatchRecord | null>(null);
 
   const fetchMatches = async (reqId: string) => {
     setLoading(true);
@@ -219,14 +222,46 @@ export const MatchesPage: React.FC = () => {
                 >
                   <ArrowLeft className="size-3.5 mr-1.5" /> Back to Matches
                 </Button>
-                <Button className="w-full sm:w-auto bg-[#173D32] hover:bg-[#255244] text-white font-mono text-xs font-bold uppercase tracking-wider px-6 py-2.5 rounded-lg shadow-2xs cursor-pointer">
-                  <Handshake className="size-4 mr-2" /> Initiate Commercial Off-Take Offer
+                <Button
+                  onClick={() => {
+                    setInquiryMatch(inspectMatch);
+                    setInspectMatch(null);
+                  }}
+                  className="w-full sm:w-auto bg-[#173D32] hover:bg-[#255244] text-white font-mono text-xs font-bold uppercase tracking-wider px-6 py-2.5 rounded-lg shadow-2xs cursor-pointer"
+                >
+                  <Handshake className="size-4 mr-2" /> Request Supply / Initiate Inquiry
                 </Button>
               </div>
             </>
           )}
         </DialogContent>
       </Dialog>
+
+      {/* Commercial Inquiry Composer Modal */}
+      {inquiryMatch && inquiryMatch.listing && (
+        <InquiryComposerModal
+          isOpen={!!inquiryMatch}
+          onClose={() => setInquiryMatch(null)}
+          listing={{
+            id: inquiryMatch.listing.id,
+            title: inquiryMatch.listing.title || 'Industrial CO2 Batch',
+            remaining_quantity: inquiryMatch.listing.available_quantity_tons || 1000,
+            price_per_ton: inquiryMatch.listing.price_per_ton || 4800,
+            purity_percentage: inquiryMatch.listing.purity_percentage || 99.5,
+            organization_name: inquiryMatch.listing.organization_name,
+          }}
+          requirement={
+            inquiryMatch.requirement
+              ? {
+                  id: inquiryMatch.requirement.id,
+                  title: inquiryMatch.requirement.title,
+                  required_quantity: inquiryMatch.requirement.required_quantity_tons,
+                }
+              : undefined
+          }
+          matchScore={inquiryMatch.overall_score}
+        />
+      )}
     </div>
   );
 };

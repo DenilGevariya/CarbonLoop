@@ -1,31 +1,28 @@
 import React, { useState } from 'react';
-import { useOffers } from '@/features/offers/hooks/useOffers';
-import { Handshake, ArrowDownLeft, ArrowUpRight, Eye, Filter } from 'lucide-react';
+import { useInquiries } from '@/features/inquiries/hooks/useInquiries';
+import { MessageSquare, ArrowUpRight, ArrowDownLeft, Filter, Eye } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
-export const OffersPage: React.FC = () => {
+export const InquiriesPage: React.FC = () => {
   const [role, setRole] = useState<'sent' | 'received' | 'all'>('all');
   const [statusFilter, setStatusFilter] = useState<string>('');
 
-  const { data: offers = [], isLoading } = useOffers(role, statusFilter);
+  const { data: inquiries = [], isLoading } = useInquiries(role, statusFilter);
 
   const getStatusBadge = (status: string) => {
     const s = (status || '').toUpperCase();
     switch (s) {
-      case 'SENT':
-      case 'PENDING':
-        return <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono bg-sky-50 text-sky-700 border border-sky-200">SENT</span>;
-      case 'COUNTERED':
-        return <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono bg-amber-50 text-amber-700 border border-amber-200 font-semibold">COUNTERED</span>;
-      case 'ACCEPTED':
-        return <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono bg-emerald-800 text-white font-semibold">ACCEPTED</span>;
-      case 'REJECTED':
-      case 'DECLINED':
-        return <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono bg-rose-50 text-rose-700 border border-rose-200">REJECTED</span>;
-      case 'WITHDRAWN':
-        return <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono bg-stone-100 text-stone-600 border border-stone-300">WITHDRAWN</span>;
-      case 'EXPIRED':
-        return <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono bg-[#E2DDD5] text-[#5C554E]">EXPIRED</span>;
+      case 'OPEN':
+        return <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono bg-sky-50 text-sky-700 border border-sky-200">OPEN</span>;
+      case 'RESPONDED':
+        return <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono bg-amber-50 text-amber-700 border border-amber-200">RESPONDED</span>;
+      case 'NEGOTIATING':
+        return <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono bg-emerald-50 text-emerald-700 border border-emerald-200 font-semibold">NEGOTIATING</span>;
+      case 'CONVERTED':
+        return <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono bg-emerald-900 text-white font-semibold">CONVERTED</span>;
+      case 'CLOSED':
+      case 'CANCELLED':
+        return <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono bg-stone-100 text-stone-600 border border-stone-300">CLOSED</span>;
       default:
         return <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono bg-stone-100 text-stone-700">{s}</span>;
     }
@@ -39,20 +36,20 @@ export const OffersPage: React.FC = () => {
           <div className="flex items-center gap-2">
             <span className="font-mono text-xs text-[#173D32] tracking-wider uppercase font-semibold">Commercial Transactions</span>
             <span className="text-[#8C827A]">•</span>
-            <span className="font-mono text-xs text-[#8C827A]">Bilateral Proposals</span>
+            <span className="font-mono text-xs text-[#8C827A]">Inquiry Management</span>
           </div>
           <h1 className="text-2xl md:text-3xl font-serif text-[#171A18] tracking-tight font-medium mt-1">
-            Commercial Offers Inbox
+            Commercial Inquiries
           </h1>
           <p className="text-sm text-[#5C554E] mt-1 font-sans">
-            Formal price, volume, and transport proposals across participating organizations.
+            Bilateral communication workspaces between CO₂ emitters and utilizers.
           </p>
         </div>
       </div>
 
-      {/* Controls Bar */}
+      {/* Control Bar: Role Tabs & Status Filter */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#F7F5EF] border border-[#E2DDD5] p-3 rounded-lg">
-        {/* Role Tabs */}
+        {/* Tabs */}
         <div className="flex items-center gap-2">
           <button
             onClick={() => setRole('all')}
@@ -62,7 +59,7 @@ export const OffersPage: React.FC = () => {
                 : 'text-[#5C554E] hover:text-[#171A18] hover:bg-[#E2DDD5]/50'
             }`}
           >
-            All Offers
+            All Inquiries
           </button>
           <button
             onClick={() => setRole('received')}
@@ -73,7 +70,7 @@ export const OffersPage: React.FC = () => {
             }`}
           >
             <ArrowDownLeft className="w-3.5 h-3.5 text-emerald-400" />
-            Received Offers
+            Received (Supply Requests)
           </button>
           <button
             onClick={() => setRole('sent')}
@@ -84,7 +81,7 @@ export const OffersPage: React.FC = () => {
             }`}
           >
             <ArrowUpRight className="w-3.5 h-3.5 text-amber-400" />
-            Sent Proposals
+            Sent (My Requests)
           </button>
         </div>
 
@@ -97,25 +94,28 @@ export const OffersPage: React.FC = () => {
             className="bg-white border border-[#E2DDD5] text-xs font-mono text-[#171A18] rounded px-2.5 py-1.5 focus:outline-none focus:border-[#173D32]"
           >
             <option value="">All Statuses</option>
-            <option value="SENT">SENT</option>
-            <option value="COUNTERED">COUNTERED</option>
-            <option value="ACCEPTED">ACCEPTED</option>
-            <option value="REJECTED">REJECTED</option>
-            <option value="WITHDRAWN">WITHDRAWN</option>
-            <option value="EXPIRED">EXPIRED</option>
+            <option value="OPEN">OPEN</option>
+            <option value="RESPONDED">RESPONDED</option>
+            <option value="NEGOTIATING">NEGOTIATING</option>
+            <option value="CONVERTED">CONVERTED</option>
+            <option value="CLOSED">CLOSED</option>
           </select>
         </div>
       </div>
 
-      {/* Offers Table */}
+      {/* Inquiry Table */}
       {isLoading ? (
-        <div className="p-12 text-center text-[#8C827A] font-mono text-sm">Loading commercial offers...</div>
-      ) : offers.length === 0 ? (
+        <div className="p-12 text-center text-[#8C827A] font-mono text-sm">Loading commercial inquiries...</div>
+      ) : inquiries.length === 0 ? (
         <div className="p-12 text-center border border-dashed border-[#E2DDD5] bg-[#F7F5EF]/50 rounded-lg">
-          <Handshake className="w-8 h-8 text-[#8C827A] mx-auto mb-3 opacity-50" />
-          <h3 className="text-sm font-serif font-medium text-[#171A18]">No commercial offers found</h3>
+          <MessageSquare className="w-8 h-8 text-[#8C827A] mx-auto mb-3 opacity-50" />
+          <h3 className="text-sm font-serif font-medium text-[#171A18]">No inquiries found</h3>
           <p className="text-xs text-[#8C827A] mt-1 font-mono">
-            {role === 'received' ? 'No offers received from suppliers yet.' : 'No sent offers recorded.'}
+            {role === 'received'
+              ? 'No incoming supply requests received yet.'
+              : role === 'sent'
+              ? 'You have not submitted any supply requests.'
+              : 'No commercial inquiries match the selected filter.'}
           </p>
         </div>
       ) : (
@@ -123,47 +123,41 @@ export const OffersPage: React.FC = () => {
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-[#F7F5EF] border-b border-[#E2DDD5] text-[11px] font-mono uppercase tracking-wider text-[#5C554E]">
-                <th className="p-3 pl-4">Offer Ref / Version</th>
+                <th className="p-3 pl-4">Inquiry / Listing</th>
                 <th className="p-3">Counterparty</th>
-                <th className="p-3">Volume</th>
-                <th className="p-3">Unit Price</th>
-                <th className="p-3">Estimated Total</th>
+                <th className="p-3">Requested Vol</th>
                 <th className="p-3">Status</th>
-                <th className="p-3">Valid Until</th>
+                <th className="p-3">Updated</th>
                 <th className="p-3 pr-4 text-right">Action</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[#E2DDD5] text-xs font-mono">
-              {offers.map((off) => (
-                <tr key={off.id} className="hover:bg-[#FAF8F5] transition-colors">
+              {inquiries.map((inq) => (
+                <tr key={inq.id} className="hover:bg-[#FAF8F5] transition-colors">
                   <td className="p-3 pl-4">
-                    <div className="font-mono font-bold text-[#171A18]">
-                      {off.offer_number || `CL-OFR-${off.id.slice(0, 6)}`}
-                    </div>
-                    <div className="text-[10px] text-[#8C827A] font-mono">
-                      Ver {off.version || 1} • {off.listing_title || 'CO₂ Supply'}
+                    <div className="font-serif font-medium text-sm text-[#171A18]">{inq.listing_title}</div>
+                    <div className="text-[11px] text-[#8C827A] font-mono">
+                      Ref: CL-INQ-{inq.id.slice(0, 8).toUpperCase()}
                     </div>
                   </td>
                   <td className="p-3">
                     <div className="text-[#171A18] font-medium">
-                      {off.buyer_organization_name || off.seller_organization_name}
+                      {inq.buyer_organization_name || inq.seller_organization_name}
                     </div>
                   </td>
-                  <td className="p-3 font-semibold text-[#171A18]">{off.quantity} t</td>
-                  <td className="p-3 text-[#173D32]">₹{off.unit_price}/t</td>
-                  <td className="p-3 font-bold text-[#173D32]">
-                    ₹{(off.total_estimated_cost || 0).toLocaleString('en-IN')}
+                  <td className="p-3 font-semibold text-[#173D32]">
+                    {inq.requested_quantity} t
                   </td>
-                  <td className="p-3">{getStatusBadge(off.status)}</td>
+                  <td className="p-3">{getStatusBadge(inq.status)}</td>
                   <td className="p-3 text-[#8C827A]">
-                    {new Date(off.valid_until).toLocaleDateString('en-IN', { month: 'short', day: 'numeric' })}
+                    {new Date(inq.updated_at).toLocaleDateString('en-IN', { month: 'short', day: 'numeric' })}
                   </td>
                   <td className="p-3 pr-4 text-right">
                     <Link
-                      to={`/dashboard/offers/${off.id}`}
+                      to={`/dashboard/inquiries/${inq.id}`}
                       className="inline-flex items-center gap-1 px-3 py-1 bg-[#F7F5EF] hover:bg-[#173D32] hover:text-white border border-[#E2DDD5] rounded text-xs font-mono transition-colors"
                     >
-                      <Eye className="w-3 h-3" /> Detail
+                      <Eye className="w-3 h-3" /> Workspace
                     </Link>
                   </td>
                 </tr>
@@ -176,4 +170,4 @@ export const OffersPage: React.FC = () => {
   );
 };
 
-export default OffersPage;
+export default InquiriesPage;

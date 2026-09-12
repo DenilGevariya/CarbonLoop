@@ -8,6 +8,11 @@ import listingRoutes from '../modules/listings/listing.routes';
 import requirementRoutes from '../modules/requirements/requirements.routes';
 import matchingRoutes from '../modules/matching/matching.routes';
 
+import inquiryRoutes from '../modules/inquiries/inquiry.routes';
+import offerRoutes from '../modules/offers/offer.routes';
+import orderRoutes from '../modules/orders/order.routes';
+import notificationRoutes from '../modules/notifications/notification.routes';
+
 const router = Router();
 
 // Health Check Endpoint
@@ -36,15 +41,17 @@ router.use('/listings', listingRoutes);
 router.use('/requirements', requirementRoutes);
 router.use('/matches', matchingRoutes);
 router.use('/recommendations', matchingRoutes);
+router.use('/inquiries', inquiryRoutes);
+router.use('/offers', offerRoutes);
+router.use('/orders', orderRoutes);
+router.use('/notifications', notificationRoutes);
 
 // Placeholder Routes for remaining modules
 const placeholderModules = [
   'facilities',
-  'orders',
   'logistics',
   'shipments',
   'verification',
-  'notifications',
   'admin'
 ];
 

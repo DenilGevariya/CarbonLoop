@@ -31,10 +31,15 @@ import CreateListingPage from '@/pages/dashboard/CreateListingPage';
 import EditListingPage from '@/pages/dashboard/EditListingPage';
 import RequirementsPage from '@/pages/dashboard/RequirementsPage';
 import CreateRequirementPage from '@/pages/dashboard/CreateRequirementPage';
-import EditRequirementPage from '@/pages/dashboard/EditRequirementPage';
+import { EditRequirementPage } from '@/pages/dashboard/EditRequirementPage';
 import MatchesPage from '@/pages/dashboard/MatchesPage';
+import InquiriesPage from '@/pages/dashboard/InquiriesPage';
+import InquiryDetailPage from '@/pages/dashboard/InquiryDetailPage';
 import OffersPage from '@/pages/dashboard/OffersPage';
+import OfferDetailPage from '@/pages/dashboard/OfferDetailPage';
 import OrdersPage from '@/pages/dashboard/OrdersPage';
+import OrderDetailPage from '@/pages/dashboard/OrderDetailPage';
+import NotificationsPage from '@/pages/dashboard/NotificationsPage';
 import ShipmentsPage from '@/pages/dashboard/ShipmentsPage';
 import AnalyticsPage from '@/pages/dashboard/AnalyticsPage';
 import SettingsPage from '@/pages/dashboard/SettingsPage';
@@ -103,8 +108,13 @@ const router = createBrowserRouter([
           { path: 'requirements/new', element: <CreateRequirementPage /> },
           { path: 'requirements/:id/edit', element: <EditRequirementPage /> },
           { path: 'matches', element: <MatchesPage /> },
+          { path: 'inquiries', element: <InquiriesPage /> },
+          { path: 'inquiries/:id', element: <InquiryDetailPage /> },
           { path: 'offers', element: <OffersPage /> },
+          { path: 'offers/:id', element: <OfferDetailPage /> },
           { path: 'orders', element: <OrdersPage /> },
+          { path: 'orders/:id', element: <OrderDetailPage /> },
+          { path: 'notifications', element: <NotificationsPage /> },
           { path: 'shipments', element: <ShipmentsPage /> },
           { path: 'analytics', element: <AnalyticsPage /> },
           { path: 'organization', element: <OrganizationPage /> },
