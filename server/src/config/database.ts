@@ -1,22 +1,35 @@
-import { Pool, QueryResult, QueryResultRow } from 'pg';
+import { Pool as PgPool, QueryResult, QueryResultRow } from 'pg';
+import { Pool as NeonPool, neonConfig } from '@neondatabase/serverless';
+import ws from 'ws';
+import dns from 'dns';
 import { env } from './env';
 
-const poolConfig = env.DATABASE_URL
-  ? { connectionString: env.DATABASE_URL }
-  : {
-      host: env.DB_HOST,
-      port: parseInt(env.DB_PORT, 10),
-      database: env.DB_NAME,
-      user: env.DB_USER,
-      password: env.DB_PASSWORD,
-      max: 20,
-      idleTimeoutMillis: 30000,
-      connectionTimeoutMillis: 2000,
-    };
+dns.setDefaultResultOrder('ipv4first');
 
-export const pool = new Pool(poolConfig);
+let poolInstance: PgPool | NeonPool;
 
-pool.on('error', (err) => {
+if (env.DATABASE_URL) {
+  neonConfig.webSocketConstructor = ws;
+  poolInstance = new NeonPool({
+    connectionString: env.DATABASE_URL,
+    connectionTimeoutMillis: 15000,
+  });
+} else {
+  poolInstance = new PgPool({
+    host: env.DB_HOST,
+    port: parseInt(env.DB_PORT, 10),
+    database: env.DB_NAME,
+    user: env.DB_USER,
+    password: env.DB_PASSWORD,
+    max: 20,
+    idleTimeoutMillis: 30000,
+    connectionTimeoutMillis: 10000,
+  });
+}
+
+export const pool = poolInstance as unknown as PgPool;
+
+pool.on('error', (err: any) => {
   console.error('❌ Unexpected error on idle PostgreSQL client', err);
 });
 
@@ -56,10 +69,11 @@ export async function checkDatabaseHealth(): Promise<{ status: 'healthy' | 'unhe
       details: `Connected to PostgreSQL ${version} (${dbName}) in ${latencyMs}ms`
     };
   } catch (error: any) {
+    console.error('❌ Health check error:', error);
     return {
       status: 'unhealthy',
       latencyMs: Date.now() - start,
-      details: error?.message || 'Connection failed'
+      details: error?.stack || error?.message || 'Connection failed'
     };
   }
 }

@@ -12,7 +12,7 @@ async function runHealthCheck() {
     console.log(`📝 Details       : ${health.details}`);
   } else {
     console.error('❌ Database Health: UNHEALTHY');
-    console.error(`🚨 Error Details : ${health.details}`);
+    console.error('🚨 Error Details :', health.details);
     process.exitCode = 1;
   }
 

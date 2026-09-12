@@ -101,7 +101,7 @@ export async function seedLogisticsDemoData() {
          ($1, 'PICKED_UP', 'PICKED_UP', 'PICKED_UP', 'Ahmedabad Capture Plant', 23.0225, 72.5714, '300 tonnes liquefied CO2 loaded into pressure tanker', NOW() - INTERVAL '18 hours', NOW() - INTERVAL '18 hours'),
          ($1, 'DEPARTED', 'IN_TRANSIT', 'IN_TRANSIT', 'Ahmedabad Industrial Exit', 22.9800, 72.6000, 'Departed origin facility on schedule', NOW() - INTERVAL '14 hours', NOW() - INTERVAL '14 hours'),
          ($1, 'CHECKPOINT', 'IN_TRANSIT', 'IN_TRANSIT', 'Nadiad Toll Plaza Checkpoint', 22.6916, 72.8634, 'Safety inspection cleared. Pressure 18.4 bar stable.', NOW() - INTERVAL '6 hours', NOW() - INTERVAL '6 hours'),
-         ($1, 'IN_TRANSIT', 'IN_TRANSIT', 'IN_TRANSIT', 'Anand Industrial Corridor', 22.5645, 72.9289, 'In transit along NH48 corridor towards Vadodara', NOW() - INTERVAL '2 hours', NOW() - INTERVAL '2 hours')`,
+         ($1, 'CHECKPOINT_PASSED', 'IN_TRANSIT', 'IN_TRANSIT', 'Anand Industrial Corridor', 22.5645, 72.9289, 'In transit along NH48 corridor towards Vadodara', NOW() - INTERVAL '2 hours', NOW() - INTERVAL '2 hours')`,
         [demoShpId]
       );
 
@@ -165,27 +165,28 @@ export async function seedLogisticsDemoData() {
 
         const sRes = await client.query(
           `INSERT INTO shipments (
-            shipment_number, order_id, logistics_provider_id, quote_id,
+            shipment_number, order_id, logistics_provider_id, quote_id, origin_facility_id,
             quantity, quantity_unit, quantity_tons,
             scheduled_pickup_at, estimated_delivery_at,
             distance_km, estimated_distance_km, transport_mode, tracking_reference,
             destination_address, status, exception_reason
           ) VALUES (
-            $1, $2, $3, $4,
-            $5, 'tonne', $5,
+            $1, $2, $3, $4, $5,
+            $6, 'tonne', $6,
             NOW() - INTERVAL '2 days', NOW() + INTERVAL '1 day',
-            $6, $6, $7, $8,
-            $9, $10, $11
+            $7, $7, $8, $9,
+            $10, $11, $12
           ) RETURNING id`,
           [
             item.num,
             targetOrder.id,
             pId,
             qRes.rows[0].id,
+            facilityId,
             item.qty,
             item.dist,
             item.mode,
-            `CLTRK-${Math.random().toString(36).substring(2, 8).toUpperCase()}`,
+            item.ref,
             item.dest,
             item.status,
             item.excReason || null,

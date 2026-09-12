@@ -170,22 +170,6 @@ async function seed() {
       [DEMO_USER_IDS.ADMIN, IDS.ROLE_ADMIN],
     ];
 
-    // Assign Organizations for Local Demo Users
-    const demoOrgMemberships = [
-      [IDS.ORG_TERRACEM, DEMO_USER_IDS.EMITTER, 'Demo Emitter Specialist', false],
-      [IDS.ORG_GREENFORGE, DEMO_USER_IDS.UTILIZER, 'Demo Off-Take Specialist', false],
-      [IDS.ORG_TRANSCARBON, DEMO_USER_IDS.LOGISTICS, 'Demo Logistics Operator', false],
-      [IDS.ORG_REGULATOR, DEMO_USER_IDS.ADMIN, 'Demo System Inspector', false],
-    ];
-
-    for (const [oId, uId, title, isPrimary] of demoOrgMemberships) {
-      await client.query(
-        `INSERT INTO organization_members (organization_id, user_id, job_title, is_primary_contact)
-         VALUES ($1, $2, $3, $4) ON CONFLICT (organization_id, user_id) DO NOTHING;`,
-        [oId, uId, title, isPrimary]
-      );
-    }
-
     for (const [uId, rId] of userRoleMappings) {
       await client.query(
         `INSERT INTO user_roles (user_id, role_id) VALUES ($1, $2) ON CONFLICT DO NOTHING;`,
@@ -201,7 +185,7 @@ async function seed() {
       [IDS.ORG_BLUESKY, 'BlueSky Power', 'BlueSky Thermal Energy Corp', 'bluesky-power', 'emitter', 'Power Generation', 'CIN-L40100GJ2018PLC0999', 'Clean power producer utilizing post-combustion carbon capture.', 'https://bluesky.demo', 'contact@bluesky.demo', '+91 98111 22233', '24AAACB9999C1Z9', 'Gujarat', 'Surat', '395001', 'Surat Thermal Power Complex', 21.1702, 72.8311, 'verified'],
       [IDS.ORG_GREENFORGE, 'GreenForge Materials', 'GreenForge Sustainable Infrastructure Ltd', 'greenforge-materials', 'utilizer', 'Sustainable Construction', 'CIN-L45200GJ2019PLC1022', 'Pioneering mineralized concrete building products.', 'https://greenforge.demo', 'procurement@greenforge.com', '+91 98456 78901', '24AAACG1111D1Z8', 'Gujarat', 'Vadodara', '391340', 'Nandesari GIDC', 22.4110, 73.0890, 'verified'],
       [IDS.ORG_CARBONARC, 'CarbonArc Fuels', 'CarbonArc Synthetic Energy Solutions', 'carbonarc-fuels', 'utilizer', 'Synthetic E-Fuels', 'CIN-L23200KA2020PLC1188', 'Producing drop-in e-methanol and aviation e-fuels from captured CO2.', 'https://carbonarc.demo', 'procurement@carbonarc.com', '+91 98567 89012', '24AAACC2222E1Z7', 'Gujarat', 'Dahej', '392130', 'PCPIR Region', 21.7118, 72.5312, 'verified'],
-      [IDS.ORG_ALGAENOVA, 'AlgaeNova Labs', 'AlgaeNova Bio-Technologies Pvt Ltd', 'algaenova-labs', 'utilizer', 'Bio-Technologies', 'CIN-L73100TN2021PLC1240', 'Algae biomanufacturing for protein meal and bioplastics using gaseous CO2.', 'https://algaenova.demo', 'procurement@algaenova.com', '+91 98678 90123', '24AAACA3333F1Z6', 'Gujarat', 'Surat', '394270', 'Hazira Coastal Bio Zone', 21.1000, 72.6400, 'verified'],
+      [IDS.ORG_ALGAENOVA, 'AlgaeNova Labs', 'AlgaeNova Bio-Technologies Pvt Ltd', 'algaenova-labs', 'utilizer', 'Bio-Technologies', 'CIN-L73100TN2021PLC1240', 'Algae biomanufacturing for protein meal and biplastics using gaseous CO2.', 'https://algaenova.demo', 'procurement@algaenova.com', '+91 98678 90123', '24AAACA3333F1Z6', 'Gujarat', 'Surat', '394270', 'Hazira Coastal Bio Zone', 21.1000, 72.6400, 'verified'],
       [IDS.ORG_TRANSCARBON, 'TransCarbon Logistics', 'TransCarbon Cryogenic Transport Ltd', 'transcarbon-logistics', 'logistics_provider', 'Cryogenic Freight', 'CIN-L60200GJ2018PLC0755', 'Specialized ISO tank transport and pressurized CO2 distribution fleet.', 'https://transcarbon.demo', 'logistics@transcarbon.com', '+91 98789 01234', '24AAACT4444G1Z5', 'Gujarat', 'Ahmedabad', '380015', 'SG Highway Freight Hub', 23.0225, 72.5714, 'verified'],
       [IDS.ORG_REGULATOR, 'GPCB Regulatory Oversight', 'Gujarat Pollution Control Board Oversight Unit', 'gpcb-regulatory', 'regulator', 'Environmental Oversight', 'GOV-GJ-2026-REG', 'State environmental monitoring and carbon accounting verification authority.', 'https://gpcb.gujarat.gov.in', 'regulator@gpcb.gov.in', '+91 98890 12345', 'GOV24AAACG5555H1Z4', 'Gujarat', 'Gandhinagar', '382010', 'Sector 10A Environmental Bhavan', 23.2156, 72.6369, 'verified']
     ];
@@ -227,6 +211,10 @@ async function seed() {
       [IDS.ORG_ALGAENOVA, IDS.USER_ALGAENOVA, 'Bio-Refinery Director', true],
       [IDS.ORG_TRANSCARBON, IDS.USER_TRANSCARBON, 'Fleet Operations Manager', true],
       [IDS.ORG_REGULATOR, IDS.USER_REGULATOR, 'Senior Carbon Inspector', true],
+      [IDS.ORG_TERRACEM, DEMO_USER_IDS.EMITTER, 'Demo Emitter Specialist', false],
+      [IDS.ORG_GREENFORGE, DEMO_USER_IDS.UTILIZER, 'Demo Off-Take Specialist', false],
+      [IDS.ORG_TRANSCARBON, DEMO_USER_IDS.LOGISTICS, 'Demo Logistics Operator', false],
+      [IDS.ORG_REGULATOR, DEMO_USER_IDS.ADMIN, 'Demo System Inspector', false],
     ];
 
     for (const [oId, uId, title, isPrimary] of members) {
