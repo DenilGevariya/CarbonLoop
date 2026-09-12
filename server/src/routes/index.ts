@@ -17,6 +17,7 @@ import shipmentRoutes from '../modules/shipments/shipment.routes';
 import analyticsRoutes from '../modules/analytics/analytics.routes';
 import verificationRoutes from '../modules/verification/verification.routes';
 import documentRoutes from '../modules/documents/document.routes';
+import adminRoutes from '../modules/admin/admin.routes';
 
 const router = Router();
 
@@ -55,11 +56,11 @@ router.use('/shipments', shipmentRoutes);
 router.use('/analytics', analyticsRoutes);
 router.use('/verification', verificationRoutes);
 router.use('/documents', documentRoutes);
+router.use('/admin', adminRoutes);
 
 // Placeholder Routes for remaining modules
 const placeholderModules = [
-  'facilities',
-  'admin'
+  'facilities'
 ];
 
 placeholderModules.forEach((mod) => {

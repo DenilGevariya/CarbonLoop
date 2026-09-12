@@ -19,6 +19,18 @@ import { HowItWorksPage } from '@/pages/public/HowItWorksPage';
 import { PublicImpactPage } from '@/pages/public/PublicImpactPage';
 import { PublicOrganizationPage } from '@/pages/public/PublicOrganizationPage';
 
+// Admin Command Center Imports
+import { AdminLayout } from '@/features/admin/components/AdminLayout';
+import { AdminOverviewPage } from '@/pages/admin/AdminOverviewPage';
+import { AdminOrganizationsPage } from '@/pages/admin/AdminOrganizationsPage';
+import { AdminOrganizationDetailPage } from '@/pages/admin/AdminOrganizationDetailPage';
+import { AdminUsersPage } from '@/pages/admin/AdminUsersPage';
+import { AdminUserDetailPage } from '@/pages/admin/AdminUserDetailPage';
+import { AdminMatchesPage } from '@/pages/admin/AdminMatchesPage';
+import { AdminAuditLogPage } from '@/pages/admin/AdminAuditLogPage';
+import { AdminNetworkMapPage } from '@/pages/admin/AdminNetworkMapPage';
+import { AdminSystemHealthPage } from '@/pages/admin/AdminSystemHealthPage';
+
 // Trust Network & Verification Pages
 import OrganizationVerificationPage from '@/pages/dashboard/OrganizationVerificationPage';
 import AdminVerificationPage from '@/pages/admin/AdminVerificationPage';
@@ -83,8 +95,17 @@ const router = createBrowserRouter([
     element: <ProtectedRoute />,
     children: [
       {
-        element: <DashboardLayout />,
+        element: <AdminLayout />,
         children: [
+          { index: true, element: <AdminOverviewPage /> },
+          { path: 'organizations', element: <AdminOrganizationsPage /> },
+          { path: 'organizations/:id', element: <AdminOrganizationDetailPage /> },
+          { path: 'users', element: <AdminUsersPage /> },
+          { path: 'users/:id', element: <AdminUserDetailPage /> },
+          { path: 'matches', element: <AdminMatchesPage /> },
+          { path: 'audit-logs', element: <AdminAuditLogPage /> },
+          { path: 'network-map', element: <AdminNetworkMapPage /> },
+          { path: 'health', element: <AdminSystemHealthPage /> },
           { path: 'verification', element: <AdminVerificationPage /> },
           { path: 'verification/:id', element: <AdminVerificationDetailPage /> },
         ],
