@@ -23,8 +23,8 @@ export const MatchFilters: React.FC<MatchFiltersProps> = ({
   onSortChange,
 }) => {
   return (
-    <div className="flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-[#E2DDD5] pb-4">
-      <div className="flex items-center gap-1 bg-[#EFECE4] border border-[#E2DDD5] p-1 rounded-xl w-full sm:w-auto">
+    <div className="flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-[#E5EAEF] pb-4">
+      <div className="flex items-center gap-1 bg-[#F6F9FC] border border-[#E5EAEF] p-1 rounded-xl w-full sm:w-auto">
         {FILTER_OPTIONS.map((tab) => {
           const isActive = activeFilter === tab.id;
           return (
@@ -33,10 +33,10 @@ export const MatchFilters: React.FC<MatchFiltersProps> = ({
               type="button"
               onClick={() => onFilterChange(tab.id)}
               className={cn(
-                "text-xs font-mono font-bold rounded-lg px-4 py-1.5 transition-all cursor-pointer whitespace-nowrap",
+                "text-xs font-semibold rounded-lg px-4 py-1.5 transition-all cursor-pointer whitespace-nowrap",
                 isActive
-                  ? "bg-[#173D32] text-white shadow-2xs"
-                  : "text-stone-600 hover:text-[#171A18] hover:bg-stone-200/60"
+                  ? "bg-[#5D87FF] text-white shadow-xs"
+                  : "text-[#5A6A85] hover:text-[#2A3547] hover:bg-[#ECF2FF]"
               )}
             >
               {tab.label}
@@ -45,13 +45,13 @@ export const MatchFilters: React.FC<MatchFiltersProps> = ({
         })}
       </div>
 
-      <div className="flex items-center gap-2 text-xs font-mono text-[#5C6560] w-full sm:w-auto justify-end">
+      <div className="flex items-center gap-2 text-xs font-semibold text-[#5A6A85] w-full sm:w-auto justify-end">
         <span>Sort By:</span>
         <Select value={sortBy} onValueChange={(val) => val && onSortChange(val)}>
-          <SelectTrigger className="w-48 bg-white border-[#E2DDD5] text-[#171A18] text-xs font-mono rounded-lg shadow-2xs">
+          <SelectTrigger className="w-48 bg-white border-[#E5EAEF] text-[#2A3547] text-xs font-medium rounded-lg shadow-xs">
             <SelectValue placeholder="Sort Order" />
           </SelectTrigger>
-          <SelectContent className="bg-white border-[#E2DDD5] text-[#171A18] text-xs font-mono">
+          <SelectContent className="bg-white border-[#E5EAEF] text-[#2A3547] text-xs">
             <SelectItem value="score_desc">Highest Score</SelectItem>
             <SelectItem value="price_asc">Lowest Delivered Cost</SelectItem>
             <SelectItem value="distance_asc">Shortest Distance</SelectItem>

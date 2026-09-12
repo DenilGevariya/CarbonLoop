@@ -8,13 +8,13 @@ interface Props {
 
 export const RegionalBalanceTable: React.FC<Props> = ({ regions }) => {
   return (
-    <div className="bg-[#FAF8F5] border border-[#E2DDD5] rounded-lg overflow-hidden font-mono text-xs shadow-2xs">
-      <div className="p-4 bg-[#F7F5EF] border-b border-[#E2DDD5] flex items-center justify-between">
+    <div className="bg-white border border-[#E5EAEF] rounded-xl overflow-hidden text-xs shadow-xs">
+      <div className="p-4 bg-[#F6F9FC] border-b border-[#E5EAEF] flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <MapPin className="w-4 h-4 text-[#173D32]" />
-          <span className="font-bold text-[#171A18] uppercase tracking-wider">Regional Carbon Balance Matrix</span>
+          <MapPin className="w-4 h-4 text-[#5D87FF]" />
+          <span className="font-bold text-[#2A3547] uppercase tracking-wider">Regional Carbon Balance Matrix</span>
         </div>
-        <span className="text-[10px] text-[#55524D] bg-[#E2DDD5]/40 px-2 py-0.5 rounded">
+        <span className="text-[10px] text-[#5D87FF] bg-[#ECF2FF] px-2.5 py-0.5 rounded-full border border-[#5D87FF]/20 font-semibold">
           Supply vs Demand
         </span>
       </div>
@@ -22,34 +22,34 @@ export const RegionalBalanceTable: React.FC<Props> = ({ regions }) => {
       <div className="overflow-x-auto">
         <table className="w-full text-left border-collapse">
           <thead>
-            <tr className="border-b border-[#E2DDD5] text-[#55524D] uppercase text-[10px] bg-[#FAF8F5]">
-              <th className="py-3 px-4 font-semibold">Region / Corridor</th>
-              <th className="py-3 px-4 font-semibold">Available Supply</th>
-              <th className="py-3 px-4 font-semibold">Required Demand</th>
-              <th className="py-3 px-4 font-semibold text-right">Net Balance</th>
+            <tr className="border-b border-[#E5EAEF] text-[#5A6A85] uppercase text-[10px] bg-[#F6F9FC] font-semibold">
+              <th className="py-3 px-4">Region / Corridor</th>
+              <th className="py-3 px-4">Available Supply</th>
+              <th className="py-3 px-4">Required Demand</th>
+              <th className="py-3 px-4 text-right">Net Balance</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-[#E2DDD5]/60">
+          <tbody className="divide-y divide-[#E5EAEF]">
             {regions.map((r) => {
               const isSurplus = r.netBalanceTonnes >= 0;
               return (
-                <tr key={r.region} className="hover:bg-[#F7F5EF]/60 transition-colors">
-                  <td className="py-3 px-4 font-bold text-[#171A18] flex items-center gap-1.5">
-                    <MapPin className="w-3.5 h-3.5 text-[#173D32]" />
+                <tr key={r.region} className="hover:bg-[#ECF2FF]/50 transition-colors">
+                  <td className="py-3 px-4 font-bold text-[#2A3547] flex items-center gap-1.5">
+                    <MapPin className="w-3.5 h-3.5 text-[#5D87FF]" />
                     {r.region}
                   </td>
-                  <td className="py-3 px-4 text-[#171A18] font-medium">
+                  <td className="py-3 px-4 text-[#2A3547] font-medium">
                     {r.supplyTonnes.toLocaleString()} t
                   </td>
-                  <td className="py-3 px-4 text-[#55524D]">
+                  <td className="py-3 px-4 text-[#5A6A85]">
                     {r.demandTonnes.toLocaleString()} t
                   </td>
                   <td className="py-3 px-4 text-right">
                     <span
-                      className={`px-2 py-0.5 rounded font-bold ${
+                      className={`px-2.5 py-0.5 rounded-full font-bold text-[11px] ${
                         isSurplus
-                          ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
-                          : 'bg-rose-50 text-rose-800 border border-rose-200'
+                          ? 'bg-[#13DEB9]/15 text-[#0EAB8B] border border-[#13DEB9]/30'
+                          : 'bg-[#FA896B]/15 text-[#FA896B] border border-[#FA896B]/30'
                       }`}
                     >
                       {isSurplus ? `+${r.netBalanceTonnes.toLocaleString()} t` : `${r.netBalanceTonnes.toLocaleString()} t`}

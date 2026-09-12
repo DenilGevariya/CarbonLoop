@@ -41,31 +41,31 @@ export const AdminMatchDebuggerModal: React.FC<AdminMatchDebuggerModalProps> = (
   if (!isOpen) return null;
 
   const getFactorIcon = (factorName: string) => {
-    if (factorName.includes('Quantity')) return <Scale className="w-4 h-4 text-emerald-700" />;
-    if (factorName.includes('Purity') || factorName.includes('Assay')) return <Award className="w-4 h-4 text-[#173D32]" />;
-    if (factorName.includes('Geospatial') || factorName.includes('Proximity')) return <MapPin className="w-4 h-4 text-amber-700" />;
-    if (factorName.includes('Price')) return <DollarSign className="w-4 h-4 text-blue-700" />;
-    if (factorName.includes('Verification') || factorName.includes('Bonus')) return <ShieldCheck className="w-4 h-4 text-purple-700" />;
-    return <Layers className="w-4 h-4 text-stone-600" />;
+    if (factorName.includes('Quantity')) return <Scale className="w-4 h-4 text-[#13DEB9]" />;
+    if (factorName.includes('Purity') || factorName.includes('Assay')) return <Award className="w-4 h-4 text-[#5D87FF]" />;
+    if (factorName.includes('Geospatial') || factorName.includes('Proximity')) return <MapPin className="w-4 h-4 text-[#FFAE1F]" />;
+    if (factorName.includes('Price')) return <DollarSign className="w-4 h-4 text-[#5D87FF]" />;
+    if (factorName.includes('Verification') || factorName.includes('Bonus')) return <ShieldCheck className="w-4 h-4 text-purple-600" />;
+    return <Layers className="w-4 h-4 text-[#5A6A85]" />;
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#171A18]/60 backdrop-blur-xs animate-in fade-in duration-150">
-      <div className="bg-[#FAF8F5] border border-[#E2DDD5] shadow-2xl rounded-xl w-full max-w-3xl max-h-[90vh] overflow-hidden flex flex-col">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#2A3547]/50 backdrop-blur-xs animate-in fade-in duration-150">
+      <div className="bg-[#F6F9FC] border border-[#E5EAEF] shadow-xl rounded-xl w-full max-w-3xl max-h-[90vh] overflow-hidden flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-[#E2DDD5] bg-white">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-[#E5EAEF] bg-white">
           <div>
             <div className="flex items-center gap-2">
-              <span className="px-2 py-0.5 text-[10px] font-mono font-bold bg-[#173D32] text-white rounded uppercase">
+              <span className="px-2 py-0.5 text-[10px] font-semibold bg-[#ECF2FF] text-[#5D87FF] rounded uppercase">
                 Match Factor Inspector
               </span>
-              <span className="text-xs font-mono text-stone-500">ID: {matchId}</span>
+              <span className="text-xs font-medium text-[#5A6A85]">ID: {matchId}</span>
             </div>
-            <h2 className="text-lg font-bold text-[#171A18] mt-0.5">
+            <h2 className="text-lg font-bold text-[#2A3547] mt-0.5">
               {detail ? `${detail.supplierName} ➔ ${detail.buyerName}` : 'Match Factor Debugger'}
             </h2>
           </div>
-          <button onClick={onClose} className="p-1 rounded-md text-stone-400 hover:text-stone-700 transition-colors">
+          <button onClick={onClose} className="p-1 rounded-lg text-[#5A6A85] hover:text-[#2A3547] hover:bg-[#F6F9FC] transition-colors">
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -73,13 +73,13 @@ export const AdminMatchDebuggerModal: React.FC<AdminMatchDebuggerModalProps> = (
         {/* Content */}
         <div className="p-6 overflow-y-auto flex-1 space-y-6">
           {isLoading && (
-            <div className="py-12 text-center text-xs font-mono text-stone-500 uppercase tracking-widest">
+            <div className="py-12 text-center text-xs font-semibold text-[#5A6A85] uppercase tracking-wider">
               Calculating Aggregated Match Vector Weights...
             </div>
           )}
 
           {error && (
-            <div className="p-4 bg-rose-50 border border-rose-200 text-rose-800 rounded-lg text-xs font-medium">
+            <div className="p-4 bg-[#FBF2EF] border border-[#FA896B]/30 text-[#FA896B] rounded-xl text-xs font-medium">
               {error}
             </div>
           )}
@@ -87,66 +87,66 @@ export const AdminMatchDebuggerModal: React.FC<AdminMatchDebuggerModalProps> = (
           {detail && !isLoading && (
             <>
               {/* Score Headline Banner */}
-              <div className="bg-white border border-[#E2DDD5] rounded-xl p-5 shadow-xs flex flex-col md:flex-row items-center justify-between gap-4">
+              <div className="bg-white border border-[#E5EAEF] rounded-xl p-5 shadow-xs flex flex-col md:flex-row items-center justify-between gap-4">
                 <div className="flex items-center gap-4">
-                  <div className="w-16 h-16 rounded-full bg-[#173D32] text-white font-mono text-2xl font-bold flex items-center justify-center shadow-inner">
+                  <div className="w-16 h-16 rounded-full bg-[#5D87FF] text-white text-2xl font-bold flex items-center justify-center shadow-xs">
                     {Math.round(detail.overallScore)}
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
-                      <span className="text-sm font-bold text-[#171A18] uppercase tracking-wide">
+                      <span className="text-sm font-bold text-[#2A3547] uppercase tracking-wide">
                         Overall Compatibility Rating
                       </span>
-                      <span className="px-2 py-0.5 text-[10px] font-mono font-bold bg-emerald-100 text-emerald-800 border border-emerald-200 rounded">
+                      <span className="px-2 py-0.5 text-[10px] font-semibold bg-[#E8F9F5] text-[#13DEB9] border border-[#13DEB9]/20 rounded-md">
                         {detail.matchGrade}
                       </span>
                     </div>
-                    <p className="text-xs text-stone-500 mt-0.5">
-                      Pairing: <strong className="text-stone-700">{detail.listingCode}</strong> (Listing) with <strong className="text-stone-700">{detail.requirementCode}</strong> (Demand Requirement)
+                    <p className="text-xs text-[#5A6A85] mt-0.5">
+                      Pairing: <strong className="text-[#2A3547]">{detail.listingCode}</strong> (Listing) with <strong className="text-[#2A3547]">{detail.requirementCode}</strong> (Demand Requirement)
                     </p>
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-3 text-right font-mono text-xs border-l border-[#E2DDD5] pl-4">
+                <div className="grid grid-cols-2 gap-3 text-right text-xs border-l border-[#E5EAEF] pl-4">
                   <div>
-                    <span className="text-stone-400 text-[10px] block uppercase">Purity Assay</span>
-                    <span className="font-bold text-stone-800">{detail.purityPercentage}%</span>
+                    <span className="text-[#5A6A85] text-[10px] block uppercase font-medium">Purity Assay</span>
+                    <span className="font-bold text-[#2A3547]">{detail.purityPercentage}%</span>
                   </div>
                   <div>
-                    <span className="text-stone-400 text-[10px] block uppercase">Transit Dist</span>
-                    <span className="font-bold text-stone-800">{detail.distanceKm} km</span>
+                    <span className="text-[#5A6A85] text-[10px] block uppercase font-medium">Transit Dist</span>
+                    <span className="font-bold text-[#2A3547]">{detail.distanceKm} km</span>
                   </div>
                   <div>
-                    <span className="text-stone-400 text-[10px] block uppercase">Unit Price</span>
-                    <span className="font-bold text-stone-800">₹{detail.pricePerTon}/t</span>
+                    <span className="text-[#5A6A85] text-[10px] block uppercase font-medium">Unit Price</span>
+                    <span className="font-bold text-[#2A3547]">₹{detail.pricePerTon}/t</span>
                   </div>
                   <div>
-                    <span className="text-stone-400 text-[10px] block uppercase">Verification</span>
-                    <span className="font-bold text-emerald-700">{detail.verificationStatus}</span>
+                    <span className="text-[#5A6A85] text-[10px] block uppercase font-medium">Verification</span>
+                    <span className="font-bold text-[#13DEB9]">{detail.verificationStatus}</span>
                   </div>
                 </div>
               </div>
 
               {/* Eligibility Warnings if any */}
               {detail.eligibilityWarnings.length > 0 && (
-                <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg text-xs space-y-1">
-                  <span className="font-bold text-amber-900 flex items-center gap-1">
-                    <AlertTriangle className="w-4 h-4 text-amber-700" /> Operational Warnings:
+                <div className="p-4 bg-[#FEF5E5] border border-[#FFAE1F]/30 rounded-xl text-xs space-y-1">
+                  <span className="font-bold text-[#FFAE1F] flex items-center gap-1">
+                    <AlertTriangle className="w-4 h-4 text-[#FFAE1F]" /> Operational Warnings:
                   </span>
                   {detail.eligibilityWarnings.map((w, idx) => (
-                    <p key={idx} className="text-amber-800 font-mono text-[11px] pl-5">• {w}</p>
+                    <p key={idx} className="text-[#2A3547] text-[11px] pl-5">• {w}</p>
                   ))}
                 </div>
               )}
 
               {/* Factor Decomposition Table */}
               <div>
-                <h3 className="text-xs font-bold uppercase tracking-wider text-stone-600 font-mono mb-3">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-[#5A6A85] mb-3">
                   Match Score Weight Decomposition Matrix
                 </h3>
-                <div className="border border-[#E2DDD5] rounded-lg overflow-hidden bg-white shadow-xs">
+                <div className="border border-[#E5EAEF] rounded-xl overflow-hidden bg-white shadow-xs">
                   <table className="w-full text-left text-xs">
-                    <thead className="bg-[#F4F0EA] border-b border-[#E2DDD5] text-stone-700 font-mono text-[11px] uppercase">
+                    <thead className="bg-[#F6F9FC] border-b border-[#E5EAEF] text-[#5A6A85] font-semibold text-[11px] uppercase">
                       <tr>
                         <th className="py-2.5 px-3">Evaluation Factor</th>
                         <th className="py-2.5 px-3 text-center">Score (0-100)</th>
@@ -155,23 +155,23 @@ export const AdminMatchDebuggerModal: React.FC<AdminMatchDebuggerModalProps> = (
                         <th className="py-2.5 px-3">Engine Assessment Explanation</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-[#E2DDD5]/60">
+                    <tbody className="divide-y divide-[#E5EAEF]">
                       {detail.factors.map((f, idx) => (
-                        <tr key={idx} className="hover:bg-[#FAF8F5] transition-colors">
-                          <td className="py-3 px-3 font-semibold text-stone-800 flex items-center gap-2">
+                        <tr key={idx} className="hover:bg-[#F6F9FC] transition-colors">
+                          <td className="py-3 px-3 font-semibold text-[#2A3547] flex items-center gap-2">
                             {getFactorIcon(f.factor)}
                             {f.factor}
                           </td>
-                          <td className="py-3 px-3 text-center font-mono font-bold text-stone-800">
+                          <td className="py-3 px-3 text-center font-bold text-[#2A3547]">
                             {f.score}
                           </td>
-                          <td className="py-3 px-3 text-center font-mono text-stone-500">
+                          <td className="py-3 px-3 text-center text-[#5A6A85]">
                             {f.weightPercent}%
                           </td>
-                          <td className="py-3 px-3 text-center font-mono font-bold text-[#173D32]">
+                          <td className="py-3 px-3 text-center font-bold text-[#5D87FF]">
                             {f.weightedScore.toFixed(2)}
                           </td>
-                          <td className="py-3 px-3 text-stone-600 text-[11px]">
+                          <td className="py-3 px-3 text-[#5A6A85] text-[11px]">
                             {f.explanation}
                           </td>
                         </tr>
@@ -185,11 +185,11 @@ export const AdminMatchDebuggerModal: React.FC<AdminMatchDebuggerModalProps> = (
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-3 border-t border-[#E2DDD5] bg-[#F4F0EA] flex items-center justify-between text-xs font-mono">
-          <span className="text-stone-500">Deterministic SQL Mathematical Scoring Engine</span>
+        <div className="px-6 py-3 border-t border-[#E5EAEF] bg-[#F6F9FC] flex items-center justify-between text-xs">
+          <span className="text-[#5A6A85]">Deterministic SQL Mathematical Scoring Engine</span>
           <button
             onClick={onClose}
-            className="px-4 py-1.5 bg-[#173D32] text-white font-semibold rounded hover:bg-[#173D32]/90 transition-colors"
+            className="px-4 py-1.5 bg-[#5D87FF] text-white font-semibold rounded-lg hover:bg-[#4570EA] transition-colors"
           >
             Close Inspector
           </button>

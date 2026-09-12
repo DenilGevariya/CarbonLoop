@@ -53,29 +53,29 @@ export const AnalyticsPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#F7F5EF] p-6 space-y-6 font-mono">
+    <div className="space-y-6 max-w-7xl mx-auto pb-12 font-sans text-[#2A3547]">
       {/* Top Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-[#FAF8F5] p-6 border border-[#E2DDD5] rounded-lg shadow-2xs">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-6 border border-[#E5EAEF] rounded-xl shadow-xs">
         <div>
-          <div className="flex items-center gap-2 text-xs font-mono uppercase text-[#173D32] font-semibold tracking-wider mb-1">
+          <div className="flex items-center gap-2 text-xs font-semibold uppercase text-[#5D87FF] tracking-wider mb-1">
             <BarChart3 className="w-4 h-4" />
             <span>CARBONLOOP NETWORK ANALYTICS & INTELLIGENCE</span>
           </div>
-          <h1 className="text-2xl font-bold font-mono text-[#171A18]">Network Analytics Console</h1>
-          <p className="text-xs font-mono text-[#55524D] mt-0.5">
+          <h1 className="text-2xl font-bold text-[#2A3547]">Network Analytics Console</h1>
+          <p className="text-xs text-[#5A6A85] mt-0.5">
             Operational view of supply stock, demand flow, matching distributions, and physical movements.
           </p>
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
           {/* Timeframe Selector */}
-          <div className="flex items-center gap-1 bg-[#E2DDD5]/40 p-1 rounded-md border border-[#E2DDD5] text-xs font-mono">
+          <div className="flex items-center gap-1 bg-[#F6F9FC] p-1 rounded-lg border border-[#E5EAEF] text-xs">
             {(['7d', '30d', '90d', '12m', 'all'] as Timeframe[]).map((tf) => (
               <button
                 key={tf}
                 onClick={() => setTimeframe(tf)}
-                className={`px-2.5 py-1 rounded font-medium transition ${
-                  timeframe === tf ? 'bg-[#173D32] text-white shadow-2xs' : 'text-[#55524D] hover:text-[#171A18]'
+                className={`px-3 py-1 rounded-md font-semibold transition cursor-pointer ${
+                  timeframe === tf ? 'bg-[#5D87FF] text-white shadow-xs' : 'text-[#5A6A85] hover:text-[#2A3547]'
                 }`}
               >
                 {tf.toUpperCase()}
@@ -85,7 +85,7 @@ export const AnalyticsPage: React.FC = () => {
 
           <button
             onClick={handleExportCSV}
-            className="px-3 py-1.5 bg-[#FAF8F5] border border-[#E2DDD5] text-[#171A18] text-xs font-semibold rounded hover:bg-[#E2DDD5]/40 flex items-center gap-1.5"
+            className="px-3.5 py-2 bg-[#F6F9FC] border border-[#E5EAEF] text-[#2A3547] text-xs font-semibold rounded-lg hover:bg-[#ECF2FF] hover:text-[#5D87FF] flex items-center gap-1.5 cursor-pointer"
           >
             <Download className="w-3.5 h-3.5" />
             <span>Export CSV</span>
@@ -93,7 +93,7 @@ export const AnalyticsPage: React.FC = () => {
 
           <button
             onClick={() => navigate('/dashboard/impact')}
-            className="px-3.5 py-1.5 bg-[#173D32] text-white text-xs font-semibold rounded hover:bg-[#173D32]/90 flex items-center gap-1.5 shadow-2xs"
+            className="px-4 py-2 bg-[#5D87FF] text-white text-xs font-semibold rounded-lg hover:bg-[#4570EA] flex items-center gap-1.5 shadow-xs cursor-pointer"
           >
             <FileText className="w-3.5 h-3.5" />
             <span>Impact Report</span>
@@ -103,9 +103,9 @@ export const AnalyticsPage: React.FC = () => {
 
       {/* Primary KPI Strip */}
       {overviewLoading || !overview ? (
-        <div className="bg-[#FAF8F5] border border-[#E2DDD5] rounded-lg p-10 text-center text-xs">
-          <div className="w-6 h-6 border-2 border-[#173D32] border-t-transparent rounded-full animate-spin mx-auto mb-2" />
-          <p className="text-[#55524D]">Computing network stock & flow aggregations...</p>
+        <div className="bg-white border border-[#E5EAEF] rounded-xl p-10 text-center text-xs shadow-xs">
+          <div className="w-6 h-6 border-2 border-[#5D87FF] border-t-transparent rounded-full animate-spin mx-auto mb-2" />
+          <p className="text-[#5A6A85]">Computing network stock & flow aggregations...</p>
         </div>
       ) : (
         <KpiStrip kpis={overview} />

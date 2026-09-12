@@ -77,26 +77,26 @@ export const DocumentUploader: React.FC<DocumentUploaderProps> = ({
   };
 
   return (
-    <div className="bg-[#FAF8F5] border border-[#E2DDD5] rounded-lg p-5 font-mono space-y-4 shadow-2xs">
-      <div className="flex items-center justify-between border-b border-[#E2DDD5] pb-3">
+    <div className="bg-white border border-[#E5EAEF] rounded-xl p-5 text-xs font-sans space-y-4 shadow-xs">
+      <div className="flex items-center justify-between border-b border-[#E5EAEF] pb-3">
         <div className="flex items-center gap-2">
-          <Upload className="w-4 h-4 text-[#173D32]" />
-          <h3 className="text-xs font-bold text-[#171A18] uppercase tracking-wider">
+          <Upload className="w-4 h-4 text-[#5D87FF]" />
+          <h3 className="text-xs font-bold text-[#2A3547] uppercase tracking-wider">
             Technical Evidence Document Uploader
           </h3>
         </div>
-        <span className="text-[10px] text-neutral-500">Max size: 20MB (PDF, PNG, JPG)</span>
+        <span className="text-[10px] text-[#5A6A85] font-semibold">Max size: 20MB (PDF, PNG, JPG)</span>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className="block text-[10px] uppercase font-bold text-neutral-500 mb-1">
+          <label className="block text-[10px] uppercase font-semibold text-[#5A6A85] mb-1">
             Document Type
           </label>
           <select
             value={selectedType}
             onChange={(e) => setSelectedType(e.target.value)}
-            className="w-full bg-[#F7F5EF] border border-[#E2DDD5] rounded px-3 py-2 text-xs font-bold text-[#171A18] focus:outline-none focus:border-[#173D32]"
+            className="w-full bg-[#F6F9FC] border border-[#E5EAEF] rounded-lg px-3 py-2 text-xs font-semibold text-[#2A3547] focus:outline-none focus:border-[#5D87FF]"
           >
             {DOCUMENT_TYPES.map((dt) => (
               <option key={dt.value} value={dt.value}>
@@ -107,7 +107,7 @@ export const DocumentUploader: React.FC<DocumentUploaderProps> = ({
         </div>
 
         <div>
-          <label className="block text-[10px] uppercase font-bold text-neutral-500 mb-1">
+          <label className="block text-[10px] uppercase font-semibold text-[#5A6A85] mb-1">
             Notes / Description (Optional)
           </label>
           <input
@@ -115,13 +115,13 @@ export const DocumentUploader: React.FC<DocumentUploaderProps> = ({
             placeholder="e.g. Q3 2026 Gas Assay Report"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            className="w-full bg-[#F7F5EF] border border-[#E2DDD5] rounded px-3 py-2 text-xs text-[#171A18] focus:outline-none focus:border-[#173D32]"
+            className="w-full bg-[#F6F9FC] border border-[#E5EAEF] rounded-lg px-3 py-2 text-xs text-[#2A3547] focus:outline-none focus:border-[#5D87FF]"
           />
         </div>
       </div>
 
       {/* File Drop Target */}
-      <div className="relative border-2 border-dashed border-[#E2DDD5] rounded-lg p-6 text-center hover:border-[#173D32] transition bg-[#F7F5EF]">
+      <div className="relative border-2 border-dashed border-[#E5EAEF] rounded-xl p-6 text-center hover:border-[#5D87FF] transition bg-[#F6F9FC]">
         <input
           type="file"
           accept=".pdf,.png,.jpg,.jpeg,.doc,.docx"
@@ -131,17 +131,17 @@ export const DocumentUploader: React.FC<DocumentUploaderProps> = ({
         />
         <div className="space-y-2 pointer-events-none">
           {uploading ? (
-            <div className="flex items-center justify-center gap-2 text-xs font-bold text-[#173D32]">
-              <Loader2 className="w-5 h-5 animate-spin" />
+            <div className="flex items-center justify-center gap-2 text-xs font-bold text-[#5D87FF]">
+              <Loader2 className="w-5 h-5 animate-spin text-[#5D87FF]" />
               <span>Uploading technical evidence to CarbonLoop vault...</span>
             </div>
           ) : (
             <>
-              <FileText className="w-8 h-8 mx-auto text-[#173D32]/60" />
-              <p className="text-xs font-bold text-[#171A18]">
+              <FileText className="w-8 h-8 mx-auto text-[#5D87FF]/60" />
+              <p className="text-xs font-bold text-[#2A3547]">
                 Click or drag file here to attach verification evidence
               </p>
-              <span className="text-[10px] text-neutral-500 block">
+              <span className="text-[10px] text-[#5A6A85] block">
                 Accepted: PDF, PNG, JPG, DOCX (up to 20MB)
               </span>
             </>
@@ -150,19 +150,19 @@ export const DocumentUploader: React.FC<DocumentUploaderProps> = ({
       </div>
 
       {error && (
-        <div className="flex items-center gap-2 text-xs text-red-700 bg-red-50 border border-red-200 p-3 rounded">
+        <div className="flex items-center gap-2 text-xs text-[#FA896B] bg-[#FA896B]/10 border border-[#FA896B]/30 p-3 rounded-lg font-semibold">
           <AlertCircle className="w-4 h-4 shrink-0" />
           <span>{error}</span>
         </div>
       )}
 
       {successDoc && (
-        <div className="flex items-center justify-between text-xs text-[#173D32] bg-[#173D32]/5 border border-[#173D32]/20 p-3 rounded">
+        <div className="flex items-center justify-between text-xs text-[#0EAB8B] bg-[#13DEB9]/15 border border-[#13DEB9]/30 p-3 rounded-lg">
           <div className="flex items-center gap-2">
-            <CheckCircle2 className="w-4 h-4 text-[#173D32]" />
+            <CheckCircle2 className="w-4 h-4 text-[#13DEB9]" />
             <span className="font-bold">Uploaded successfully: {successDoc.fileName}</span>
           </div>
-          <span className="text-[10px] uppercase font-bold bg-[#173D32]/10 px-2 py-0.5 rounded">
+          <span className="text-[10px] uppercase font-bold bg-[#13DEB9]/20 px-2 py-0.5 rounded-full">
             {successDoc.status}
           </span>
         </div>

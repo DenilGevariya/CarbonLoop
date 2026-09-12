@@ -14,87 +14,86 @@ export const OffersPage: React.FC = () => {
     switch (s) {
       case 'SENT':
       case 'PENDING':
-        return <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono bg-sky-50 text-sky-700 border border-sky-200">SENT</span>;
+        return <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-[#E8F7FF] text-[#49BEFF]">SENT</span>;
       case 'COUNTERED':
-        return <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono bg-amber-50 text-amber-700 border border-amber-200 font-semibold">COUNTERED</span>;
+        return <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-[#FEF5E5] text-[#FFAE1F]">COUNTERED</span>;
       case 'ACCEPTED':
-        return <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono bg-emerald-800 text-white font-semibold">ACCEPTED</span>;
+        return <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#E6FFFA] text-[#13DEB9]">ACCEPTED</span>;
       case 'REJECTED':
       case 'DECLINED':
-        return <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono bg-rose-50 text-rose-700 border border-rose-200">REJECTED</span>;
+        return <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-[#FDEDE8] text-[#FA896B]">REJECTED</span>;
       case 'WITHDRAWN':
-        return <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono bg-stone-100 text-stone-600 border border-stone-300">WITHDRAWN</span>;
       case 'EXPIRED':
-        return <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono bg-[#E2DDD5] text-[#5C554E]">EXPIRED</span>;
+        return <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-[#F6F9FC] text-[#5A6A85] border border-[#E5EAEF]">EXPIRED</span>;
       default:
-        return <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono bg-stone-100 text-stone-700">{s}</span>;
+        return <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-[#F6F9FC] text-[#5A6A85]">{s}</span>;
     }
   };
 
   return (
     <div className="space-y-6 max-w-7xl mx-auto pb-12">
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between border-b border-[#E2DDD5] pb-5 gap-4">
+      <div className="flex flex-col md:flex-row md:items-center justify-between border-b border-[#E5EAEF] pb-5 gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <span className="font-mono text-xs text-[#173D32] tracking-wider uppercase font-semibold">Commercial Transactions</span>
-            <span className="text-[#8C827A]">•</span>
-            <span className="font-mono text-xs text-[#8C827A]">Bilateral Proposals</span>
+            <span className="text-xs text-[#5D87FF] uppercase font-semibold">Commercial Transactions</span>
+            <span className="text-[#5A6A85]">•</span>
+            <span className="text-xs text-[#5A6A85]">Bilateral Proposals</span>
           </div>
-          <h1 className="text-2xl md:text-3xl font-serif text-[#171A18] tracking-tight font-medium mt-1">
+          <h1 className="text-2xl md:text-3xl text-[#2A3547] tracking-tight font-bold mt-1">
             Commercial Offers Inbox
           </h1>
-          <p className="text-sm text-[#5C554E] mt-1 font-sans">
+          <p className="text-xs text-[#5A6A85] mt-1">
             Formal price, volume, and transport proposals across participating organizations.
           </p>
         </div>
       </div>
 
       {/* Controls Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#F7F5EF] border border-[#E2DDD5] p-3 rounded-lg">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white border border-[#E5EAEF] p-3 rounded-xl shadow-xs">
         {/* Role Tabs */}
         <div className="flex items-center gap-2">
           <button
             onClick={() => setRole('all')}
-            className={`px-3 py-1.5 text-xs font-mono rounded transition-colors ${
+            className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors cursor-pointer ${
               role === 'all'
-                ? 'bg-[#173D32] text-white font-medium shadow-xs'
-                : 'text-[#5C554E] hover:text-[#171A18] hover:bg-[#E2DDD5]/50'
+                ? 'bg-[#5D87FF] text-white shadow-xs'
+                : 'text-[#5A6A85] hover:text-[#2A3547] hover:bg-[#F6F9FC]'
             }`}
           >
             All Offers
           </button>
           <button
             onClick={() => setRole('received')}
-            className={`px-3 py-1.5 text-xs font-mono rounded transition-colors flex items-center gap-1.5 ${
+            className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors flex items-center gap-1.5 cursor-pointer ${
               role === 'received'
-                ? 'bg-[#173D32] text-white font-medium shadow-xs'
-                : 'text-[#5C554E] hover:text-[#171A18] hover:bg-[#E2DDD5]/50'
+                ? 'bg-[#5D87FF] text-white shadow-xs'
+                : 'text-[#5A6A85] hover:text-[#2A3547] hover:bg-[#F6F9FC]'
             }`}
           >
-            <ArrowDownLeft className="w-3.5 h-3.5 text-emerald-400" />
+            <ArrowDownLeft className="w-3.5 h-3.5 text-[#13DEB9]" />
             Received Offers
           </button>
           <button
             onClick={() => setRole('sent')}
-            className={`px-3 py-1.5 text-xs font-mono rounded transition-colors flex items-center gap-1.5 ${
+            className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors flex items-center gap-1.5 cursor-pointer ${
               role === 'sent'
-                ? 'bg-[#173D32] text-white font-medium shadow-xs'
-                : 'text-[#5C554E] hover:text-[#171A18] hover:bg-[#E2DDD5]/50'
+                ? 'bg-[#5D87FF] text-white shadow-xs'
+                : 'text-[#5A6A85] hover:text-[#2A3547] hover:bg-[#F6F9FC]'
             }`}
           >
-            <ArrowUpRight className="w-3.5 h-3.5 text-amber-400" />
+            <ArrowUpRight className="w-3.5 h-3.5 text-[#FFAE1F]" />
             Sent Proposals
           </button>
         </div>
 
         {/* Status Dropdown */}
         <div className="flex items-center gap-2">
-          <Filter className="w-3.5 h-3.5 text-[#8C827A]" />
+          <Filter className="w-3.5 h-3.5 text-[#5A6A85]" />
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="bg-white border border-[#E2DDD5] text-xs font-mono text-[#171A18] rounded px-2.5 py-1.5 focus:outline-none focus:border-[#173D32]"
+            className="bg-[#F6F9FC] border border-[#E5EAEF] text-xs font-semibold text-[#2A3547] rounded-lg px-3 py-1.5 focus:outline-none focus:border-[#5D87FF]"
           >
             <option value="">All Statuses</option>
             <option value="SENT">SENT</option>
@@ -109,61 +108,61 @@ export const OffersPage: React.FC = () => {
 
       {/* Offers Table */}
       {isLoading ? (
-        <div className="p-12 text-center text-[#8C827A] font-mono text-sm">Loading commercial offers...</div>
+        <div className="p-12 text-center text-[#5A6A85] text-xs">Loading commercial offers...</div>
       ) : offers.length === 0 ? (
-        <div className="p-12 text-center border border-dashed border-[#E2DDD5] bg-[#F7F5EF]/50 rounded-lg">
-          <Handshake className="w-8 h-8 text-[#8C827A] mx-auto mb-3 opacity-50" />
-          <h3 className="text-sm font-serif font-medium text-[#171A18]">No commercial offers found</h3>
-          <p className="text-xs text-[#8C827A] mt-1 font-mono">
+        <div className="p-12 text-center border border-dashed border-[#E5EAEF] bg-white rounded-xl shadow-xs">
+          <Handshake className="w-8 h-8 text-[#5A6A85] mx-auto mb-3 opacity-50" />
+          <h3 className="text-sm font-bold text-[#2A3547]">No commercial offers found</h3>
+          <p className="text-xs text-[#5A6A85] mt-1">
             {role === 'received' ? 'No offers received from suppliers yet.' : 'No sent offers recorded.'}
           </p>
         </div>
       ) : (
-        <div className="border border-[#E2DDD5] bg-white rounded-lg overflow-hidden shadow-xs">
+        <div className="border border-[#E5EAEF] bg-white rounded-xl overflow-hidden shadow-xs">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-[#F7F5EF] border-b border-[#E2DDD5] text-[11px] font-mono uppercase tracking-wider text-[#5C554E]">
-                <th className="p-3 pl-4">Offer Ref / Version</th>
-                <th className="p-3">Counterparty</th>
-                <th className="p-3">Volume</th>
-                <th className="p-3">Unit Price</th>
-                <th className="p-3">Estimated Total</th>
-                <th className="p-3">Status</th>
-                <th className="p-3">Valid Until</th>
-                <th className="p-3 pr-4 text-right">Action</th>
+              <tr className="bg-[#F6F9FC] border-b border-[#E5EAEF] text-xs font-semibold uppercase tracking-wider text-[#5A6A85]">
+                <th className="p-3.5 pl-5">Offer Ref / Version</th>
+                <th className="p-3.5">Counterparty</th>
+                <th className="p-3.5">Volume</th>
+                <th className="p-3.5">Unit Price</th>
+                <th className="p-3.5">Estimated Total</th>
+                <th className="p-3.5">Status</th>
+                <th className="p-3.5">Valid Until</th>
+                <th className="p-3.5 pr-5 text-right">Action</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#E2DDD5] text-xs font-mono">
+            <tbody className="divide-y divide-[#E5EAEF] text-xs">
               {offers.map((off) => (
-                <tr key={off.id} className="hover:bg-[#FAF8F5] transition-colors">
-                  <td className="p-3 pl-4">
-                    <div className="font-mono font-bold text-[#171A18]">
+                <tr key={off.id} className="hover:bg-[#F6F9FC] transition-colors">
+                  <td className="p-3.5 pl-5">
+                    <div className="font-bold text-[#2A3547]">
                       {off.offer_number || `CL-OFR-${off.id.slice(0, 6)}`}
                     </div>
-                    <div className="text-[10px] text-[#8C827A] font-mono">
+                    <div className="text-[11px] text-[#5A6A85]">
                       Ver {off.version || 1} • {off.listing_title || 'CO₂ Supply'}
                     </div>
                   </td>
-                  <td className="p-3">
-                    <div className="text-[#171A18] font-medium">
+                  <td className="p-3.5">
+                    <div className="text-[#2A3547] font-semibold">
                       {off.buyer_organization_name || off.seller_organization_name}
                     </div>
                   </td>
-                  <td className="p-3 font-semibold text-[#171A18]">{off.quantity} t</td>
-                  <td className="p-3 text-[#173D32]">₹{off.unit_price}/t</td>
-                  <td className="p-3 font-bold text-[#173D32]">
+                  <td className="p-3.5 font-semibold text-[#2A3547]">{off.quantity} t</td>
+                  <td className="p-3.5 text-[#5D87FF] font-semibold">₹{off.unit_price}/t</td>
+                  <td className="p-3.5 font-bold text-[#5D87FF]">
                     ₹{(off.total_estimated_cost || 0).toLocaleString('en-IN')}
                   </td>
-                  <td className="p-3">{getStatusBadge(off.status)}</td>
-                  <td className="p-3 text-[#8C827A]">
+                  <td className="p-3.5">{getStatusBadge(off.status)}</td>
+                  <td className="p-3.5 text-[#5A6A85]">
                     {new Date(off.valid_until).toLocaleDateString('en-IN', { month: 'short', day: 'numeric' })}
                   </td>
-                  <td className="p-3 pr-4 text-right">
+                  <td className="p-3.5 pr-5 text-right">
                     <Link
                       to={`/dashboard/offers/${off.id}`}
-                      className="inline-flex items-center gap-1 px-3 py-1 bg-[#F7F5EF] hover:bg-[#173D32] hover:text-white border border-[#E2DDD5] rounded text-xs font-mono transition-colors"
+                      className="inline-flex items-center gap-1 px-3 py-1.5 bg-[#ECF2FF] hover:bg-[#5D87FF] text-[#5D87FF] hover:text-white rounded-lg text-xs font-semibold transition-colors"
                     >
-                      <Eye className="w-3 h-3" /> Detail
+                      <Eye className="w-3.5 h-3.5" /> Detail
                     </Link>
                   </td>
                 </tr>

@@ -94,25 +94,30 @@ export const DashboardLayout: React.FC = () => {
 
   return (
     <SidebarProvider defaultOpen>
-      <div className="min-h-screen flex w-full bg-[#F7F5EF] text-[#171A18]">
+      <div className="min-h-screen flex w-full bg-[#F6F9FC] text-[#2A3547] font-sans">
 
-        {/* Sidebar Navigation */}
-        <Sidebar className="border-r border-[#E2DDD5] bg-[#FAF8F5]">
-          <SidebarHeader className="p-4 border-b border-[#E2DDD5] bg-[#171A18] text-white">
-            <Link to="/" className="flex items-center gap-2.5">
-              <div className="size-7 bg-[#173D32] border border-[#3C6E5C] text-white flex items-center justify-center font-mono font-bold text-xs">
+        {/* Modernize Sidebar Navigation */}
+        <Sidebar className="border-r border-[#E5EAEF] bg-white">
+          <SidebarHeader className="p-5 border-b border-[#E5EAEF] bg-white">
+            <Link to="/" className="flex items-center gap-3">
+              <div className="size-9 bg-[#5D87FF] text-white flex items-center justify-center font-bold text-sm rounded-lg shadow-sm">
                 C⟳
               </div>
-              <span className="text-base font-black tracking-tight uppercase font-mono text-white">
-                CARBON<span className="text-[#A3B899] font-light">LOOP</span>
-              </span>
+              <div className="flex flex-col">
+                <span className="text-base font-bold tracking-tight text-[#2A3547]">
+                  CARBON<span className="text-[#5D87FF]">LOOP</span>
+                </span>
+                <span className="text-[10px] text-[#5A6A85] font-medium tracking-wide">
+                  INDUSTRIAL NETWORK
+                </span>
+              </div>
             </Link>
           </SidebarHeader>
 
-          <SidebarContent className="p-2 space-y-4">
+          <SidebarContent className="p-3 space-y-4">
             {navSections.map((sec) => (
               <SidebarGroup key={sec.group}>
-                <SidebarGroupLabel className="text-[10px] font-mono uppercase text-[#5C6560] px-2 py-1 font-bold">
+                <SidebarGroupLabel className="text-[11px] font-bold uppercase tracking-wider text-[#5A6A85] px-3 py-1.5">
                   {sec.group}
                 </SidebarGroupLabel>
                 <SidebarMenu>
@@ -123,14 +128,14 @@ export const DashboardLayout: React.FC = () => {
                       <SidebarMenuItem key={item.path}>
                         <SidebarMenuButton
                           className={cn(
-                            'w-full flex items-center gap-3 px-3 py-2 rounded-none text-xs font-mono font-semibold uppercase tracking-wider transition-colors',
+                            'w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-xs font-semibold tracking-wide transition-all cursor-pointer',
                             isActive
-                              ? 'bg-[#173D32] text-white border border-[#173D32]'
-                              : 'text-[#5C6560] hover:text-[#171A18] hover:bg-[#EBE7DF]'
+                              ? 'bg-[#ECF2FF] text-[#5D87FF] font-bold shadow-xs'
+                              : 'text-[#2A3547] hover:text-[#5D87FF] hover:bg-[#F6F9FC]'
                           )}
                           onClick={() => navigate(item.path)}
                         >
-                          <Icon className="size-4" />
+                          <Icon className={cn("size-4", isActive ? "text-[#5D87FF]" : "text-[#5A6A85]")} />
                           <span>{item.label}</span>
                         </SidebarMenuButton>
                       </SidebarMenuItem>
@@ -142,18 +147,18 @@ export const DashboardLayout: React.FC = () => {
           </SidebarContent>
 
           {/* User Account Footer */}
-          <SidebarFooter className="p-4 border-t border-[#E2DDD5] flex flex-col gap-3 bg-[#FAF8F5]">
-            <div className="flex items-center gap-3 p-2 bg-[#EBE7DF] border border-[#DCD6C9]">
-              <Avatar className="size-8 rounded-none border border-[#173D32]">
-                <AvatarFallback className="bg-[#173D32] text-white font-mono font-bold text-xs rounded-none">
+          <SidebarFooter className="p-4 border-t border-[#E5EAEF] flex flex-col gap-3 bg-white">
+            <div className="flex items-center gap-3 p-2.5 bg-[#F6F9FC] border border-[#E5EAEF] rounded-lg">
+              <Avatar className="size-9 rounded-full border border-[#5D87FF]">
+                <AvatarFallback className="bg-[#5D87FF] text-white font-bold text-xs">
                   {userInitials}
                 </AvatarFallback>
               </Avatar>
               <div className="flex flex-col min-w-0 flex-1">
-                <span className="text-xs font-bold text-[#171A18] truncate font-mono">
+                <span className="text-xs font-bold text-[#2A3547] truncate">
                   {user?.firstName} {user?.lastName}
                 </span>
-                <span className="text-[10px] font-mono text-[#5C6560] truncate">
+                <span className="text-[11px] text-[#5A6A85] truncate">
                   {user?.email}
                 </span>
               </div>
@@ -166,7 +171,7 @@ export const DashboardLayout: React.FC = () => {
                 await logout();
                 navigate('/login');
               }}
-              className="w-full bg-[#EBE7DF] hover:bg-[#E2DDD5] text-[#171A18] border-[#DCD6C9] font-mono text-xs font-bold uppercase rounded-none"
+              className="w-full bg-white hover:bg-[#FDEDE8] text-[#FA896B] border-[#FA896B]/30 hover:border-[#FA896B] font-semibold text-xs rounded-lg transition-colors cursor-pointer"
             >
               <LogOut className="size-3.5 mr-2" /> End Session
             </Button>
@@ -176,23 +181,23 @@ export const DashboardLayout: React.FC = () => {
         {/* Main Content Viewport */}
         <div className="flex-1 flex flex-col min-w-0">
 
-          {/* Topbar */}
-          <header className="h-16 border-b border-[#E2DDD5] bg-[#FAF8F5] px-6 flex items-center justify-between sticky top-0 z-30">
+          {/* Modernize Top Header */}
+          <header className="h-16 border-b border-[#E5EAEF] bg-white px-6 flex items-center justify-between sticky top-0 z-30 shadow-xs">
             <div className="flex items-center gap-4">
-              <SidebarTrigger />
+              <SidebarTrigger className="text-[#5A6A85] hover:text-[#5D87FF] hover:bg-[#ECF2FF] rounded-lg" />
 
               {/* Organization Selector */}
               {user && user.organizations && user.organizations.length > 0 && (
                 <div className="hidden sm:flex items-center gap-2">
-                  <span className="text-[10px] font-mono text-[#5C6560] uppercase">ORG:</span>
+                  <span className="text-xs text-[#5A6A85] font-semibold">ORG:</span>
                   <Select
                     value={activeOrg?.organizationId || ''}
                     onValueChange={(val) => { if (val) switchOrganization(val); }}
                   >
-                    <SelectTrigger className="h-8 bg-[#EBE7DF] border-[#DCD6C9] text-xs font-mono font-bold text-[#171A18] rounded-none px-3">
+                    <SelectTrigger className="h-9 bg-[#F6F9FC] border-[#E5EAEF] text-xs font-bold text-[#2A3547] rounded-lg px-3 hover:border-[#5D87FF]">
                       <SelectValue placeholder="Select Organization" />
                     </SelectTrigger>
-                    <SelectContent className="bg-[#FAF8F5] border-[#E2DDD5] text-xs font-mono">
+                    <SelectContent className="bg-white border-[#E5EAEF] text-xs">
                       {user.organizations.map((org) => (
                         <SelectItem key={org.organizationId} value={org.organizationId}>
                           {org.organizationName} ({org.orgType})
@@ -207,15 +212,15 @@ export const DashboardLayout: React.FC = () => {
             {/* Search & Actions */}
             <div className="flex items-center gap-3">
               <div className="relative w-48 md:w-64 hidden md:block">
-                <Search className="size-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#5C6560]" />
+                <Search className="size-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#5A6A85]" />
                 <Input
                   placeholder="Search exchange..."
-                  className="pl-9 h-8 bg-[#EBE7DF] border-[#DCD6C9] text-xs text-[#171A18] placeholder:text-[#5C6560] font-mono rounded-none focus-visible:ring-[#173D32]"
+                  className="pl-9 h-9 bg-[#F6F9FC] border-[#E5EAEF] text-xs text-[#2A3547] placeholder:text-[#5A6A85] rounded-lg focus-visible:ring-[#5D87FF]"
                 />
               </div>
 
-              <Badge variant="outline" className="border-[#173D32] text-[#173D32] bg-[#EBE7DF] font-mono text-[10px] uppercase font-bold rounded-none">
-                <ShieldCheck className="size-3 mr-1 text-[#173D32]" />
+              <Badge variant="outline" className="border-[#5D87FF]/30 text-[#5D87FF] bg-[#ECF2FF] text-xs font-bold rounded-full px-3 py-1">
+                <ShieldCheck className="size-3.5 mr-1.5 text-[#5D87FF]" />
                 {activeOrg ? activeOrg.orgType : 'VERIFIED'}
               </Badge>
 
@@ -223,21 +228,19 @@ export const DashboardLayout: React.FC = () => {
                 variant="ghost"
                 size="icon"
                 onClick={() => navigate('/dashboard/notifications')}
-                className="relative text-[#171A18] hover:bg-[#EBE7DF] rounded-none size-8 cursor-pointer"
+                className="relative text-[#5A6A85] hover:text-[#5D87FF] hover:bg-[#ECF2FF] rounded-lg size-9 cursor-pointer"
                 title="Notifications"
               >
-                <Bell className="size-4 text-[#5C6560]" />
+                <Bell className="size-4" />
                 {unreadCount > 0 && (
-                  <span className="absolute -top-0.5 -right-0.5 min-w-4 h-4 bg-[#173D32] text-white font-mono text-[9px] font-bold rounded-full flex items-center justify-center px-1">
-                    {unreadCount}
-                  </span>
+                  <span className="absolute top-1 right-1 size-2 bg-[#FA896B] rounded-full ring-2 ring-white animate-pulse" />
                 )}
               </Button>
             </div>
           </header>
 
           {/* Main Page Area */}
-          <main className="flex-1 p-6 overflow-y-auto bg-[#F7F5EF]">
+          <main className="flex-1 p-6 overflow-y-auto bg-[#F6F9FC]">
             <Outlet />
           </main>
         </div>

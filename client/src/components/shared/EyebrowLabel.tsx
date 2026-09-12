@@ -12,10 +12,10 @@ export const EyebrowLabel: React.FC<EyebrowLabelProps> = ({ children, icon: Icon
   return (
     <div
       className={cn(
-        "inline-flex items-center gap-2 px-3 py-1 rounded-sm text-[11px] font-mono uppercase tracking-widest font-semibold transition-colors",
+        "inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold tracking-wide transition-colors",
         dark
-          ? "bg-white/10 border border-white/15 text-[#A3B899]"
-          : "bg-[#EBE7DF] border border-[#DCD6C9] text-[#173D32]",
+          ? "bg-white/10 border border-white/15 text-blue-300"
+          : "bg-[#ECF2FF] border border-[#5D87FF]/20 text-[#5D87FF]",
         className
       )}
     >

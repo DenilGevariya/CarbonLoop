@@ -10,38 +10,38 @@ export const NetworkObservations: React.FC<Props> = ({ observations }) => {
   if (observations.length === 0) return null;
 
   return (
-    <div className="bg-[#FAF8F5] border border-[#E2DDD5] rounded-lg p-6 font-mono text-xs shadow-2xs">
-      <div className="flex items-center justify-between mb-4 border-b border-[#E2DDD5]/60 pb-3">
+    <div className="bg-white border border-[#E5EAEF] rounded-xl p-6 text-xs shadow-xs">
+      <div className="flex items-center justify-between mb-4 border-b border-[#E5EAEF] pb-3">
         <div>
-          <h3 className="text-xs font-bold text-[#171A18] uppercase tracking-wider flex items-center gap-2">
-            <Cpu className="w-4 h-4 text-[#173D32]" />
+          <h3 className="text-xs font-bold text-[#2A3547] uppercase tracking-wider flex items-center gap-2">
+            <Cpu className="w-4 h-4 text-[#5D87FF]" />
             <span>Deterministic Network Observations</span>
           </h3>
-          <p className="text-[11px] text-[#55524D] mt-0.5">
+          <p className="text-[11px] text-[#5A6A85] mt-0.5">
             Rule-based algorithmic intelligence derived from live transaction metrics
           </p>
         </div>
 
-        <span className="text-[10px] text-[#173D32] bg-[#173D32]/10 px-2.5 py-1 rounded font-bold uppercase border border-[#173D32]/20">
+        <span className="text-[10px] text-[#5D87FF] bg-[#ECF2FF] px-3 py-1 rounded-full font-bold uppercase border border-[#5D87FF]/20">
           Rule Engine v1.0
         </span>
       </div>
 
       <div className="space-y-3">
         {observations.map((obs) => {
-          let bg = 'bg-[#F7F5EF] border-[#E2DDD5] text-[#171A18]';
-          let icon = <Info className="w-4 h-4 text-[#173D32]" />;
+          let bg = 'bg-[#F6F9FC] border-[#E5EAEF] text-[#2A3547]';
+          let icon = <Info className="w-4 h-4 text-[#5D87FF]" />;
 
           if (obs.severity === 'SUCCESS') {
-            bg = 'bg-emerald-50 border-emerald-200 text-emerald-950';
-            icon = <CheckCircle className="w-4 h-4 text-emerald-600" />;
+            bg = 'bg-[#13DEB9]/10 border-[#13DEB9]/30 text-[#0EAB8B]';
+            icon = <CheckCircle className="w-4 h-4 text-[#13DEB9]" />;
           } else if (obs.severity === 'WARNING') {
-            bg = 'bg-rose-50 border-rose-200 text-rose-950';
-            icon = <AlertTriangle className="w-4 h-4 text-rose-600" />;
+            bg = 'bg-[#FA896B]/10 border-[#FA896B]/30 text-[#FA896B]';
+            icon = <AlertTriangle className="w-4 h-4 text-[#FA896B]" />;
           }
 
           return (
-            <div key={obs.id} className={`p-4 rounded-md border ${bg} flex items-start justify-between gap-4`}>
+            <div key={obs.id} className={`p-4 rounded-xl border ${bg} flex items-start justify-between gap-4`}>
               <div className="flex items-start gap-3">
                 <div className="mt-0.5">{icon}</div>
                 <div>
@@ -51,7 +51,7 @@ export const NetworkObservations: React.FC<Props> = ({ observations }) => {
               </div>
 
               {obs.metricValue && (
-                <span className="px-2.5 py-1 rounded font-bold text-xs bg-white/80 border border-current shrink-0">
+                <span className="px-2.5 py-1 rounded-lg font-bold text-xs bg-white/80 border border-current shrink-0">
                   {obs.metricValue}
                 </span>
               )}

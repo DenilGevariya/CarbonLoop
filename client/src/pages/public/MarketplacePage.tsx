@@ -33,7 +33,7 @@ export const MarketplacePage: React.FC = () => {
   const pagination = listingsData?.pagination || { page: 1, limit: 12, total: 0, totalPages: 1 };
 
   return (
-    <div className="min-h-screen bg-[#FAF8F5]">
+    <div className="min-h-screen bg-[#F6F9FC] font-sans">
       {/* Header with Aggregate Analytics */}
       <MarketplaceHeader stats={statsData} isLoading={statsLoading} />
 
@@ -54,10 +54,10 @@ export const MarketplacePage: React.FC = () => {
 
         {/* Pagination Bar */}
         {!listingsLoading && pagination.totalPages > 1 && (
-          <div className="flex items-center justify-between bg-white px-6 py-4 rounded-xl border border-[#E2DDD5] shadow-2xs font-mono text-xs">
-            <span className="text-stone-500">
-              Showing page <span className="font-bold text-[#171A18]">{pagination.page}</span> of{' '}
-              <span className="font-bold text-[#171A18]">{pagination.totalPages}</span> ({pagination.total} total streams)
+          <div className="flex items-center justify-between bg-white px-6 py-4 rounded-xl border border-[#E5EAEF] shadow-xs text-xs font-medium text-[#5A6A85]">
+            <span>
+              Showing page <span className="font-bold text-[#2A3547]">{pagination.page}</span> of{' '}
+              <span className="font-bold text-[#2A3547]">{pagination.totalPages}</span> ({pagination.total} total streams)
             </span>
 
             <div className="flex items-center gap-2">
@@ -66,7 +66,7 @@ export const MarketplacePage: React.FC = () => {
                 size="sm"
                 onClick={() => handleFilterChange({ page: pagination.page - 1 })}
                 disabled={pagination.page <= 1}
-                className="border-[#E2DDD5] text-xs h-8"
+                className="border-[#E5EAEF] text-xs h-8 text-[#2A3547] hover:border-[#5D87FF] rounded-lg"
               >
                 <ChevronLeft className="w-3.5 h-3.5 mr-1" /> Previous
               </Button>
@@ -76,7 +76,7 @@ export const MarketplacePage: React.FC = () => {
                 size="sm"
                 onClick={() => handleFilterChange({ page: pagination.page + 1 })}
                 disabled={pagination.page >= pagination.totalPages}
-                className="border-[#E2DDD5] text-xs h-8"
+                className="border-[#E5EAEF] text-xs h-8 text-[#2A3547] hover:border-[#5D87FF] rounded-lg"
               >
                 Next <ChevronRight className="w-3.5 h-3.5 ml-1" />
               </Button>

@@ -18,16 +18,16 @@ export const MatchScore: React.FC<MatchScoreProps> = ({
   const getGradeStyle = (g: MatchGrade) => {
     switch (g) {
       case 'EXCELLENT':
-        return 'bg-[#173D32]/10 text-[#173D32] border-[#173D32]/30';
+        return 'bg-[#13DEB9]/15 text-[#0EAB8B] border-[#13DEB9]/30';
       case 'STRONG':
-        return 'bg-[#3C6E5C]/10 text-[#3C6E5C] border-[#3C6E5C]/30';
+        return 'bg-[#5D87FF]/15 text-[#5D87FF] border-[#5D87FF]/30';
       case 'GOOD':
-        return 'bg-amber-600/10 text-amber-800 border-amber-600/30';
+        return 'bg-amber-500/15 text-amber-700 border-amber-500/30';
       case 'POSSIBLE':
-        return 'bg-orange-600/10 text-orange-800 border-orange-600/30';
+        return 'bg-orange-500/15 text-orange-700 border-orange-500/30';
       case 'WEAK':
       default:
-        return 'bg-rose-600/10 text-rose-800 border-rose-600/30';
+        return 'bg-rose-500/15 text-rose-700 border-rose-500/30';
     }
   };
 
@@ -40,7 +40,7 @@ export const MatchScore: React.FC<MatchScoreProps> = ({
   return (
     <div
       className={cn(
-        'inline-flex items-center gap-2 rounded-lg border font-mono tracking-tight font-bold shadow-2xs',
+        'inline-flex items-center gap-2 rounded-full border tracking-tight font-bold shadow-xs',
         getGradeStyle(grade),
         textSizes[size],
         className
@@ -48,7 +48,7 @@ export const MatchScore: React.FC<MatchScoreProps> = ({
     >
       <span className="size-2 rounded-full bg-current" />
       <span>{score.toFixed(1)} / 100</span>
-      <span className="text-[10px] opacity-80 font-mono font-semibold uppercase tracking-wider ml-1 border-l border-current/30 pl-2">
+      <span className="text-[10px] opacity-80 font-semibold uppercase tracking-wider ml-1 border-l border-current/30 pl-2">
         {grade}
       </span>
     </div>

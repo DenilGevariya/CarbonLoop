@@ -13,80 +13,80 @@ export const OrdersPage: React.FC = () => {
     const s = (status || '').toUpperCase();
     switch (s) {
       case 'CONFIRMED':
-        return <span className="inline-flex items-center px-2.5 py-0.5 rounded text-[10px] font-mono bg-emerald-800 text-white font-semibold">CONFIRMED</span>;
+        return <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#E6FFFA] text-[#13DEB9]">CONFIRMED</span>;
       case 'PENDING':
-        return <span className="inline-flex items-center px-2.5 py-0.5 rounded text-[10px] font-mono bg-amber-50 text-amber-700 border border-amber-200">PENDING</span>;
+        return <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-[#FEF5E5] text-[#FFAE1F]">PENDING</span>;
       case 'CANCELLED':
-        return <span className="inline-flex items-center px-2.5 py-0.5 rounded text-[10px] font-mono bg-stone-100 text-stone-600 border border-stone-300">CANCELLED</span>;
+        return <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-[#FDEDE8] text-[#FA896B]">CANCELLED</span>;
       default:
-        return <span className="inline-flex items-center px-2.5 py-0.5 rounded text-[10px] font-mono bg-stone-100 text-stone-700">{s}</span>;
+        return <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-[#F6F9FC] text-[#5A6A85]">{s}</span>;
     }
   };
 
   return (
     <div className="space-y-6 max-w-7xl mx-auto pb-12">
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between border-b border-[#E2DDD5] pb-5 gap-4">
+      <div className="flex flex-col md:flex-row md:items-center justify-between border-b border-[#E5EAEF] pb-5 gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <span className="font-mono text-xs text-[#173D32] tracking-wider uppercase font-semibold">Commercial Transactions</span>
-            <span className="text-[#8C827A]">•</span>
-            <span className="font-mono text-xs text-[#8C827A]">Purchase Orders</span>
+            <span className="text-xs text-[#5D87FF] uppercase font-semibold">Commercial Transactions</span>
+            <span className="text-[#5A6A85]">•</span>
+            <span className="text-xs text-[#5A6A85]">Purchase Orders</span>
           </div>
-          <h1 className="text-2xl md:text-3xl font-serif text-[#171A18] tracking-tight font-medium mt-1">
+          <h1 className="text-2xl md:text-3xl text-[#2A3547] tracking-tight font-bold mt-1">
             Industrial Orders Registry
           </h1>
-          <p className="text-sm text-[#5C554E] mt-1 font-sans">
+          <p className="text-xs text-[#5A6A85] mt-1">
             Legally binding commercial purchase orders generated from accepted off-take offers.
           </p>
         </div>
       </div>
 
       {/* Control Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#F7F5EF] border border-[#E2DDD5] p-3 rounded-lg">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white border border-[#E5EAEF] p-3 rounded-xl shadow-xs">
         {/* Tabs */}
         <div className="flex items-center gap-2">
           <button
             onClick={() => setRole('all')}
-            className={`px-3 py-1.5 text-xs font-mono rounded transition-colors ${
+            className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors cursor-pointer ${
               role === 'all'
-                ? 'bg-[#173D32] text-white font-medium shadow-xs'
-                : 'text-[#5C554E] hover:text-[#171A18] hover:bg-[#E2DDD5]/50'
+                ? 'bg-[#5D87FF] text-white shadow-xs'
+                : 'text-[#5A6A85] hover:text-[#2A3547] hover:bg-[#F6F9FC]'
             }`}
           >
             All Orders
           </button>
           <button
             onClick={() => setRole('sent')}
-            className={`px-3 py-1.5 text-xs font-mono rounded transition-colors flex items-center gap-1.5 ${
+            className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors flex items-center gap-1.5 cursor-pointer ${
               role === 'sent'
-                ? 'bg-[#173D32] text-white font-medium shadow-xs'
-                : 'text-[#5C554E] hover:text-[#171A18] hover:bg-[#E2DDD5]/50'
+                ? 'bg-[#5D87FF] text-white shadow-xs'
+                : 'text-[#5A6A85] hover:text-[#2A3547] hover:bg-[#F6F9FC]'
             }`}
           >
-            <ArrowUpRight className="w-3.5 h-3.5 text-amber-400" />
+            <ArrowUpRight className="w-3.5 h-3.5 text-[#FFAE1F]" />
             Purchases (Buyer)
           </button>
           <button
             onClick={() => setRole('received')}
-            className={`px-3 py-1.5 text-xs font-mono rounded transition-colors flex items-center gap-1.5 ${
+            className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors flex items-center gap-1.5 cursor-pointer ${
               role === 'received'
-                ? 'bg-[#173D32] text-white font-medium shadow-xs'
-                : 'text-[#5C554E] hover:text-[#171A18] hover:bg-[#E2DDD5]/50'
+                ? 'bg-[#5D87FF] text-white shadow-xs'
+                : 'text-[#5A6A85] hover:text-[#2A3547] hover:bg-[#F6F9FC]'
             }`}
           >
-            <ArrowDownLeft className="w-3.5 h-3.5 text-emerald-400" />
+            <ArrowDownLeft className="w-3.5 h-3.5 text-[#13DEB9]" />
             Sales (Supplier)
           </button>
         </div>
 
         {/* Status Dropdown */}
         <div className="flex items-center gap-2">
-          <Filter className="w-3.5 h-3.5 text-[#8C827A]" />
+          <Filter className="w-3.5 h-3.5 text-[#5A6A85]" />
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="bg-white border border-[#E2DDD5] text-xs font-mono text-[#171A18] rounded px-2.5 py-1.5 focus:outline-none focus:border-[#173D32]"
+            className="bg-[#F6F9FC] border border-[#E5EAEF] text-xs font-semibold text-[#2A3547] rounded-lg px-3 py-1.5 focus:outline-none focus:border-[#5D87FF]"
           >
             <option value="">All Statuses</option>
             <option value="CONFIRMED">CONFIRMED</option>
@@ -98,60 +98,60 @@ export const OrdersPage: React.FC = () => {
 
       {/* Orders Table */}
       {isLoading ? (
-        <div className="p-12 text-center text-[#8C827A] font-mono text-sm">Loading industrial purchase orders...</div>
+        <div className="p-12 text-center text-[#5A6A85] text-xs">Loading industrial purchase orders...</div>
       ) : orders.length === 0 ? (
-        <div className="p-12 text-center border border-dashed border-[#E2DDD5] bg-[#F7F5EF]/50 rounded-lg">
-          <ShoppingBag className="w-8 h-8 text-[#8C827A] mx-auto mb-3 opacity-50" />
-          <h3 className="text-sm font-serif font-medium text-[#171A18]">No purchase orders found</h3>
-          <p className="text-xs text-[#8C827A] mt-1 font-mono">
+        <div className="p-12 text-center border border-dashed border-[#E5EAEF] bg-white rounded-xl shadow-xs">
+          <ShoppingBag className="w-8 h-8 text-[#5A6A85] mx-auto mb-3 opacity-50" />
+          <h3 className="text-sm font-bold text-[#2A3547]">No purchase orders found</h3>
+          <p className="text-xs text-[#5A6A85] mt-1">
             Accept a commercial offer from an inquiry thread to generate a Purchase Order.
           </p>
         </div>
       ) : (
-        <div className="border border-[#E2DDD5] bg-white rounded-lg overflow-hidden shadow-xs">
+        <div className="border border-[#E5EAEF] bg-white rounded-xl overflow-hidden shadow-xs">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-[#F7F5EF] border-b border-[#E2DDD5] text-[11px] font-mono uppercase tracking-wider text-[#5C554E]">
-                <th className="p-3 pl-4">Order Number</th>
-                <th className="p-3">Buyer Org</th>
-                <th className="p-3">Seller Org</th>
-                <th className="p-3">Volume</th>
-                <th className="p-3">Unit Price</th>
-                <th className="p-3">Total Amount</th>
-                <th className="p-3">Status</th>
-                <th className="p-3">Date</th>
-                <th className="p-3 pr-4 text-right">Action</th>
+              <tr className="bg-[#F6F9FC] border-b border-[#E5EAEF] text-xs font-semibold uppercase tracking-wider text-[#5A6A85]">
+                <th className="p-3.5 pl-5">Order Number</th>
+                <th className="p-3.5">Buyer Org</th>
+                <th className="p-3.5">Seller Org</th>
+                <th className="p-3.5">Volume</th>
+                <th className="p-3.5">Unit Price</th>
+                <th className="p-3.5">Total Amount</th>
+                <th className="p-3.5">Status</th>
+                <th className="p-3.5">Date</th>
+                <th className="p-3.5 pr-5 text-right">Action</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#E2DDD5] text-xs font-mono">
+            <tbody className="divide-y divide-[#E5EAEF] text-xs">
               {orders.map((ord) => (
-                <tr key={ord.id} className="hover:bg-[#FAF8F5] transition-colors">
-                  <td className="p-3 pl-4">
-                    <div className="font-mono font-bold text-[#171A18] flex items-center gap-1.5">
-                      <ShieldCheck className="w-3.5 h-3.5 text-[#173D32]" />
+                <tr key={ord.id} className="hover:bg-[#F6F9FC] transition-colors">
+                  <td className="p-3.5 pl-5">
+                    <div className="font-bold text-[#2A3547] flex items-center gap-1.5">
+                      <ShieldCheck className="w-3.5 h-3.5 text-[#5D87FF]" />
                       {ord.order_number}
                     </div>
-                    <div className="text-[10px] text-[#8C827A] font-mono">
+                    <div className="text-[11px] text-[#5A6A85]">
                       {ord.listing_title || 'CO₂ Supply Order'}
                     </div>
                   </td>
-                  <td className="p-3 text-[#171A18]">{ord.buyer_organization_name || 'Buyer'}</td>
-                  <td className="p-3 text-[#171A18]">{ord.seller_organization_name || 'Seller'}</td>
-                  <td className="p-3 font-semibold text-[#171A18]">{ord.quantity} t</td>
-                  <td className="p-3 text-[#173D32]">₹{ord.unit_price}/t</td>
-                  <td className="p-3 font-bold text-[#173D32]">
+                  <td className="p-3.5 text-[#2A3547] font-semibold">{ord.buyer_organization_name || 'Buyer'}</td>
+                  <td className="p-3.5 text-[#2A3547] font-semibold">{ord.seller_organization_name || 'Seller'}</td>
+                  <td className="p-3.5 font-bold text-[#2A3547]">{ord.quantity} t</td>
+                  <td className="p-3.5 text-[#5D87FF] font-semibold">₹{ord.unit_price}/t</td>
+                  <td className="p-3.5 font-bold text-[#5D87FF]">
                     ₹{(ord.total_amount || 0).toLocaleString('en-IN')}
                   </td>
-                  <td className="p-3">{getStatusBadge(ord.status)}</td>
-                  <td className="p-3 text-[#8C827A]">
+                  <td className="p-3.5">{getStatusBadge(ord.status)}</td>
+                  <td className="p-3.5 text-[#5A6A85]">
                     {new Date(ord.created_at).toLocaleDateString('en-IN', { month: 'short', day: 'numeric' })}
                   </td>
-                  <td className="p-3 pr-4 text-right">
+                  <td className="p-3.5 pr-5 text-right">
                     <Link
                       to={`/dashboard/orders/${ord.id}`}
-                      className="inline-flex items-center gap-1 px-3 py-1 bg-[#F7F5EF] hover:bg-[#173D32] hover:text-white border border-[#E2DDD5] rounded text-xs font-mono transition-colors"
+                      className="inline-flex items-center gap-1 px-3 py-1.5 bg-[#ECF2FF] hover:bg-[#5D87FF] text-[#5D87FF] hover:text-white rounded-lg text-xs font-semibold transition-colors"
                     >
-                      <Eye className="w-3 h-3" /> View PO
+                      <Eye className="w-3.5 h-3.5" /> View PO
                     </Link>
                   </td>
                 </tr>

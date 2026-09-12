@@ -87,48 +87,48 @@ export const GlobalCommandSearch: React.FC<GlobalCommandSearchProps> = ({ isOpen
   const renderIcon = (category: string) => {
     switch (category) {
       case 'ORGANIZATION':
-        return <Building2 className="w-4 h-4 text-[#173D32]" />;
+        return <Building2 className="w-4 h-4 text-[#5D87FF]" />;
       case 'FACILITY':
-        return <Factory className="w-4 h-4 text-amber-700" />;
+        return <Factory className="w-4 h-4 text-[#FFAE1F]" />;
       case 'LISTING':
-        return <Package className="w-4 h-4 text-emerald-700" />;
+        return <Package className="w-4 h-4 text-[#13DEB9]" />;
       case 'REQUIREMENT':
-        return <FileText className="w-4 h-4 text-blue-700" />;
+        return <FileText className="w-4 h-4 text-[#5D87FF]" />;
       case 'ORDER':
-        return <ShoppingCart className="w-4 h-4 text-indigo-700" />;
+        return <ShoppingCart className="w-4 h-4 text-purple-600" />;
       case 'SHIPMENT':
-        return <Truck className="w-4 h-4 text-purple-700" />;
+        return <Truck className="w-4 h-4 text-indigo-600" />;
       case 'VERIFICATION':
-        return <ShieldCheck className="w-4 h-4 text-teal-700" />;
+        return <ShieldCheck className="w-4 h-4 text-[#13DEB9]" />;
       default:
-        return <Search className="w-4 h-4 text-stone-500" />;
+        return <Search className="w-4 h-4 text-[#5A6A85]" />;
     }
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center pt-20 bg-[#171A18]/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-50 flex items-start justify-center pt-20 bg-[#2A3547]/50 backdrop-blur-sm p-4 animate-in fade-in duration-200">
       <div
-        className="w-full max-w-2xl bg-[#FAF8F5] border border-[#E2DDD5] shadow-2xl rounded-xl overflow-hidden flex flex-col max-h-[80vh]"
+        className="w-full max-w-2xl bg-[#F6F9FC] border border-[#E5EAEF] shadow-2xl rounded-xl overflow-hidden flex flex-col max-h-[80vh]"
         onKeyDown={handleKeyNavigation}
       >
         {/* Search Header */}
-        <div className="flex items-center px-4 py-3 border-b border-[#E2DDD5] bg-white gap-3">
-          <Search className="w-5 h-5 text-stone-400 shrink-0" />
+        <div className="flex items-center px-4 py-3 border-b border-[#E5EAEF] bg-white gap-3">
+          <Search className="w-5 h-5 text-[#5A6A85] shrink-0" />
           <input
             ref={inputRef}
             type="text"
-            className="w-full bg-transparent text-[#171A18] placeholder-stone-400 text-sm font-medium focus:outline-none"
+            className="w-full bg-transparent text-[#2A3547] placeholder-[#5A6A85]/70 text-sm font-medium focus:outline-none"
             placeholder="Search organizations, facilities, listings, orders, shipments..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
           />
           <div className="flex items-center gap-2">
-            <kbd className="hidden sm:inline-block px-2 py-0.5 text-[10px] font-semibold text-stone-500 bg-stone-100 border border-stone-300 rounded font-mono">
+            <kbd className="hidden sm:inline-block px-2 py-0.5 text-[10px] font-semibold text-[#5A6A85] bg-[#F6F9FC] border border-[#E5EAEF] rounded">
               ESC
             </kbd>
             <button
               onClick={onClose}
-              className="text-stone-400 hover:text-stone-700 transition-colors p-1 rounded-md"
+              className="text-[#5A6A85] hover:text-[#2A3547] hover:bg-[#F6F9FC] transition-colors p-1 rounded-lg"
             >
               <X className="w-4 h-4" />
             </button>
@@ -138,33 +138,33 @@ export const GlobalCommandSearch: React.FC<GlobalCommandSearchProps> = ({ isOpen
         {/* Results Container */}
         <div className="flex-1 overflow-y-auto p-2 space-y-1">
           {isLoading && (
-            <div className="p-8 text-center text-xs font-mono text-stone-500 uppercase tracking-widest">
+            <div className="p-8 text-center text-xs font-semibold text-[#5A6A85] uppercase tracking-wider">
               Searching CarbonLoop Enterprise Database...
             </div>
           )}
 
           {!isLoading && query.trim() && results.length === 0 && (
-            <div className="p-8 text-center text-stone-500">
-              <p className="text-sm font-medium">No matching entities found</p>
-              <p className="text-xs text-stone-400 mt-1">Try searching by company name, facility city, order number, or shipment code.</p>
+            <div className="p-8 text-center text-[#5A6A85]">
+              <p className="text-sm font-medium text-[#2A3547]">No matching entities found</p>
+              <p className="text-xs text-[#5A6A85] mt-1">Try searching by company name, facility city, order number, or shipment code.</p>
             </div>
           )}
 
           {!isLoading && !query.trim() && (
-            <div className="p-6 text-stone-500 text-xs">
-              <span className="font-semibold text-stone-700 block mb-2 uppercase tracking-wider text-[11px]">Quick Admin Shortcuts</span>
+            <div className="p-6 text-[#5A6A85] text-xs">
+              <span className="font-semibold text-[#2A3547] block mb-2 uppercase tracking-wider text-[11px]">Quick Admin Shortcuts</span>
               <div className="grid grid-cols-2 gap-2">
-                <button onClick={() => { onClose(); navigate('/admin/organizations'); }} className="flex items-center gap-2 p-2 rounded border border-[#E2DDD5] bg-white hover:bg-[#F4F0EA] transition-colors text-left text-xs font-medium text-stone-800">
-                  <Building2 className="w-4 h-4 text-[#173D32]" /> Manage Organizations
+                <button onClick={() => { onClose(); navigate('/admin/organizations'); }} className="flex items-center gap-2 p-2.5 rounded-lg border border-[#E5EAEF] bg-white hover:bg-[#F6F9FC] transition-colors text-left text-xs font-semibold text-[#2A3547]">
+                  <Building2 className="w-4 h-4 text-[#5D87FF]" /> Manage Organizations
                 </button>
-                <button onClick={() => { onClose(); navigate('/admin/users'); }} className="flex items-center gap-2 p-2 rounded border border-[#E2DDD5] bg-white hover:bg-[#F4F0EA] transition-colors text-left text-xs font-medium text-stone-800">
-                  <ShieldCheck className="w-4 h-4 text-emerald-800" /> Platform User Access
+                <button onClick={() => { onClose(); navigate('/admin/users'); }} className="flex items-center gap-2 p-2.5 rounded-lg border border-[#E5EAEF] bg-white hover:bg-[#F6F9FC] transition-colors text-left text-xs font-semibold text-[#2A3547]">
+                  <ShieldCheck className="w-4 h-4 text-[#13DEB9]" /> Platform User Access
                 </button>
-                <button onClick={() => { onClose(); navigate('/admin/matches'); }} className="flex items-center gap-2 p-2 rounded border border-[#E2DDD5] bg-white hover:bg-[#F4F0EA] transition-colors text-left text-xs font-medium text-stone-800">
-                  <FileText className="w-4 h-4 text-blue-800" /> Match Score Debugger
+                <button onClick={() => { onClose(); navigate('/admin/matches'); }} className="flex items-center gap-2 p-2.5 rounded-lg border border-[#E5EAEF] bg-white hover:bg-[#F6F9FC] transition-colors text-left text-xs font-semibold text-[#2A3547]">
+                  <FileText className="w-4 h-4 text-[#5D87FF]" /> Match Score Debugger
                 </button>
-                <button onClick={() => { onClose(); navigate('/admin/health'); }} className="flex items-center gap-2 p-2 rounded border border-[#E2DDD5] bg-white hover:bg-[#F4F0EA] transition-colors text-left text-xs font-medium text-stone-800">
-                  <Factory className="w-4 h-4 text-amber-800" /> System Health Diagnostics
+                <button onClick={() => { onClose(); navigate('/admin/health'); }} className="flex items-center gap-2 p-2.5 rounded-lg border border-[#E5EAEF] bg-white hover:bg-[#F6F9FC] transition-colors text-left text-xs font-semibold text-[#2A3547]">
+                  <Factory className="w-4 h-4 text-[#FFAE1F]" /> System Health Diagnostics
                 </button>
               </div>
             </div>
@@ -179,11 +179,11 @@ export const GlobalCommandSearch: React.FC<GlobalCommandSearchProps> = ({ isOpen
                   onClick={() => handleSelect(item)}
                   onMouseEnter={() => setSelectedIndex(idx)}
                   className={`flex items-center justify-between p-3 rounded-lg cursor-pointer transition-all ${
-                    isSelected ? 'bg-[#173D32] text-white shadow-sm' : 'bg-white border border-[#E2DDD5]/60 hover:bg-[#F4F0EA] text-[#171A18]'
+                    isSelected ? 'bg-[#5D87FF] text-white shadow-xs' : 'bg-white border border-[#E5EAEF] hover:bg-[#F6F9FC] text-[#2A3547]'
                   }`}
                 >
                   <div className="flex items-center gap-3 min-w-0">
-                    <div className={`p-2 rounded-md ${isSelected ? 'bg-white/10' : 'bg-[#FAF8F5]'}`}>
+                    <div className={`p-2 rounded-lg ${isSelected ? 'bg-white/20' : 'bg-[#F6F9FC]'}`}>
                       {renderIcon(item.category)}
                     </div>
                     <div className="min-w-0">
@@ -191,26 +191,26 @@ export const GlobalCommandSearch: React.FC<GlobalCommandSearchProps> = ({ isOpen
                         <span className="text-xs font-semibold truncate">{item.title}</span>
                         {item.status && (
                           <span
-                            className={`px-1.5 py-0.5 text-[10px] font-mono font-semibold rounded uppercase ${
+                            className={`px-1.5 py-0.5 text-[10px] font-semibold rounded uppercase ${
                               isSelected
                                 ? 'bg-white/20 text-white'
-                                : 'bg-stone-100 text-stone-700 border border-stone-200'
+                                : 'bg-[#F6F9FC] text-[#5A6A85] border border-[#E5EAEF]'
                             }`}
                           >
                             {item.status}
                           </span>
                         )}
                       </div>
-                      <p className={`text-[11px] truncate ${isSelected ? 'text-stone-300' : 'text-stone-500'}`}>
+                      <p className={`text-[11px] truncate ${isSelected ? 'text-white/80' : 'text-[#5A6A85]'}`}>
                         {item.subtitle}
                       </p>
                     </div>
                   </div>
                   <div className="flex items-center gap-2 pl-2">
-                    <span className={`text-[10px] font-mono uppercase tracking-wider ${isSelected ? 'text-emerald-300' : 'text-stone-400'}`}>
+                    <span className={`text-[10px] uppercase tracking-wider font-semibold ${isSelected ? 'text-white/90' : 'text-[#5A6A85]'}`}>
                       {item.category}
                     </span>
-                    <ArrowRight className={`w-3.5 h-3.5 ${isSelected ? 'text-white' : 'text-stone-400'}`} />
+                    <ArrowRight className={`w-3.5 h-3.5 ${isSelected ? 'text-white' : 'text-[#5A6A85]'}`} />
                   </div>
                 </div>
               );
@@ -218,7 +218,7 @@ export const GlobalCommandSearch: React.FC<GlobalCommandSearchProps> = ({ isOpen
         </div>
 
         {/* Footer */}
-        <div className="px-4 py-2 border-t border-[#E2DDD5] bg-[#F4F0EA] text-[11px] text-stone-500 flex items-center justify-between font-mono">
+        <div className="px-4 py-2.5 border-t border-[#E5EAEF] bg-[#F6F9FC] text-[11px] text-[#5A6A85] flex items-center justify-between font-medium">
           <span>Use ↑ ↓ keys to navigate, Enter to select</span>
           <span>CarbonLoop Global Admin Registry</span>
         </div>

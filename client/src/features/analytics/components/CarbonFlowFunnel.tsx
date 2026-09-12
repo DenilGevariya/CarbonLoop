@@ -8,21 +8,21 @@ interface Props {
 
 export const CarbonFlowFunnel: React.FC<Props> = ({ funnel }) => {
   return (
-    <div className="bg-[#FAF8F5] border border-[#E2DDD5] rounded-lg p-6 font-mono text-xs shadow-2xs">
-      <div className="flex flex-wrap items-center justify-between gap-2 mb-6 border-b border-[#E2DDD5]/60 pb-4">
+    <div className="bg-white border border-[#E5EAEF] rounded-xl p-6 text-xs shadow-xs">
+      <div className="flex flex-wrap items-center justify-between gap-2 mb-6 border-b border-[#E5EAEF] pb-4">
         <div>
-          <h3 className="text-xs font-bold text-[#171A18] uppercase tracking-wider flex items-center gap-2">
-            <Filter className="w-4 h-4 text-[#173D32]" />
+          <h3 className="text-xs font-bold text-[#2A3547] uppercase tracking-wider flex items-center gap-2">
+            <Filter className="w-4 h-4 text-[#5D87FF]" />
             <span>Carbon Throughput Conversion Funnel</span>
           </h3>
-          <p className="text-[11px] text-[#55524D] mt-0.5">
+          <p className="text-[11px] text-[#5A6A85] mt-0.5">
             Physical progression from available supply to delivered productive reuse
           </p>
         </div>
 
-        <div className="flex items-center gap-2 bg-[#173D32]/10 border border-[#173D32]/20 px-3 py-1.5 rounded">
-          <ShieldCheck className="w-4 h-4 text-[#173D32]" />
-          <span className="text-xs font-bold text-[#173D32]">
+        <div className="flex items-center gap-2 bg-[#ECF2FF] border border-[#5D87FF]/20 px-3 py-1.5 rounded-full">
+          <ShieldCheck className="w-4 h-4 text-[#5D87FF]" />
+          <span className="text-xs font-bold text-[#5D87FF]">
             Overall Efficiency: {funnel.overallFunnelEfficiencyPercent}%
           </span>
         </div>
@@ -37,36 +37,36 @@ export const CarbonFlowFunnel: React.FC<Props> = ({ funnel }) => {
           return (
             <div
               key={stage.stage}
-              className={`p-4 rounded-md border flex flex-col justify-between space-y-3 relative transition-all ${
+              className={`p-4 rounded-xl border flex flex-col justify-between space-y-3 relative transition-all ${
                 isLast
-                  ? 'bg-[#173D32] text-white border-[#173D32] shadow-sm'
+                  ? 'bg-[#5D87FF] text-white border-[#5D87FF] shadow-xs'
                   : isFirst
-                  ? 'bg-[#F7F5EF] border-[#E2DDD5] text-[#171A18]'
-                  : 'bg-[#FAF8F5] border-[#E2DDD5]/80 text-[#171A18]'
+                  ? 'bg-[#F6F9FC] border-[#E5EAEF] text-[#2A3547]'
+                  : 'bg-white border-[#E5EAEF] text-[#2A3547]'
               }`}
             >
               <div>
-                <div className="flex items-center justify-between text-[10px] uppercase font-semibold text-[#55524D] mb-1">
-                  <span className={isLast ? 'text-[#A3E635]' : 'text-[#55524D]'}>STAGE 0{i + 1}</span>
-                  <span>{stage.funnelSharePercent}% Share</span>
+                <div className="flex items-center justify-between text-[10px] uppercase font-semibold text-[#5A6A85] mb-1">
+                  <span className={isLast ? 'text-[#13DEB9]' : 'text-[#5A6A85]'}>STAGE 0{i + 1}</span>
+                  <span className={isLast ? 'text-white/80' : ''}>{stage.funnelSharePercent}% Share</span>
                 </div>
 
-                <p className={`font-bold text-xs ${isLast ? 'text-white' : 'text-[#171A18]'}`}>
+                <p className={`font-bold text-xs ${isLast ? 'text-white' : 'text-[#2A3547]'}`}>
                   {stage.label}
                 </p>
               </div>
 
               <div>
-                <p className={`text-xl font-bold font-mono ${isLast ? 'text-[#A3E635]' : 'text-[#173D32]'}`}>
+                <p className={`text-xl font-bold ${isLast ? 'text-white' : 'text-[#5D87FF]'}`}>
                   {stage.quantityTonnes.toLocaleString()}
                 </p>
-                <span className={`text-[10px] ${isLast ? 'text-emerald-200' : 'text-[#55524D]'}`}>
+                <span className={`text-[10px] ${isLast ? 'text-white/70' : 'text-[#5A6A85]'}`}>
                   TONNES CO₂
                 </span>
               </div>
 
               {/* Conversion indicator */}
-              <div className={`pt-2 border-t text-[10px] flex items-center justify-between ${isLast ? 'border-emerald-700/60 text-emerald-200' : 'border-[#E2DDD5]/60 text-[#55524D]'}`}>
+              <div className={`pt-2 border-t text-[10px] flex items-center justify-between ${isLast ? 'border-white/20 text-white/80' : 'border-[#E5EAEF] text-[#5A6A85]'}`}>
                 <span>Conversion:</span>
                 <span className="font-bold">{stage.conversionPercent}%</span>
               </div>

@@ -33,7 +33,7 @@ export const MatchBreakdown: React.FC<MatchBreakdownProps> = ({ match }) => {
 
   return (
     <div className="space-y-4">
-      <h4 className="text-xs font-mono text-stone-500 uppercase tracking-wider font-bold">
+      <h4 className="text-xs text-[#5A6A85] uppercase tracking-wider font-bold">
         Multi-Vector 8-Factor Score Breakdown
       </h4>
 
@@ -43,20 +43,20 @@ export const MatchBreakdown: React.FC<MatchBreakdownProps> = ({ match }) => {
           const pctWeight = Math.round(item.weight * 100);
 
           return (
-            <div key={index} className="p-3.5 rounded-xl bg-white border border-[#E2DDD5] shadow-2xs space-y-2">
-              <div className="flex items-center justify-between text-xs font-mono">
-                <span className="text-[#171A18] font-bold flex items-center gap-2">
+            <div key={index} className="p-3.5 rounded-xl bg-white border border-[#E5EAEF] shadow-xs space-y-2">
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-[#2A3547] font-bold flex items-center gap-2">
                   {label}
-                  <span className="text-[10px] text-stone-600 bg-[#F7F5EF] px-2 py-0.5 rounded border border-[#E2DDD5]">
+                  <span className="text-[10px] text-[#5D87FF] bg-[#ECF2FF] px-2 py-0.5 rounded-full font-semibold border border-[#5D87FF]/20">
                     Weight: {pctWeight}%
                   </span>
                 </span>
-                <span className="text-[#173D32] font-extrabold">{item.score.toFixed(0)} / 100</span>
+                <span className="text-[#5D87FF] font-extrabold">{item.score.toFixed(0)} / 100</span>
               </div>
 
-              <Progress value={item.score} className="h-1.5 bg-[#EFECE4] [&>div]:bg-[#173D32]" />
+              <Progress value={item.score} className="h-1.5 bg-[#F6F9FC] [&>div]:bg-[#5D87FF]" />
 
-              <p className="text-[11px] text-stone-600 font-sans leading-relaxed">
+              <p className="text-[11px] text-[#5A6A85] font-sans leading-relaxed">
                 {item.explanation}
               </p>
             </div>
