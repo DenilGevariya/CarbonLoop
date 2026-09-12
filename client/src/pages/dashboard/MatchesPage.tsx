@@ -35,9 +35,10 @@ export const MatchesPage: React.FC = () => {
     setLoading(true);
     try {
       const res = await matchingApi.getRequirementMatches(reqId, 0);
-      setMatches(res);
+      setMatches(res || []);
     } catch (err) {
       console.error('Failed to fetch requirement matches:', err);
+      setMatches([]);
     } finally {
       setLoading(false);
     }
@@ -59,18 +60,26 @@ export const MatchesPage: React.FC = () => {
     }
   };
 
-  // Filtering & Sorting
-  let filteredMatches = matches.filter((m) => {
-    if (activeFilter === 'excellent') return m.overall_score >= 90;
-    if (activeFilter === 'strong') return m.overall_score >= 80;
-    if (activeFilter === 'near') return m.status === 'INELIGIBLE' || m.overall_score < 70;
-    return true;
+  // Pure numerical filtering & sorting on immutable copy
+  const filteredMatches = matches.filter((m) => {
+    const score = Number(m.overall_score) || 0;
+    if (activeFilter === 'excellent') return score >= 90;
+    if (activeFilter === 'strong') return score >= 80 && score < 90;
+    if (activeFilter === 'near') return m.status === 'INELIGIBLE' || score < 70;
+    return true; // 'all' filter returns 100% of matches
   });
 
-  filteredMatches.sort((a, b) => {
-    if (sortBy === 'price_asc') return a.estimated_delivered_cost - b.estimated_delivered_cost;
-    if (sortBy === 'distance_asc') return a.estimated_distance_km - b.estimated_distance_km;
-    return b.overall_score - a.overall_score;
+  const sortedMatches = [...filteredMatches].sort((a, b) => {
+    const costA = Number(a.estimated_delivered_cost) || 0;
+    const costB = Number(b.estimated_delivered_cost) || 0;
+    const distA = Number(a.estimated_distance_km) || 0;
+    const distB = Number(b.estimated_distance_km) || 0;
+    const scoreA = Number(a.overall_score) || 0;
+    const scoreB = Number(b.overall_score) || 0;
+
+    if (sortBy === 'price_asc') return costA - costB;
+    if (sortBy === 'distance_asc') return distA - distB;
+    return scoreB - scoreA;
   });
 
   const selectedReqObj = SEEDED_REQUIREMENTS.find((r) => r.id === selectedReqId);
@@ -109,7 +118,7 @@ export const MatchesPage: React.FC = () => {
           <Button
             disabled={generating}
             onClick={handleGenerateMatches}
-            className="w-full sm:w-auto bg-[#173D32] hover:bg-[#255244] text-white font-mono text-xs font-bold uppercase tracking-wider py-2.5 px-5 rounded-lg shadow-2xs transition-colors whitespace-nowrap"
+            className="w-full sm:w-auto bg-[#173D32] hover:bg-[#255244] text-white font-mono text-xs font-bold uppercase tracking-wider py-2.5 px-5 rounded-lg shadow-2xs transition-colors whitespace-nowrap cursor-pointer"
           >
             <RefreshCw className={`size-3.5 mr-2 ${generating ? 'animate-spin' : ''}`} />
             {generating ? 'Calculating Matrix...' : 'Run Engine Matching'}
@@ -131,28 +140,28 @@ export const MatchesPage: React.FC = () => {
           <RefreshCw className="size-8 text-[#173D32] animate-spin mb-3" />
           <p className="text-xs font-mono">Evaluating candidate supply streams against requirement constraints...</p>
         </div>
-      ) : filteredMatches.length === 0 ? (
+      ) : sortedMatches.length === 0 ? (
         <FadeUp className="bg-white p-12 rounded-2xl border border-[#E2DDD5] shadow-2xs text-center flex flex-col items-center gap-4">
           <div className="p-4 rounded-2xl bg-amber-500/10 text-amber-800 border border-amber-500/20">
             <AlertCircle className="size-8" />
           </div>
           <div className="space-y-1 max-w-md">
-            <h3 className="text-xl font-serif font-bold text-[#171A18]">No Fully Eligible Supply Streams Found</h3>
+            <h3 className="text-xl font-serif font-bold text-[#171A18]">No Supply Streams Found For Active Filter</h3>
             <p className="text-xs text-stone-600 leading-relaxed font-sans">
-              No supply listings in the current network satisfy 100% of the hard constraints for {selectedReqObj?.title}.
+              No supply listings match filter category <span className="font-mono font-bold uppercase text-[#173D32]">"{activeFilter}"</span> for {selectedReqObj?.title}.
             </p>
           </div>
           <Button
             variant="outline"
             onClick={() => setActiveFilter('all')}
-            className="border-[#E2DDD5] text-[#171A18] text-xs font-mono hover:bg-[#F7F5EF]"
+            className="border-[#E2DDD5] text-[#171A18] text-xs font-mono hover:bg-[#F7F5EF] cursor-pointer"
           >
-            View All Candidates & Near Matches
+            View All Matches & Candidates
           </Button>
         </FadeUp>
       ) : (
-        <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredMatches.map((m) => (
+        <StaggerContainer key={`${activeFilter}-${sortBy}`} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {sortedMatches.map((m) => (
             <StaggerItem key={m.id}>
               <MatchCard match={m} onSelect={setInspectMatch} />
             </StaggerItem>
@@ -162,20 +171,20 @@ export const MatchesPage: React.FC = () => {
 
       {/* Inspection Side-by-Side Match Detail Modal */}
       <Dialog open={!!inspectMatch} onOpenChange={(open) => !open && setInspectMatch(null)}>
-        <DialogContent className="bg-[#FAF8F5] border-[#E2DDD5] text-[#171A18] max-w-4xl max-h-[90vh] overflow-y-auto p-6 md:p-8 space-y-6 rounded-2xl shadow-xl">
+        <DialogContent className="bg-[#FAF8F5] border-[#E2DDD5] text-[#171A18] sm:max-w-4xl w-full max-h-[85vh] overflow-y-auto p-6 sm:p-8 space-y-6 rounded-2xl shadow-2xl">
           {inspectMatch && (
             <>
-              <DialogHeader className="space-y-2 border-b border-[#E2DDD5] pb-4">
-                <div className="flex items-center justify-between">
+              <DialogHeader className="space-y-3 border-b border-[#E2DDD5] pb-5 pr-8">
+                <div className="flex flex-wrap items-center justify-between gap-3">
                   <Badge variant="outline" className="border-[#173D32]/20 text-[#173D32] bg-[#173D32]/10 text-xs font-mono">
-                    Match Analysis Report #{inspectMatch.id.substring(0, 8)}
+                    Match Report #{inspectMatch.id.substring(0, 8)}
                   </Badge>
                   <MatchScore score={inspectMatch.overall_score} grade={inspectMatch.grade} size="md" />
                 </div>
-                <DialogTitle className="text-2xl font-serif font-bold text-[#171A18]">
+                <DialogTitle className="text-xl sm:text-2xl font-serif font-bold text-[#171A18] leading-tight">
                   {inspectMatch.listing?.organization_name} → {inspectMatch.requirement?.organization_name}
                 </DialogTitle>
-                <DialogDescription className="text-xs text-stone-600 font-sans">
+                <DialogDescription className="text-xs text-stone-600 font-sans leading-relaxed">
                   {inspectMatch.matching_reason}
                 </DialogDescription>
               </DialogHeader>
@@ -202,15 +211,15 @@ export const MatchesPage: React.FC = () => {
               </div>
 
               {/* Actions */}
-              <div className="pt-4 border-t border-[#E2DDD5] flex items-center justify-between">
+              <div className="pt-4 border-t border-[#E2DDD5] flex flex-col sm:flex-row items-center justify-between gap-3">
                 <Button
                   variant="outline"
                   onClick={() => setInspectMatch(null)}
-                  className="border-[#E2DDD5] text-[#171A18] hover:bg-[#F7F5EF] text-xs font-mono"
+                  className="border-[#E2DDD5] text-[#171A18] hover:bg-[#F7F5EF] text-xs font-mono cursor-pointer"
                 >
                   <ArrowLeft className="size-3.5 mr-1.5" /> Back to Matches
                 </Button>
-                <Button className="bg-[#173D32] hover:bg-[#255244] text-white font-mono text-xs font-bold uppercase tracking-wider px-6 py-2.5 rounded-lg shadow-2xs">
+                <Button className="w-full sm:w-auto bg-[#173D32] hover:bg-[#255244] text-white font-mono text-xs font-bold uppercase tracking-wider px-6 py-2.5 rounded-lg shadow-2xs cursor-pointer">
                   <Handshake className="size-4 mr-2" /> Initiate Commercial Off-Take Offer
                 </Button>
               </div>

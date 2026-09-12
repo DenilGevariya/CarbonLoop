@@ -1,6 +1,6 @@
 import React from 'react';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { cn } from '@/lib/utils';
 
 interface MatchFiltersProps {
   activeFilter: string;
@@ -8,6 +8,13 @@ interface MatchFiltersProps {
   sortBy: string;
   onSortChange: (value: string) => void;
 }
+
+const FILTER_OPTIONS = [
+  { id: 'all', label: 'All Matches' },
+  { id: 'excellent', label: 'Excellent (≥90%)' },
+  { id: 'strong', label: 'Strong (80–89%)' },
+  { id: 'near', label: 'Near Matches' },
+];
 
 export const MatchFilters: React.FC<MatchFiltersProps> = ({
   activeFilter,
@@ -17,34 +24,26 @@ export const MatchFilters: React.FC<MatchFiltersProps> = ({
 }) => {
   return (
     <div className="flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-[#E2DDD5] pb-4">
-      <Tabs value={activeFilter} onValueChange={onFilterChange} className="w-full sm:w-auto">
-        <TabsList className="bg-[#EFECE4] border border-[#E2DDD5] p-1 rounded-xl">
-          <TabsTrigger
-            value="all"
-            className="data-[state=active]:bg-[#173D32] data-[state=active]:text-white text-xs font-mono font-bold rounded-lg px-4 py-1.5 transition-colors"
-          >
-            All Matches
-          </TabsTrigger>
-          <TabsTrigger
-            value="excellent"
-            className="data-[state=active]:bg-[#173D32] data-[state=active]:text-white text-xs font-mono font-bold rounded-lg px-4 py-1.5 transition-colors"
-          >
-            Excellent (≥90%)
-          </TabsTrigger>
-          <TabsTrigger
-            value="strong"
-            className="data-[state=active]:bg-[#3C6E5C] data-[state=active]:text-white text-xs font-mono font-bold rounded-lg px-4 py-1.5 transition-colors"
-          >
-            Strong (≥80%)
-          </TabsTrigger>
-          <TabsTrigger
-            value="near"
-            className="data-[state=active]:bg-amber-600 data-[state=active]:text-white text-xs font-mono font-bold rounded-lg px-4 py-1.5 transition-colors"
-          >
-            Near Matches
-          </TabsTrigger>
-        </TabsList>
-      </Tabs>
+      <div className="flex items-center gap-1 bg-[#EFECE4] border border-[#E2DDD5] p-1 rounded-xl w-full sm:w-auto">
+        {FILTER_OPTIONS.map((tab) => {
+          const isActive = activeFilter === tab.id;
+          return (
+            <button
+              key={tab.id}
+              type="button"
+              onClick={() => onFilterChange(tab.id)}
+              className={cn(
+                "text-xs font-mono font-bold rounded-lg px-4 py-1.5 transition-all cursor-pointer whitespace-nowrap",
+                isActive
+                  ? "bg-[#173D32] text-white shadow-2xs"
+                  : "text-stone-600 hover:text-[#171A18] hover:bg-stone-200/60"
+              )}
+            >
+              {tab.label}
+            </button>
+          );
+        })}
+      </div>
 
       <div className="flex items-center gap-2 text-xs font-mono text-[#5C6560] w-full sm:w-auto justify-end">
         <span>Sort By:</span>
