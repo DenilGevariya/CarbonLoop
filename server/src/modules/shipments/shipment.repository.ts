@@ -66,6 +66,16 @@ export class ShipmentRepository {
     };
   }
 
+  async checkOverdueShipments(): Promise<void> {
+    await query(
+      `UPDATE shipments 
+       SET is_overdue = TRUE, updated_at = NOW() 
+       WHERE COALESCE(delivery_deadline, estimated_delivery_at) < NOW() 
+         AND UPPER(status) IN ('SCHEDULED', 'PICKED_UP', 'IN_TRANSIT', 'ARRIVING')
+         AND is_overdue = FALSE`
+    );
+  }
+
   async listShipments(
     orgId: string,
     role: 'received' | 'sent' | 'all' = 'all',
@@ -74,6 +84,7 @@ export class ShipmentRepository {
     page = 1,
     limit = 20
   ) {
+    await this.checkOverdueShipments();
     const offset = (page - 1) * limit;
     let whereConditions: string[] = [];
     let params: any[] = [];

@@ -94,3 +94,29 @@ export function requireOrgMember(req: AuthenticatedRequest, res: Response, next:
     })
     .catch((err) => next(err));
 }
+
+export function forbidRegulatorCommercialActions(req: AuthenticatedRequest, res: Response, next: NextFunction) {
+  const userId = req.user?.userId;
+  if (!userId) return next();
+
+  query(
+    `SELECT o.organization_type 
+     FROM organization_members om
+     JOIN organizations o ON om.organization_id = o.id
+     WHERE om.user_id = $1 AND UPPER(o.organization_type) = 'REGULATOR'`,
+    [userId]
+  )
+    .then((result) => {
+      if (result.rows.length > 0 && !(req.user?.roles || []).some((r) => r.toLowerCase() === 'platform_admin' || r.toLowerCase() === 'admin')) {
+        return res.status(403).json({
+          success: false,
+          error: {
+            code: 'REGULATOR_COMMERCIAL_FORBIDDEN',
+            message: 'Policy Regulators are oversight bodies and cannot create commercial supply, demand, or transactions.',
+          },
+        });
+      }
+      next();
+    })
+    .catch((err) => next(err));
+}

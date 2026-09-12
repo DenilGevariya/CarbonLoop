@@ -105,4 +105,14 @@ export class AnalyticsService {
   async getPublicImpact() {
     return this.repo.getPublicImpactSummary();
   }
+
+  async getPriceByPurity(filters: AnalyticsQueryFilters) {
+    const { fromISO, toISO } = parseTimeframeToDates(filters.timeframe, filters.from, filters.to);
+    return this.repo.getPriceByPurity(fromISO, toISO, filters.organizationId);
+  }
+
+  async getTopPricePoints(filters: AnalyticsQueryFilters) {
+    const { fromISO, toISO } = parseTimeframeToDates(filters.timeframe, filters.from, filters.to);
+    return this.repo.getTopPricePoints(fromISO, toISO, filters.organizationId);
+  }
 }

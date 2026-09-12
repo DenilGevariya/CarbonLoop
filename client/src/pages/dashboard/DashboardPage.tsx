@@ -3,11 +3,12 @@ import { useAuth } from '@/context/AuthContext';
 import { MetricCard } from '@/components/shared/MetricCard';
 import { MatchScoreBadge } from '@/components/shared/MatchScoreBadge';
 import { Button } from '@/components/ui/button';
-import { Factory, RotateCcw, Cpu, Truck, ArrowUpRight, PlusCircle, ShieldCheck, Layers, Building2 } from 'lucide-react';
+import { Factory, RotateCcw, Cpu, Truck, ArrowUpRight, PlusCircle, ShieldCheck, Layers, Building2, Eye, Scale } from 'lucide-react';
 import { FadeUp, StaggerContainer, StaggerItem } from '@/animations';
 import { useNavigate } from 'react-router-dom';
 import { matchingApi } from '@/features/matching/api/matching.api';
 import type { MatchRecord } from '@/features/matching/types/matching.types';
+import { PriceAnalyticsCharts } from '@/features/analytics/components/PriceAnalyticsCharts';
 
 export const DashboardPage: React.FC = () => {
   const { user, activeOrg } = useAuth();
@@ -30,67 +31,83 @@ export const DashboardPage: React.FC = () => {
   const isEmitter = orgType === 'EMITTER';
   const isUtilizer = orgType === 'BUYER' || orgType === 'UTILIZER';
   const isLogistics = orgType === 'LOGISTICS_PROVIDER';
-  const isAdmin = user?.roles.includes('platform_admin') || user?.roles.includes('admin');
+  const isRegulator = orgType === 'REGULATOR';
+  const isAdmin = (user?.roles || []).some((r) => r.toLowerCase() === 'platform_admin' || r.toLowerCase() === 'admin');
 
   return (
     <div className="space-y-6 bg-[#F6F9FC] text-[#2A3547] font-sans">
-      {/* Top Banner */}
-      <FadeUp className="bg-white border border-[#E5EAEF] rounded-xl p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-xs">
+      
+      {/* 1. TOP WELCOME BANNER */}
+      <FadeUp className="bg-white border border-[#E5EAEF] rounded-2xl p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-xs">
         <div>
           <div className="flex items-center gap-2">
-            <span className="text-xs font-semibold text-[#5D87FF] bg-[#ECF2FF] px-3 py-1 rounded-full border border-[#5D87FF]/20">
-              ACTIVE ORG: {activeOrg?.organizationName || 'TerraCem Industries'} ({orgType})
+            <span className="text-xs font-bold text-[#5D87FF] bg-[#ECF2FF] px-3 py-1 rounded-full border border-[#5D87FF]/20 uppercase tracking-wider">
+              {activeOrg?.organizationName || 'Industrial Complex'} ({orgType})
             </span>
+            {isRegulator && (
+              <span className="text-xs font-bold text-[#13DEB9] bg-[#E8F9F5] px-3 py-1 rounded-full border border-[#13DEB9]/20 uppercase tracking-wider">
+                Regulatory Oversight Node
+              </span>
+            )}
           </div>
           <h2 className="text-2xl font-bold text-[#2A3547] tracking-tight mt-3">
             Welcome back, <span className="text-[#5D87FF]">{user?.firstName} {user?.lastName}</span>
           </h2>
           <p className="text-xs text-[#5A6A85] font-medium mt-1">
-            Operational Console • Connected as {user?.email}
+            Operational Console • Account: {user?.email}
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
           {isEmitter && (
             <Button
-              onClick={() => navigate('/dashboard/listings')}
-              className="bg-[#5D87FF] hover:bg-[#4570EA] text-white font-semibold text-xs rounded-lg px-4 py-2.5 shadow-sm cursor-pointer"
+              onClick={() => navigate('/dashboard/listings/new')}
+              className="bg-[#5D87FF] hover:bg-[#4570EA] text-white font-semibold text-xs rounded-xl px-4 py-2.5 shadow-sm cursor-pointer"
             >
-              <PlusCircle className="size-4 mr-2" /> Add CO₂ Stream
+              <PlusCircle className="w-4 h-4 mr-2" /> Add CO₂ Stream
             </Button>
           )}
 
           {isUtilizer && (
             <Button
-              onClick={() => navigate('/dashboard/requirements')}
-              className="bg-[#5D87FF] hover:bg-[#4570EA] text-white font-semibold text-xs rounded-lg px-4 py-2.5 shadow-sm cursor-pointer"
+              onClick={() => navigate('/dashboard/requirements/new')}
+              className="bg-[#5D87FF] hover:bg-[#4570EA] text-white font-semibold text-xs rounded-xl px-4 py-2.5 shadow-sm cursor-pointer"
             >
-              <PlusCircle className="size-4 mr-2" /> Post Requirement
+              <PlusCircle className="w-4 h-4 mr-2" /> Post Requirement
             </Button>
           )}
 
           {isLogistics && (
             <Button
-              onClick={() => navigate('/dashboard/shipments')}
-              className="bg-[#5D87FF] hover:bg-[#4570EA] text-white font-semibold text-xs rounded-lg px-4 py-2.5 shadow-sm cursor-pointer"
+              onClick={() => navigate('/dashboard/logistics')}
+              className="bg-[#5D87FF] hover:bg-[#4570EA] text-white font-semibold text-xs rounded-xl px-4 py-2.5 shadow-sm cursor-pointer"
             >
-              <Truck className="size-4 mr-2" /> Dispatch Tanker Fleet
+              <Truck className="w-4 h-4 mr-2" /> Dispatch Tanker Fleet
+            </Button>
+          )}
+
+          {isRegulator && (
+            <Button
+              onClick={() => navigate('/admin/verification')}
+              className="bg-[#13DEB9] hover:bg-[#0eb899] text-white font-semibold text-xs rounded-xl px-4 py-2.5 shadow-sm cursor-pointer"
+            >
+              <Eye className="w-4 h-4 mr-2" /> Audit Certificates & Reports
             </Button>
           )}
 
           {isAdmin && (
             <Button
-              onClick={() => navigate('/marketplace')}
-              className="bg-[#5D87FF] hover:bg-[#4570EA] text-white font-semibold text-xs rounded-lg px-4 py-2.5 shadow-sm cursor-pointer"
+              onClick={() => navigate('/admin')}
+              className="bg-[#2A3547] hover:bg-[#1E2735] text-white font-semibold text-xs rounded-xl px-4 py-2.5 shadow-sm cursor-pointer"
             >
-              <ShieldCheck className="size-4 mr-2" /> Platform Network
+              <ShieldCheck className="w-4 h-4 mr-2" /> Platform Admin Command
             </Button>
           )}
         </div>
       </FadeUp>
 
-      {/* Role-Specific Metric Cards */}
-      <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      {/* 2. ROLE-SPECIFIC METRIC CARDS */}
+      <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         {isEmitter && (
           <>
             <StaggerItem>
@@ -142,7 +159,24 @@ export const DashboardPage: React.FC = () => {
           </>
         )}
 
-        {isAdmin && (
+        {isRegulator && (
+          <>
+            <StaggerItem>
+              <MetricCard label="Total Listed Supply" value={16050} suffix=" tonnes" subtext="Across regional industrial stack feeds" icon={Factory} />
+            </StaggerItem>
+            <StaggerItem>
+              <MetricCard label="Total Traded Volume" value={1840} suffix=" tonnes" subtext="Verified ISO 14064 custody handoffs" icon={Scale} />
+            </StaggerItem>
+            <StaggerItem>
+              <MetricCard label="Active Transactions" value={14} suffix=" deals" subtext="Commercial off-take agreements" icon={RotateCcw} />
+            </StaggerItem>
+            <StaggerItem>
+              <MetricCard label="Pending Verifications" value={2} suffix=" certs" subtext="Purity chromatography evidence" icon={ShieldCheck} />
+            </StaggerItem>
+          </>
+        )}
+
+        {isAdmin && !isEmitter && !isUtilizer && !isLogistics && !isRegulator && (
           <>
             <StaggerItem>
               <MetricCard label="Network Supply Capacity" value={24820} suffix=" t/mo" subtext="Verified stack flow capacity" icon={Factory} />
@@ -160,9 +194,14 @@ export const DashboardPage: React.FC = () => {
         )}
       </StaggerContainer>
 
-      {/* Algorithmic Match Table (Product Performance style) */}
+      {/* 3. REAL DATABASE PRICE ANALYTICS CHARTS */}
+      <FadeUp delay={0.2}>
+        <PriceAnalyticsCharts />
+      </FadeUp>
+
+      {/* 4. ALGORITHMIC MATCH MATRIX TABLE */}
       <FadeUp delay={0.3}>
-        <div className="bg-white border border-[#E5EAEF] rounded-xl shadow-xs overflow-hidden">
+        <div className="bg-white border border-[#E5EAEF] rounded-2xl shadow-xs overflow-hidden">
           <div className="flex flex-row items-center justify-between p-6 border-b border-[#E5EAEF] bg-white">
             <div>
               <h3 className="text-lg font-bold text-[#2A3547] tracking-tight">
@@ -176,9 +215,9 @@ export const DashboardPage: React.FC = () => {
               variant="outline"
               size="sm"
               onClick={() => navigate('/dashboard/matches')}
-              className="bg-[#F6F9FC] hover:bg-[#ECF2FF] text-[#5D87FF] border-[#5D87FF]/30 font-semibold text-xs rounded-lg transition-colors cursor-pointer"
+              className="bg-[#F6F9FC] hover:bg-[#ECF2FF] text-[#5D87FF] border-[#5D87FF]/30 font-semibold text-xs rounded-xl transition-colors cursor-pointer"
             >
-              View Match Matrix <ArrowUpRight className="size-3.5 ml-1" />
+              View Match Matrix <ArrowUpRight className="w-3.5 h-3.5 ml-1" />
             </Button>
           </div>
 
@@ -204,7 +243,7 @@ export const DashboardPage: React.FC = () => {
                   <Button
                     size="sm"
                     onClick={() => navigate('/dashboard/matches')}
-                    className="bg-[#5D87FF] hover:bg-[#4570EA] text-white font-semibold text-xs rounded-lg px-4 shadow-xs cursor-pointer"
+                    className="bg-[#5D87FF] hover:bg-[#4570EA] text-white font-semibold text-xs rounded-xl px-4 shadow-xs cursor-pointer"
                   >
                     Inspect Compatibility
                   </Button>
@@ -214,6 +253,7 @@ export const DashboardPage: React.FC = () => {
           </div>
         </div>
       </FadeUp>
+
     </div>
   );
 };

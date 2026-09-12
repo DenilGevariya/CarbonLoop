@@ -20,5 +20,7 @@ router.get('/logistics', controller.getLogistics);
 router.get('/regions', controller.getRegions);
 router.get('/observations', controller.getObservations);
 router.get('/impact', controller.getImpactReport);
+router.get('/price-by-purity', controller.getPriceByPurity);
+router.get('/top-price-points', controller.getTopPricePoints);
 
 export default router;

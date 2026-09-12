@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { RequirementController } from './requirements.controller';
-import { authenticateUser, optionalAuthenticateUser } from '../../middleware/auth.middleware';
+import { authenticateUser, optionalAuthenticateUser, forbidRegulatorCommercialActions } from '../../middleware/auth.middleware';
 
 const router = Router();
 
@@ -15,9 +15,9 @@ router.get('/my-requirements', authenticateUser, RequirementController.getMyRequ
 // Requirement detail (optional auth so owner org can inspect drafts)
 router.get('/:id', optionalAuthenticateUser, RequirementController.getRequirementById);
 
-// Create / Update
-router.post('/', authenticateUser, RequirementController.createRequirement);
-router.patch('/:id', authenticateUser, RequirementController.updateRequirement);
+// Create / Update (Protected + Regulator Restricted)
+router.post('/', authenticateUser, forbidRegulatorCommercialActions, RequirementController.createRequirement);
+router.patch('/:id', authenticateUser, forbidRegulatorCommercialActions, RequirementController.updateRequirement);
 
 // Status lifecycle transitions
 router.post('/:id/publish', authenticateUser, RequirementController.publishRequirement);

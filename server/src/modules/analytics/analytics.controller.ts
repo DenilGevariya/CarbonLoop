@@ -134,4 +134,42 @@ export class AnalyticsController {
       next(err);
     }
   };
+
+  getPriceByPurity = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    try {
+      const filters = analyticsQuerySchema.parse(req.query);
+      const userOrgId = await resolveUserOrgId(req);
+      if (userOrgId && !req.user?.roles?.includes('platform_admin')) {
+        filters.organization_id = userOrgId;
+      }
+      const data = await this.service.getPriceByPurity({
+        timeframe: filters.timeframe,
+        from: filters.from,
+        to: filters.to,
+        organizationId: filters.organization_id,
+      });
+      res.json({ success: true, data });
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  getTopPricePoints = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    try {
+      const filters = analyticsQuerySchema.parse(req.query);
+      const userOrgId = await resolveUserOrgId(req);
+      if (userOrgId && !req.user?.roles?.includes('platform_admin')) {
+        filters.organization_id = userOrgId;
+      }
+      const data = await this.service.getTopPricePoints({
+        timeframe: filters.timeframe,
+        from: filters.from,
+        to: filters.to,
+        organizationId: filters.organization_id,
+      });
+      res.json({ success: true, data });
+    } catch (err) {
+      next(err);
+    }
+  };
 }

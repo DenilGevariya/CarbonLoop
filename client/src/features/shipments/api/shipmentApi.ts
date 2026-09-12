@@ -78,6 +78,10 @@ export interface ShipmentItem {
   transport_mode: TransportMode;
   tracking_reference: string;
   status: ShipmentStatus;
+  is_overdue?: boolean;
+  delivery_deadline?: string;
+  vehicle_availability_confirmed?: boolean;
+  route_accepted?: boolean;
   exception_reason?: string;
   exception_notes?: string;
   destination_address?: string;

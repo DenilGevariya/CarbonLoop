@@ -23,6 +23,11 @@ export const ShipmentHeader: React.FC<Props> = ({ shipment }) => {
       <div className="flex flex-wrap items-center justify-between gap-4 pb-5 border-b border-[#E2DDD5]/60">
         <div className="flex items-center gap-3">
           <ShipmentStatusBadge status={shipment.status} size="lg" />
+          {shipment.is_overdue && (
+            <span className="px-2.5 py-1 text-xs font-mono font-bold uppercase rounded bg-rose-700 text-white animate-pulse">
+              🚨 OVERDUE
+            </span>
+          )}
           <span className="font-mono text-xl font-bold text-[#171A18] tracking-tight">
             {shipment.shipment_number}
           </span>
@@ -31,7 +36,7 @@ export const ShipmentHeader: React.FC<Props> = ({ shipment }) => {
           </span>
         </div>
 
-        <div className="flex items-center gap-2 text-xs font-mono text-[#55524D]">
+        <div className="flex items-center gap-3 text-xs font-mono text-[#55524D]">
           <FileText className="w-4 h-4 text-[#173D32]" />
           <span>ORDER #{shipment.order_number || shipment.order_id?.substring(0, 8)}</span>
         </div>

@@ -92,4 +92,68 @@ export class OrderController {
       next(err);
     }
   }
+
+  async confirmHandshake(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const userOrgId = await resolveUserOrgId(req);
+      if (!userOrgId) {
+        res.status(400).json({ success: false, error: { code: 'NO_ORG', message: 'User does not belong to an active organization.' } });
+        return;
+      }
+
+      const id = req.params.id as string;
+      const role = (req.body.role || 'seller') as 'seller' | 'buyer' | 'logistics';
+      const order = await orderService.confirmHandshake(id, userOrgId, req.user!.userId, role);
+
+      res.json({
+        success: true,
+        data: order,
+        message: `Three-way handshake confirmation registered for ${role.toUpperCase()}.`,
+      });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  async updateTerms(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const userOrgId = await resolveUserOrgId(req);
+      if (!userOrgId) {
+        res.status(400).json({ success: false, error: { code: 'NO_ORG', message: 'User does not belong to an active organization.' } });
+        return;
+      }
+
+      const id = req.params.id as string;
+      const order = await orderService.updateDealTerms(id, userOrgId, req.user!.userId, req.body);
+
+      res.json({
+        success: true,
+        data: order,
+        message: 'Commercial deal terms updated - reconfirmation required from participants.',
+      });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  async confirmReceipt(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const userOrgId = await resolveUserOrgId(req);
+      if (!userOrgId) {
+        res.status(400).json({ success: false, error: { code: 'NO_ORG', message: 'User does not belong to an active organization.' } });
+        return;
+      }
+
+      const id = req.params.id as string;
+      const order = await orderService.confirmBuyerReceipt(id, userOrgId, req.user!.userId);
+
+      res.json({
+        success: true,
+        data: order,
+        message: 'Buyer receipt confirmed and transaction completed.',
+      });
+    } catch (err) {
+      next(err);
+    }
+  }
 }

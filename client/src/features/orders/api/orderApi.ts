@@ -21,6 +21,13 @@ export interface OrderItem {
   total_amount: number;
   status: 'PENDING' | 'CONFIRMED' | 'IN_PREPARATION' | 'READY_FOR_SHIPMENT' | 'IN_TRANSIT' | 'DELIVERED' | 'COMPLETED' | 'CANCELLED';
   destination_address?: string;
+  seller_confirmed_at?: string | null;
+  buyer_confirmed_at?: string | null;
+  logistics_confirmed_at?: string | null;
+  buyer_receipt_confirmed_at?: string | null;
+  reconfirmation_required?: boolean;
+  declared_purity?: number;
+  verified_purity?: number;
   commercial_snapshot?: any;
   status_history?: any[];
   created_at: string;
@@ -31,4 +38,9 @@ export const orderApi = {
   getOrders: (role: 'sent' | 'received' | 'all' = 'all', status?: string) =>
     apiClient.get<OrderItem[]>(`/orders?role=${role}${status ? `&status=${status}` : ''}`),
   getOrderDetail: (id: string) => apiClient.get<OrderItem>(`/orders/${id}`),
+  confirmHandshake: (id: string) => apiClient.post<OrderItem>(`/orders/${id}/confirm-handshake`, {}),
+  updateTerms: (id: string, terms: { quantity?: number; unitPrice?: number; deliveryCost?: number }) =>
+    apiClient.post<OrderItem>(`/orders/${id}/update-terms`, terms),
+  confirmReceipt: (id: string, payload: { verifiedPurity?: number }) =>
+    apiClient.post<OrderItem>(`/orders/${id}/confirm-receipt`, payload),
 };

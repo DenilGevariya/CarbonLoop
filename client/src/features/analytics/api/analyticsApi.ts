@@ -175,4 +175,6 @@ export const analyticsApi = {
   getObservations: (timeframe: Timeframe = '30d') => apiClient.get<NetworkObservation[]>(`/analytics/observations?timeframe=${timeframe}`),
   getImpactReport: (timeframe: Timeframe = '30d') => apiClient.get<ImpactAnalyticsReport>(`/analytics/impact?timeframe=${timeframe}`),
   getPublicImpact: () => apiClient.get<PublicImpactSummary>('/analytics/public'),
+  getPriceByPurity: (timeframe: Timeframe = '30d') => apiClient.get<{ band: string; avgPrice: number; count: number }[]>(`/analytics/price-by-purity?timeframe=${timeframe}`),
+  getTopPricePoints: (timeframe: Timeframe = '30d') => apiClient.get<{ date: string; price: number; purity: number; company: string }[]>(`/analytics/top-price-points?timeframe=${timeframe}`),
 };

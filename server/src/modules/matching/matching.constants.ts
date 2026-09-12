@@ -21,8 +21,8 @@ export const QUALITY_BANDS = {
   EXCELLENT: { min: 90.0, max: 100.0, label: 'EXCELLENT', description: 'Exceptional technical, economic, and geographic alignment' },
   STRONG: { min: 80.0, max: 89.99, label: 'STRONG', description: 'High compatibility across all primary off-take criteria' },
   GOOD: { min: 70.0, max: 79.99, label: 'GOOD', description: 'Viable off-take opportunity with minor trade-offs' },
-  POSSIBLE: { min: 55.0, max: 69.99, label: 'POSSIBLE', description: 'Feasible match requiring commercial or schedule adjustments' },
-  WEAK: { min: 0.0, max: 54.99, label: 'WEAK', description: 'Low compatibility; significant specification gaps' },
+  POSSIBLE: { min: 60.0, max: 69.99, label: 'POTENTIAL', description: 'Feasible match requiring commercial or schedule adjustments' },
+  WEAK: { min: 0.0, max: 59.99, label: 'WEAK', description: 'Low compatibility; significant specification gaps' },
 } as const;
 
 export type MatchGrade = keyof typeof QUALITY_BANDS;

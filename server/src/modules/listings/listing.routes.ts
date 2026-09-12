@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { ListingController } from './listing.controller';
-import { authenticateUser, optionalAuthenticateUser } from '../../middleware/auth.middleware';
+import { authenticateUser, optionalAuthenticateUser, forbidRegulatorCommercialActions } from '../../middleware/auth.middleware';
 
 const router = Router();
 const controller = new ListingController();
@@ -15,9 +15,9 @@ router.get('/my-supply', authenticateUser, controller.getOrgSupplyListings.bind(
 // Listing detail (optional auth so owner organization can inspect drafts/private listings)
 router.get('/:identifier', optionalAuthenticateUser, controller.getListingDetails.bind(controller));
 
-// Create / Update / Status actions (Protected)
-router.post('/', authenticateUser, controller.createListing.bind(controller));
-router.patch('/:id', authenticateUser, controller.updateListing.bind(controller));
+// Create / Update / Status actions (Protected + Regulator Restricted)
+router.post('/', authenticateUser, forbidRegulatorCommercialActions, controller.createListing.bind(controller));
+router.patch('/:id', authenticateUser, forbidRegulatorCommercialActions, controller.updateListing.bind(controller));
 
 // Explicit status lifecycle actions
 router.post('/:id/publish', authenticateUser, controller.publish.bind(controller));

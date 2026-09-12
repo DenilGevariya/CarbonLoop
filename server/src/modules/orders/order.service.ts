@@ -268,6 +268,173 @@ export class OrderService {
     }
   }
 
+  async confirmHandshake(orderId: string, userOrgId: string, userId: string, role: 'seller' | 'buyer' | 'logistics'): Promise<Order> {
+    const orderRes = await pool.query(`SELECT * FROM orders WHERE id = $1 OR order_number = $1`, [orderId]);
+    if (orderRes.rows.length === 0) {
+      const err: any = new Error('Order not found.');
+      err.statusCode = 404;
+      throw err;
+    }
+
+    const order = orderRes.rows[0];
+    const isSeller = order.seller_organization_id === userOrgId;
+    const isBuyer = order.buyer_organization_id === userOrgId;
+
+    if (role === 'seller' && !isSeller) {
+      const err: any = new Error('Only the seller organization can confirm as seller.');
+      err.statusCode = 403;
+      throw err;
+    }
+
+    if (role === 'buyer' && !isBuyer) {
+      const err: any = new Error('Only the buyer organization can confirm as buyer.');
+      err.statusCode = 403;
+      throw err;
+    }
+
+    let sellerConfirmed = order.seller_confirmed_at || (role === 'seller' ? new Date() : null);
+    let buyerConfirmed = order.buyer_confirmed_at || (role === 'buyer' ? new Date() : null);
+    let logisticsConfirmed = order.logistics_confirmed_at || (role === 'logistics' ? new Date() : null);
+
+    let newStatus = 'AWAITING_THREE_WAY_CONFIRMATION';
+    if (sellerConfirmed || buyerConfirmed || logisticsConfirmed) {
+      newStatus = 'PARTIALLY_CONFIRMED';
+    }
+
+    // Absolute Rule: All three must confirm to be TRANSACTION_CONFIRMED
+    if (sellerConfirmed && buyerConfirmed && logisticsConfirmed) {
+      newStatus = 'TRANSACTION_CONFIRMED';
+    }
+
+    const updateRes = await pool.query<Order>(
+      `UPDATE orders 
+       SET seller_confirmed_at = $1,
+           buyer_confirmed_at = $2,
+           logistics_confirmed_at = $3,
+           vehicle_availability_confirmed = CASE WHEN $4 = 'logistics' THEN TRUE ELSE vehicle_availability_confirmed END,
+           route_accepted = CASE WHEN $4 = 'logistics' THEN TRUE ELSE route_accepted END,
+           reconfirmation_required = FALSE,
+           status = $5,
+           updated_at = NOW()
+       WHERE id = $6
+       RETURNING *`,
+      [
+        sellerConfirmed ? (sellerConfirmed instanceof Date ? sellerConfirmed : new Date(sellerConfirmed)) : null,
+        buyerConfirmed ? (buyerConfirmed instanceof Date ? buyerConfirmed : new Date(buyerConfirmed)) : null,
+        logisticsConfirmed ? (logisticsConfirmed instanceof Date ? logisticsConfirmed : new Date(logisticsConfirmed)) : null,
+        role,
+        newStatus,
+        order.id,
+      ]
+    );
+
+    const updatedOrder = updateRes.rows[0];
+
+    // Log status history
+    await pool.query(
+      `INSERT INTO order_status_history (order_id, from_status, to_status, changed_by, reason)
+       VALUES ($1, $2, $3, $4, $5)`,
+      [order.id, order.status, newStatus, userId, `Handshake confirmed by ${role.toUpperCase()}`]
+    );
+
+    // Notify participants
+    await notificationService.notifyOrganization(
+      order.buyer_organization_id,
+      `Handshake Progress (${newStatus})`,
+      `${role.toUpperCase()} confirmed order #${order.order_number}. Current status: ${newStatus}.`,
+      'ORDER_UPDATED',
+      'order',
+      order.id,
+      `/dashboard/orders/${order.id}`
+    );
+
+    await notificationService.notifyOrganization(
+      order.seller_organization_id,
+      `Handshake Progress (${newStatus})`,
+      `${role.toUpperCase()} confirmed order #${order.order_number}. Current status: ${newStatus}.`,
+      'ORDER_UPDATED',
+      'order',
+      order.id,
+      `/dashboard/orders/${order.id}`
+    );
+
+    return updatedOrder;
+  }
+
+  async updateDealTerms(orderId: string, userOrgId: string, userId: string, terms: any): Promise<Order> {
+    const orderRes = await pool.query(`SELECT * FROM orders WHERE id = $1`, [orderId]);
+    if (orderRes.rows.length === 0) {
+      const err: any = new Error('Order not found.');
+      err.statusCode = 404;
+      throw err;
+    }
+
+    const order = orderRes.rows[0];
+    const isParticipant = order.seller_organization_id === userOrgId || order.buyer_organization_id === userOrgId;
+    if (!isParticipant) {
+      const err: any = new Error('Unauthorized to modify commercial deal terms.');
+      err.statusCode = 403;
+      throw err;
+    }
+
+    // Material changes reset confirmations to RECONFIRMATION_REQUIRED
+    const updateRes = await pool.query<Order>(
+      `UPDATE orders
+       SET seller_confirmed_at = NULL,
+           buyer_confirmed_at = NULL,
+           logistics_confirmed_at = NULL,
+           reconfirmation_required = TRUE,
+           reconfirmation_reason = $1,
+           status = 'RECONFIRMATION_REQUIRED',
+           updated_at = NOW()
+       WHERE id = $2
+       RETURNING *`,
+      [terms.reason || 'Material deal terms were updated.', order.id]
+    );
+
+    await pool.query(
+      `INSERT INTO order_status_history (order_id, from_status, to_status, changed_by, reason)
+       VALUES ($1, $2, 'RECONFIRMATION_REQUIRED', $3, $4)`,
+      [order.id, order.status, userId, 'Material deal terms updated - reconfirmation required.']
+    );
+
+    return updateRes.rows[0];
+  }
+
+  async confirmBuyerReceipt(orderId: string, buyerOrgId: string, userId: string): Promise<Order> {
+    const orderRes = await pool.query(`SELECT * FROM orders WHERE id = $1`, [orderId]);
+    if (orderRes.rows.length === 0) {
+      const err: any = new Error('Order not found.');
+      err.statusCode = 404;
+      throw err;
+    }
+
+    const order = orderRes.rows[0];
+    if (order.buyer_organization_id !== buyerOrgId) {
+      const err: any = new Error('Only the buyer organization can confirm receipt.');
+      err.statusCode = 403;
+      throw err;
+    }
+
+    const updateRes = await pool.query<Order>(
+      `UPDATE orders
+       SET status = 'COMPLETED',
+           delivered_quantity = COALESCE(delivered_quantity, quantity_tons, quantity),
+           updated_at = NOW()
+       WHERE id = $1
+       RETURNING *`,
+      [order.id]
+    );
+
+    await pool.query(
+      `INSERT INTO order_status_history (order_id, from_status, to_status, changed_by, reason)
+       VALUES ($1, $2, 'COMPLETED', $3, 'Buyer confirmed receipt of delivered CO₂')`,
+      [order.id, order.status, userId]
+    );
+
+    return updateRes.rows[0];
+  }
+
   async getOrderDetail(id: string, userOrgId: string, isPlatformAdmin = false): Promise<OrderDetail> {
     const detail = await this.repo.getOrderById(id);
     if (!detail) {
@@ -294,3 +461,4 @@ export class OrderService {
     return this.repo.listOrders(orgId, role, status, page, limit);
   }
 }
+
