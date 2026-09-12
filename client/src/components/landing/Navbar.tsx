@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowRight, Menu, X } from 'lucide-react';
+import { ArrowRight, Menu, X, LayoutDashboard } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useAuth } from '@/context/AuthContext';
 
 export const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
+  const { isAuthenticated, user } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -77,12 +79,22 @@ export const Navbar = () => {
 
           {/* Right Actions */}
           <div className="hidden md:flex items-center gap-4">
-            <Link
-              to="/login"
-              className="text-xs font-mono tracking-wider uppercase text-[#173D32] font-semibold dark:text-[#F2F0EB] hover:text-[#133027] transition-colors px-3 py-2"
-            >
-              Sign In
-            </Link>
+            {isAuthenticated ? (
+              <Link
+                to="/dashboard"
+                className="text-xs font-mono tracking-wider uppercase text-[#173D32] font-bold dark:text-[#F2F0EB] hover:text-[#133027] transition-colors px-3.5 py-1.5 border border-[#173D32] rounded bg-[#173D32]/10 flex items-center gap-2 shadow-2xs"
+              >
+                <LayoutDashboard className="w-3.5 h-3.5 text-[#173D32]" />
+                <span>Console ({user?.firstName || 'Dashboard'})</span>
+              </Link>
+            ) : (
+              <Link
+                to="/login"
+                className="text-xs font-mono tracking-wider uppercase text-[#173D32] font-semibold dark:text-[#F2F0EB] hover:text-[#133027] transition-colors px-3 py-2"
+              >
+                Sign In
+              </Link>
+            )}
             <Button
               onClick={() => navigate('/marketplace')}
               className="bg-[#173D32] hover:bg-[#133027] text-[#F7F5EF] font-sans font-medium text-xs tracking-wide px-4 py-2 rounded-sm border border-[#173D32] transition-all flex items-center gap-2 group shadow-2xs cursor-pointer"
@@ -144,12 +156,24 @@ export const Navbar = () => {
             </Link>
           </nav>
           <div className="flex flex-col gap-3">
-            <Link
-              to="/login"
-              className="w-full text-center py-2.5 text-xs font-mono uppercase border border-[#E2DDD5] text-[#171A18] dark:text-[#F2F0EB] font-semibold"
-            >
-              Sign In
-            </Link>
+            {isAuthenticated ? (
+              <Link
+                to="/dashboard"
+                onClick={() => setMobileMenuOpen(false)}
+                className="w-full text-center py-2.5 text-xs font-mono uppercase bg-[#173D32] text-white font-bold rounded flex items-center justify-center gap-2"
+              >
+                <LayoutDashboard className="w-4 h-4" />
+                <span>Go to Console ({user?.firstName || 'Dashboard'})</span>
+              </Link>
+            ) : (
+              <Link
+                to="/login"
+                onClick={() => setMobileMenuOpen(false)}
+                className="w-full text-center py-2.5 text-xs font-mono uppercase border border-[#E2DDD5] text-[#171A18] dark:text-[#F2F0EB] font-semibold"
+              >
+                Sign In
+              </Link>
+            )}
             <Button
               onClick={() => {
                 setMobileMenuOpen(false);
