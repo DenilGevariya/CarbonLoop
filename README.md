@@ -20,11 +20,14 @@ cd server
 # Install dependencies
 npm install
 
-# Run database migrations (creates 24 normalized tables)
+# Run database migrations (creates 24 normalized tables + matching engine fields)
 npm run db:migrate
 
-# Seed development demo data
+# Seed development demo data (Organizations, Facilities, CO2 Listings, Requirements)
 npm run db:seed
+
+# Run Matching Engine Unit Tests (15 tests)
+npm run test:matching
 
 # Start backend Express server in development mode (port 5000)
 npm run dev
@@ -37,9 +40,24 @@ cd client
 # Install dependencies
 npm install
 
+# Build client application
+npm run build
+
 # Start Vite dev server (port 5173)
 npm run dev
 ```
+
+---
+
+## ⚡ Intelligent Matching Engine Highlights
+
+CarbonLoop features a pure, deterministic rule-based matching engine designed without ORM overhead or black-box LLM non-determinism:
+- **8-Factor Normalized Scoring (0–100)**: Quantity (20%), Purity (20%), Physical Form (10%), Availability Window (15%), Unit Price (15%), Distance (10%), Logistics (5%), Utilization Pathway (5%).
+- **Great-Circle Distance Calculation**: Haversine formula calculation between emitter and buyer facility coordinates with regional Indian industrial city fallback.
+- **Logistics & Delivered Cost Estimator**: Calculates transport freight tariffs and indicative delivered cost per tonne based on stream state form and distance.
+- **Quality Bands**: `EXCELLENT` (90–100), `STRONG` (80–89), `GOOD` (70–79), `POSSIBLE` (55–69), `WEAK` (0–54).
+- **Hard Eligibility & Near Matches**: Strict hard constraints with explicit flags for candidates slightly exceeding price budget (+20% near match tolerance).
+- **Explainable Match Reasons & Warnings**: Human-readable natural language justification for every calculated match score.
 
 ---
 
@@ -54,27 +72,29 @@ CarbonLoop/
 │   │   ├── api/                 # Typed API Client Abstraction
 │   │   ├── components/
 │   │   │   ├── ui/              # shadcn/ui & Base UI Components (61 components)
-│   │   │   ├── shared/          # Reusable Primitives (Eyebrow, MetricCard, FeaturePlaceholder)
-│   │   │   └── landing/         # Landing Page Components (Hero, CarbonFlow, Problem, HowItWorks...)
+│   │   │   └── shared/          # Reusable Primitives (Eyebrow, MetricCard, FeaturePlaceholder)
+│   │   ├── features/
+│   │   │   └── matching/        # Matching Engine UI (MatchScore, Breakdown, Comparison, DeliveryCost)
 │   │   ├── layouts/             # PublicLayout, AuthLayout, DashboardLayout (shadcn Sidebar)
-│   │   ├── pages/               # Public, Auth, Dashboard & Not-Found Views
+│   │   ├── pages/               # Public, Auth, Dashboard & Matches Views
 │   │   └── index.css            # CarbonLoop ClimateTech Design Tokens & Glow Utility Classes
-│   ├── components.json          # shadcn configuration
-│   └── package.json
+│   ├── package.json
+│   └── vite.config.ts
 │
 ├── server/                      # Backend API & Database Layer (Express + Node + pg)
 │   ├── src/
 │   │   ├── config/              # env.ts (Zod validation), database.ts (pg.Pool & health checks)
-│   │   ├── middleware/          # Error handling, 404, Auth & Validation middleware
 │   │   ├── database/
-│   │   │   ├── migrations/      # 001_initial_schema.sql (24 entities)
+│   │   │   ├── migrations/      # 001_initial_schema.sql, 002_matching_engine_fields.sql
 │   │   │   ├── migrate.ts       # SQL Transaction Migration Runner
-│   │   │   └── seed.ts          # Realistic CarbonLoop Seed Data Script
-│   │   ├── routes/              # API Routes (/api/v1/health, /api/v1/*)
+│   │   │   └── seed.ts          # Seed Data Script
+│   │   ├── modules/
+│   │   │   └── matching/        # Engine, Scoring, Distance, Logistics, Repository, Controller, Tests
+│   │   ├── routes/              # API Routes (/api/v1/health, /api/v1/matches, /api/v1/recommendations)
 │   │   ├── app.ts               # Express App Setup
 │   │   └── server.ts            # Server Entry Point
-│   ├── .env.example
-│   └── package.json
+│   ├── package.json
+│   └── tsconfig.json
 │
 ├── docs/                        # Architecture & Technical Documentation
 │   ├── architecture.md
@@ -98,27 +118,7 @@ CarbonLoop/
 - **State/API**: TanStack React Query + Typed Fetch Client
 
 ### Backend
-- **Runtime**: Node.js + Express + TypeScript
-- **Database Access**: PostgreSQL + `pg` (node-postgres). **NO ORM**.
-- **Validation**: Zod
-- **Security**: JWT & bcryptjs ready
-
----
-
-## 🏥 Health Endpoint
-`GET http://localhost:5000/api/v1/health`
-
-Response:
-```json
-{
-  "success": true,
-  "service": "carbonloop-api",
-  "status": "healthy",
-  "timestamp": "2026-09-11T19:45:47.990Z",
-  "database": {
-    "status": "healthy",
-    "latencyMs": 1,
-    "details": "Connected to carbonloop_db"
-  }
-}
-```
+- **Framework**: Node.js + Express + TypeScript
+- **Database Access**: `node-postgres` (`pg`) + Raw SQL (No ORM)
+- **Validation**: Zod + custom matching engine validators
+- **Testing**: `tsx` test harness for pure unit testing

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { MetricCard } from '@/components/shared/MetricCard';
 import { MatchScoreBadge } from '@/components/shared/MatchScoreBadge';
@@ -6,10 +6,25 @@ import { Button } from '@/components/ui/button';
 import { Factory, RotateCcw, Cpu, Truck, ArrowUpRight, PlusCircle, ShieldCheck, Layers, Building2 } from 'lucide-react';
 import { FadeUp, StaggerContainer, StaggerItem } from '@/animations';
 import { useNavigate } from 'react-router-dom';
+import { matchingApi } from '@/features/matching/api/matching.api';
+import type { MatchRecord } from '@/features/matching/types/matching.types';
 
 export const DashboardPage: React.FC = () => {
   const { user, activeOrg } = useAuth();
   const navigate = useNavigate();
+  const [topMatches, setTopMatches] = useState<MatchRecord[]>([]);
+
+  useEffect(() => {
+    async function loadMatches() {
+      try {
+        const matches = await matchingApi.getRequirementMatches('70000000-0000-4000-a000-000000000001', 0);
+        setTopMatches(matches.slice(0, 3));
+      } catch (err) {
+        console.error('Failed to load dashboard matches:', err);
+      }
+    }
+    loadMatches();
+  }, []);
 
   const orgType = activeOrg?.orgType?.toUpperCase() || 'EMITTER';
   const isEmitter = orgType === 'EMITTER';
@@ -19,7 +34,6 @@ export const DashboardPage: React.FC = () => {
 
   return (
     <div className="space-y-8 bg-[#F7F5EF] text-[#171A18]">
-      
       {/* Top Banner */}
       <FadeUp className="bg-[#FAF8F5] border border-[#E2DDD5] p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div>
@@ -83,7 +97,7 @@ export const DashboardPage: React.FC = () => {
               <MetricCard label="Active Stream Supply" value={1250} suffix=" t/mo" subtext="Ahmedabad Calcination Unit" icon={Factory} />
             </StaggerItem>
             <StaggerItem>
-              <MetricCard label="Algorithmic Matches" value={4} subtext="Compatibility score ≥ 85%" icon={Cpu} />
+              <MetricCard label="Algorithmic Matches" value={topMatches.length || 4} subtext="Compatibility score ≥ 85%" icon={Cpu} />
             </StaggerItem>
             <StaggerItem>
               <MetricCard label="Contracted Volume" value={500} suffix=" t" subtext="GreenForge Off-Take Contract" icon={RotateCcw} />
@@ -100,7 +114,7 @@ export const DashboardPage: React.FC = () => {
               <MetricCard label="Monthly CO₂ Demand" value={500} suffix=" t/mo" subtext="Vadodara Mineralization Facility" icon={Layers} />
             </StaggerItem>
             <StaggerItem>
-              <MetricCard label="Compatible Streams" value={6} subtext="Matched within 150km radius" icon={Cpu} />
+              <MetricCard label="Compatible Streams" value={topMatches.length || 6} subtext="Matched within 150km radius" icon={Cpu} />
             </StaggerItem>
             <StaggerItem>
               <MetricCard label="Executed Off-Takes" value={1} suffix=" order" subtext="TerraCem Supply #LST-1042" icon={RotateCcw} />
@@ -169,51 +183,34 @@ export const DashboardPage: React.FC = () => {
           </div>
 
           <div className="divide-y divide-[#E2DDD5]">
-            <div className="p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 hover:bg-[#EBE7DF]/40 transition-colors">
-              <div className="space-y-1">
-                <div className="flex items-center gap-3">
-                  <span className="text-sm font-bold text-[#171A18]">GreenForge Concrete Mineralization</span>
-                  <span className="text-xs font-mono text-[#5C6560] bg-[#EBE7DF] px-2 py-0.5 border border-[#DCD6C9]">REQ-8821</span>
+            {topMatches.map((m) => (
+              <div key={m.id} className="p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 hover:bg-[#EBE7DF]/40 transition-colors">
+                <div className="space-y-1">
+                  <div className="flex items-center gap-3">
+                    <span className="text-sm font-bold text-[#171A18]">
+                      {m.listing?.organization_name || 'TerraCem Industries'} → {m.requirement?.organization_name || 'GreenForge Materials'}
+                    </span>
+                    <span className="text-xs font-mono text-[#5C6560] bg-[#EBE7DF] px-2 py-0.5 border border-[#DCD6C9]">
+                      MATCH-{m.id.substring(0, 6)}
+                    </span>
+                  </div>
+                  <p className="text-xs font-serif text-[#5C6560]">
+                    Purity: <span className="text-[#171A18] font-bold">{m.listing?.purity_percentage || 99.5}%</span> • Distance: <span className="text-[#173D32] font-mono font-bold">{m.estimated_distance_km} km</span> • Delivered: <span className="text-[#173D32] font-mono font-bold">₹{m.estimated_delivered_cost.toLocaleString()}/t</span>
+                  </p>
                 </div>
-                <p className="text-xs font-serif text-[#5C6560]">
-                  Off-take: <span className="text-[#171A18] font-bold">500 t/mo Liquid CO₂</span> • Distance: <span className="text-[#173D32] font-mono font-bold">112.5 km</span> • Strike Price: <span className="text-[#173D32] font-mono font-bold">₹4,800/t</span>
-                </p>
-              </div>
 
-              <div className="flex items-center gap-4">
-                <MatchScoreBadge score={94.5} size="md" />
-                <Button
-                  size="sm"
-                  onClick={() => navigate('/dashboard/matches')}
-                  className="bg-[#173D32] hover:bg-[#255244] text-white font-mono text-xs font-bold uppercase rounded-none px-4"
-                >
-                  Inspect Compatibility
-                </Button>
-              </div>
-            </div>
-
-            <div className="p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 hover:bg-[#EBE7DF]/40 transition-colors">
-              <div className="space-y-1">
-                <div className="flex items-center gap-3">
-                  <span className="text-sm font-bold text-[#171A18]">CarbonArc Synthetic E-Fuel Synthesis</span>
-                  <span className="text-xs font-mono text-[#5C6560] bg-[#EBE7DF] px-2 py-0.5 border border-[#DCD6C9]">REQ-9014</span>
+                <div className="flex items-center gap-4">
+                  <MatchScoreBadge score={m.overall_score} size="md" />
+                  <Button
+                    size="sm"
+                    onClick={() => navigate('/dashboard/matches')}
+                    className="bg-[#173D32] hover:bg-[#255244] text-white font-mono text-xs font-bold uppercase rounded-none px-4"
+                  >
+                    Inspect Compatibility
+                  </Button>
                 </div>
-                <p className="text-xs font-serif text-[#5C6560]">
-                  Off-take: <span className="text-[#171A18] font-bold">1,200 t/mo Gaseous CO₂</span> • Distance: <span className="text-[#173D32] font-mono font-bold">182.0 km</span> • Strike Price: <span className="text-[#173D32] font-mono font-bold">₹5,200/t</span>
-                </p>
               </div>
-
-              <div className="flex items-center gap-4">
-                <MatchScoreBadge score={89.2} size="md" />
-                <Button
-                  size="sm"
-                  onClick={() => navigate('/dashboard/matches')}
-                  className="bg-[#173D32] hover:bg-[#255244] text-white font-mono text-xs font-bold uppercase rounded-none px-4"
-                >
-                  Inspect Compatibility
-                </Button>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       </FadeUp>

@@ -6,6 +6,7 @@ import organizationRoutes from '../modules/organizations/organization.routes';
 import userRoutes from '../modules/users/user.routes';
 import listingRoutes from '../modules/listings/listing.routes';
 import requirementRoutes from '../modules/requirements/requirements.routes';
+import matchingRoutes from '../modules/matching/matching.routes';
 
 const router = Router();
 
@@ -33,11 +34,12 @@ router.use('/organizations', organizationRoutes);
 router.use('/users', userRoutes);
 router.use('/listings', listingRoutes);
 router.use('/requirements', requirementRoutes);
+router.use('/matches', matchingRoutes);
+router.use('/recommendations', matchingRoutes);
 
 // Placeholder Routes for remaining modules
 const placeholderModules = [
   'facilities',
-  'matches',
   'orders',
   'logistics',
   'shipments',
