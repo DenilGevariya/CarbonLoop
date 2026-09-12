@@ -24,7 +24,7 @@ export const MatchFilters: React.FC<MatchFiltersProps> = ({
 }) => {
   return (
     <div className="flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-[#E5EAEF] pb-4">
-      <div className="flex items-center gap-1 bg-[#F6F9FC] border border-[#E5EAEF] p-1 rounded-xl w-full sm:w-auto">
+      <div className="flex items-center gap-1 bg-[#F6F9FC] border border-[#E5EAEF] p-1 rounded-xl w-full sm:w-auto overflow-x-auto max-w-full">
         {FILTER_OPTIONS.map((tab) => {
           const isActive = activeFilter === tab.id;
           return (

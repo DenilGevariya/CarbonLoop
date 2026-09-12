@@ -83,9 +83,11 @@ export const OnboardingPage: React.FC = () => {
         {/* Header Branding */}
         <div className="flex items-center justify-between border-b border-[#E2DDD5] pb-4">
           <div className="flex items-center gap-2.5">
-            <div className="size-8 bg-[#173D32] border border-[#3C6E5C] text-white flex items-center justify-center font-mono font-bold text-xs">
-              C⟳
-            </div>
+            <img
+              src="/images/logo.png"
+              alt="CarbonLoop Logo"
+              className="size-8 object-contain bg-[#0E110F] p-1 rounded-lg border border-[#3C6E5C] shadow-xs"
+            />
             <span className="text-xl font-black tracking-tight uppercase font-mono text-[#171A18]">
               CARBON<span className="text-[#3C6E5C] font-light">LOOP</span>
             </span>

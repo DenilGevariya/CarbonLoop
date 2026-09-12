@@ -383,7 +383,7 @@ export const LandingPage: React.FC = () => {
             {/* Feature Card 1 */}
             <FadeUp delay={0.1}>
               <div className="bg-white border border-[#E5EAEF] rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all group flex flex-col justify-between">
-                <div className="relative h-56 overflow-hidden">
+                <div className="relative h-48 sm:h-52 w-full overflow-hidden">
                   <img
                     src={INDUSTRIAL_IMAGES.capturePipelines}
                     alt="Carbon Capture Pipelines"
@@ -414,7 +414,7 @@ export const LandingPage: React.FC = () => {
             {/* Feature Card 2 */}
             <FadeUp delay={0.2}>
               <div className="bg-white border border-[#E5EAEF] rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all group flex flex-col justify-between">
-                <div className="relative h-56 overflow-hidden">
+                <div className="relative h-48 sm:h-52 w-full overflow-hidden">
                   <img
                     src={INDUSTRIAL_IMAGES.qualityLab}
                     alt="Quality Testing Laboratory"
@@ -445,7 +445,7 @@ export const LandingPage: React.FC = () => {
             {/* Feature Card 3 */}
             <FadeUp delay={0.3}>
               <div className="bg-white border border-[#E5EAEF] rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all group flex flex-col justify-between">
-                <div className="relative h-56 overflow-hidden">
+                <div className="relative h-48 sm:h-52 w-full overflow-hidden">
                   <img
                     src={INDUSTRIAL_IMAGES.isoTanker}
                     alt="Cryogenic Transport Tanker"
@@ -476,7 +476,7 @@ export const LandingPage: React.FC = () => {
             {/* Feature Card 4 */}
             <FadeUp delay={0.4}>
               <div className="bg-white border border-[#E5EAEF] rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all group flex flex-col justify-between">
-                <div className="relative h-56 overflow-hidden">
+                <div className="relative h-48 sm:h-52 w-full overflow-hidden">
                   <img
                     src={INDUSTRIAL_IMAGES.controlRoom}
                     alt="Control Room Verification"
@@ -682,9 +682,11 @@ export const LandingPage: React.FC = () => {
           
           <div className="space-y-3 md:col-span-1">
             <div className="flex items-center gap-3">
-              <div className="size-8 bg-[#5D87FF] text-white flex items-center justify-center font-bold text-sm rounded-lg">
-                C⟳
-              </div>
+              <img
+                src="/images/logo.png"
+                alt="CarbonLoop Logo"
+                className="size-8 rounded-lg object-contain bg-[#0E110F] p-1 border border-[#E5EAEF] shadow-xs shrink-0"
+              />
               <span className="font-bold text-base text-[#2A3547]">CarbonLoop</span>
             </div>
             <p className="text-xs text-[#5A6A85] font-medium leading-relaxed">

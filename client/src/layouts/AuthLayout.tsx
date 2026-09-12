@@ -9,9 +9,11 @@ export const AuthLayout: React.FC = () => {
       {/* Brand Header */}
       <header className="w-full max-w-5xl flex items-center justify-between py-4 border-b border-[#E5EAEF] mb-6 sm:mb-8">
         <Link to="/" className="flex items-center gap-3 group">
-          <div className="size-9 bg-[#5D87FF] text-white flex items-center justify-center font-bold text-sm rounded-lg shadow-xs group-hover:bg-[#4570EA] transition-all">
-            C⟳
-          </div>
+          <img
+            src="/images/logo.png"
+            alt="CarbonLoop Logo"
+            className="size-9 object-contain bg-[#0E110F] p-1 rounded-xl border border-[#5D87FF] shadow-xs group-hover:border-[#4570EA] transition-all"
+          />
           <span className="text-xl font-bold text-[#2A3547] tracking-tight">
             CARBON<span className="text-[#5D87FF]">LOOP</span>
           </span>

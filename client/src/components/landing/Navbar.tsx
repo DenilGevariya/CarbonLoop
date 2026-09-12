@@ -30,9 +30,11 @@ export const Navbar: React.FC = () => {
         <div className="flex items-center justify-between">
           {/* Brand Logo */}
           <Link to="/" className="flex items-center gap-3 group">
-            <div className="size-9 rounded-lg bg-[#5D87FF] text-white flex items-center justify-center font-bold text-sm shadow-xs">
-              C⟳
-            </div>
+            <img
+              src="/images/logo.png"
+              alt="CarbonLoop Logo"
+              className="size-9 rounded-lg object-contain bg-[#0E110F] p-1 border border-[#E5EAEF] shadow-xs shrink-0"
+            />
             <div className="flex flex-col">
               <span className="font-bold text-lg tracking-tight text-[#2A3547]">
                 CARBON<span className="text-[#5D87FF]">LOOP</span>

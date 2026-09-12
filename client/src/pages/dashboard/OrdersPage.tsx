@@ -108,7 +108,7 @@ export const OrdersPage: React.FC = () => {
           </p>
         </div>
       ) : (
-        <div className="border border-[#E5EAEF] bg-white rounded-xl overflow-hidden shadow-xs">
+        <div className="border border-[#E5EAEF] bg-white rounded-xl overflow-x-auto shadow-xs">
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-[#F6F9FC] border-b border-[#E5EAEF] text-xs font-semibold uppercase tracking-wider text-[#5A6A85]">

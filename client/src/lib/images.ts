@@ -1,33 +1,34 @@
-// CarbonLoop Curated Industrial Photography Assets
+// CarbonLoop High-Resolution Generated Industrial Photography Assets
 
 export const INDUSTRIAL_IMAGES = {
+  logo: '/images/logo.png',
   // Hero: Direct Carbon Capture & Industrial Processing Plant
-  heroFacility: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=1600&q=80',
-  cementPlant: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=1600&q=80',
+  heroFacility: '/images/hero_capture.png',
+  cementPlant: '/images/hero_capture.png',
 
   // Problem: Heavy Manufacturing & Flue Gas Calcination (Steel/Cement Plant)
-  steelPlant: 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=1600&q=80',
+  steelPlant: '/images/hero_capture.png',
 
   // Capture Infrastructure & Piping
-  capturePipelines: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=1600&q=80',
-  pipeline: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=1600&q=80',
-  refineryPipes: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=1600&q=80',
+  capturePipelines: '/images/flue_gas_capture.png',
+  pipeline: '/images/flue_gas_capture.png',
+  refineryPipes: '/images/flue_gas_capture.png',
 
   // Logistics: Pressurized Cryogenic Freight Tanker
-  tankerTransport: 'https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?auto=format&fit=crop&w=1600&q=80',
-  isoTanker: 'https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?auto=format&fit=crop&w=1600&q=80',
+  tankerTransport: '/images/iso_tanker.png',
+  isoTanker: '/images/iso_tanker.png',
 
   // Freight Port & Infrastructure Hub
-  portLogistics: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=1600&q=80',
+  portLogistics: '/images/iso_tanker.png',
 
   // Laboratory Quality Testing & CO2 Purity Verification
-  qualityLab: 'https://images.unsplash.com/photo-1532094349884-543bc11b234d?auto=format&fit=crop&w=1600&q=80',
-  controlRoom: 'https://images.unsplash.com/photo-1532094349884-543bc11b234d?auto=format&fit=crop&w=1600&q=80',
+  qualityLab: '/images/lab_audit.png',
+  controlRoom: '/images/utilization_plant.png',
 
   // Chemical & Synthetic Fuel Refinery
-  chemicalRefinery: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=1600&q=80',
-  greenConcrete: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=1600&q=80',
+  chemicalRefinery: '/images/utilization_plant.png',
+  greenConcrete: '/images/utilization_plant.png',
 
   // Industrial Landscape & Infrastructure Panorama
-  landscapeInfrastructure: 'https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?auto=format&fit=crop&w=1600&q=80',
+  landscapeInfrastructure: '/images/hero_capture.png',
 };

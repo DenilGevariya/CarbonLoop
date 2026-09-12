@@ -148,7 +148,7 @@ export const ListingsPage: React.FC = () => {
       </div>
 
       {/* Supply Management Table */}
-      <div className="bg-white rounded-xl border border-[#E5EAEF] overflow-hidden shadow-xs">
+      <div className="bg-white rounded-xl border border-[#E5EAEF] overflow-x-auto shadow-xs">
         <Table>
           <TableHeader className="bg-[#F6F9FC] border-b border-[#E5EAEF]">
             <TableRow className="border-[#E5EAEF]">

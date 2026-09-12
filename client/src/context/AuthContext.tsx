@@ -188,9 +188,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       {isLoading ? (
         <div className="min-h-screen bg-[#F6F9FC] text-[#2A3547] flex flex-col items-center justify-center p-6 font-sans">
           <div className="bg-white border border-[#E5EAEF] p-8 rounded-2xl shadow-xl flex flex-col items-center gap-5 max-w-sm w-full animate-in fade-in zoom-in duration-300">
-            <div className="size-14 bg-[#5D87FF] text-white flex items-center justify-center font-bold text-xl rounded-2xl shadow-md animate-bounce">
-              C⟳
-            </div>
+            <img
+              src="/images/logo.png"
+              alt="CarbonLoop Logo"
+              className="size-14 object-contain bg-[#0E110F] p-2 rounded-2xl border border-[#5D87FF] shadow-lg animate-bounce"
+            />
             <div className="text-center space-y-1.5">
               <h3 className="text-base font-bold text-[#2A3547] tracking-tight">
                 Authenticating Console Session

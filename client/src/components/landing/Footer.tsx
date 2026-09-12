@@ -10,9 +10,11 @@ export const Footer: React.FC = () => {
         {/* Brand Info */}
         <div className="space-y-3 md:col-span-1">
           <Link to="/" className="flex items-center gap-2.5">
-            <div className="size-8 bg-[#5D87FF] text-white flex items-center justify-center font-bold text-sm rounded-lg shadow-xs">
-              C⟳
-            </div>
+            <img
+              src="/images/logo.png"
+              alt="CarbonLoop Logo"
+              className="size-8 rounded-lg object-contain bg-[#0E110F] p-1 border border-[#E5EAEF] shadow-xs shrink-0"
+            />
             <span className="font-bold text-base text-[#2A3547] tracking-tight">
               CARBON<span className="text-[#5D87FF]">LOOP</span>
             </span>
