@@ -1,22 +1,29 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCreateRequirement } from '@/features/requirements/hooks/useRequirements';
 import { RequirementForm } from '@/features/requirements/components/RequirementForm';
-import type { CreateRequirementInput } from '@/features/requirements/types/requirement';
+import { RequirementPublishedModal } from '@/features/requirements/components/RequirementPublishedModal';
+import type { CreateRequirementInput, BuyerRequirement } from '@/features/requirements/types/requirement';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export const CreateRequirementPage: React.FC = () => {
   const navigate = useNavigate();
   const createMutation = useCreateRequirement();
+  const [publishedReq, setPublishedReq] = useState<BuyerRequirement | null>(null);
 
   const handleSubmit = async (data: CreateRequirementInput, publishNow: boolean) => {
     try {
-      await createMutation.mutateAsync({
+      const res = await createMutation.mutateAsync({
         ...data,
         status: publishNow ? 'PUBLISHED' : 'DRAFT',
       });
-      navigate('/dashboard/requirements');
+
+      if (publishNow && res) {
+        setPublishedReq(res);
+      } else {
+        navigate('/dashboard/requirements');
+      }
     } catch (err: any) {
       console.error('Failed to create requirement:', err);
     }
@@ -43,6 +50,13 @@ export const CreateRequirementPage: React.FC = () => {
       </div>
 
       <RequirementForm onSubmit={handleSubmit} isSubmitting={createMutation.isPending} />
+
+      {/* Success Modal on Publish */}
+      <RequirementPublishedModal
+        isOpen={!!publishedReq}
+        onClose={() => setPublishedReq(null)}
+        requirement={publishedReq}
+      />
     </div>
   );
 };

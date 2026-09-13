@@ -531,55 +531,132 @@ export const RequirementForm: React.FC<RequirementFormProps> = ({
                 Section 06 / Final Review
               </span>
               <h2 className="font-sans font-bold text-xl text-[#171A18]">
-                Review Requirement Specification
+                Review Complete Requirement Specification
               </h2>
+              <p className="text-xs text-stone-500 font-sans mt-0.5">
+                Verify all parameters before publishing your requirement to the CarbonLoop CO₂ Network.
+              </p>
             </div>
 
-            {/* Summary Specification Card */}
-            <div className="bg-[#FAF8F5] border border-[#E2DDD5] p-6 space-y-4 font-mono text-xs">
-              <div className="flex justify-between items-start border-b border-[#E2DDD5] pb-3">
-                <div>
-                  <h3 className="font-sans font-bold text-base text-[#171A18]">
-                    {formValues.title}
-                  </h3>
-                  <p className="font-sans text-xs text-stone-600 mt-0.5 font-normal">
-                    {formValues.description || 'No additional description provided.'}
-                  </p>
-                </div>
-                <span className="px-2 py-0.5 bg-[#173D32] text-white text-[10px] uppercase font-bold">
-                  {formValues.priority} priority
+            {/* Organized 5-Section Review Card */}
+            <div className="bg-[#FAF8F5] border border-[#E2DDD5] p-6 space-y-6 font-sans text-xs">
+              {/* 1. REQUIREMENT */}
+              <div className="space-y-2 border-b border-[#E2DDD5] pb-4">
+                <span className="font-mono text-[10px] font-bold uppercase text-[#173D32] tracking-wider block">
+                  01. REQUIREMENT
                 </span>
+                <div className="flex justify-between items-start">
+                  <div>
+                    <h3 className="font-bold text-base text-[#171A18]">
+                      {formValues.title}
+                    </h3>
+                    <p className="text-xs text-stone-600 mt-1 leading-relaxed">
+                      {formValues.description || 'No detailed operational description provided.'}
+                    </p>
+                  </div>
+                  <span className="px-2.5 py-0.5 bg-[#173D32] text-white text-[10px] uppercase font-bold tracking-wider rounded-none">
+                    {formValues.priority} Priority
+                  </span>
+                </div>
               </div>
 
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div>
-                  <span className="text-stone-500 text-[10px] uppercase block">Requested Volume</span>
-                  <span className="font-bold text-base text-[#171A18] font-sans">
-                    {formValues.required_quantity} {formValues.quantity_unit}s
-                  </span>
+              {/* 2. VOLUME & PURITY */}
+              <div className="space-y-2 border-b border-[#E2DDD5] pb-4">
+                <span className="font-mono text-[10px] font-bold uppercase text-[#173D32] tracking-wider block">
+                  02. VOLUME & PURITY
+                </span>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 bg-white p-3 border border-[#E2DDD5]">
+                  <div>
+                    <span className="text-stone-500 text-[10px] uppercase block">Required Volume</span>
+                    <span className="font-bold text-sm text-[#171A18]">
+                      {formValues.required_quantity} {formValues.quantity_unit}s
+                    </span>
+                  </div>
+                  <div>
+                    <span className="text-stone-500 text-[10px] uppercase block">Minimum Purity</span>
+                    <span className="font-bold text-sm text-[#173D32]">
+                      ≥{formValues.minimum_purity}%
+                    </span>
+                  </div>
+                  <div>
+                    <span className="text-stone-500 text-[10px] uppercase block">Maximum Purity</span>
+                    <span className="font-bold text-sm text-[#171A18]">
+                      {formValues.maximum_purity ? `≤${formValues.maximum_purity}%` : 'Not Capped'}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="text-stone-500 text-[10px] uppercase block">Physical Form</span>
+                    <span className="font-bold text-xs text-[#171A18] uppercase">
+                      {formValues.acceptable_physical_form}
+                    </span>
+                  </div>
                 </div>
+              </div>
 
-                <div>
-                  <span className="text-stone-500 text-[10px] uppercase block">Minimum Purity</span>
-                  <span className="font-bold text-base text-[#173D32] font-sans">
-                    ≥{formValues.minimum_purity}%
-                  </span>
+              {/* 3. UTILIZATION */}
+              <div className="space-y-2 border-b border-[#E2DDD5] pb-4">
+                <span className="font-mono text-[10px] font-bold uppercase text-[#173D32] tracking-wider block">
+                  03. UTILIZATION
+                </span>
+                <div className="bg-white p-3 border border-[#E2DDD5] flex items-center justify-between">
+                  <div>
+                    <span className="font-bold text-stone-800">
+                      {utilizationTypes.find((u) => u.id === formValues.utilization_type_id)?.name || 'Mineralization & Materials Curing'}
+                    </span>
+                    <p className="text-[11px] text-stone-500 mt-0.5">
+                      {formValues.intended_use || 'Direct chemical or industrial feedstock process consumption.'}
+                    </p>
+                  </div>
                 </div>
+              </div>
 
-                <div>
-                  <span className="text-stone-500 text-[10px] uppercase block">Max Price</span>
-                  <span className="font-bold text-base text-[#171A18] font-sans">
-                    {formValues.maximum_price_per_unit
-                      ? `₹${formValues.maximum_price_per_unit}/${formValues.quantity_unit}`
-                      : 'Open Price'}
-                  </span>
+              {/* 4. COMMERCIAL */}
+              <div className="space-y-2 border-b border-[#E2DDD5] pb-4">
+                <span className="font-mono text-[10px] font-bold uppercase text-[#173D32] tracking-wider block">
+                  04. COMMERCIAL
+                </span>
+                <div className="grid grid-cols-2 gap-4 bg-white p-3 border border-[#E2DDD5]">
+                  <div>
+                    <span className="text-stone-500 text-[10px] uppercase block">Maximum Acceptable Price</span>
+                    <span className="font-bold text-sm text-[#171A18]">
+                      {formValues.maximum_price_per_unit
+                        ? `₹${formValues.maximum_price_per_unit.toLocaleString()} / ${formValues.quantity_unit}`
+                        : 'Open / Negotiable'}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="text-stone-500 text-[10px] uppercase block">Currency & Settlement</span>
+                    <span className="font-bold text-xs text-[#171A18]">
+                      {formValues.currency || 'INR'} (Indian Rupee)
+                    </span>
+                  </div>
                 </div>
+              </div>
 
-                <div>
-                  <span className="text-stone-500 text-[10px] uppercase block">Form</span>
-                  <span className="font-bold text-sm text-[#171A18] uppercase">
-                    {formValues.acceptable_physical_form}
-                  </span>
+              {/* 5. TIMING & DESTINATION */}
+              <div className="space-y-2">
+                <span className="font-mono text-[10px] font-bold uppercase text-[#173D32] tracking-wider block">
+                  05. TIMING & DESTINATION
+                </span>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-white p-3 border border-[#E2DDD5]">
+                  <div>
+                    <span className="text-stone-500 text-[10px] uppercase block">Destination Location</span>
+                    <span className="font-bold text-xs text-[#171A18]">
+                      {formValues.location_city || 'Vadodara'}, {formValues.location_state || 'Gujarat'}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="text-stone-500 text-[10px] uppercase block">Date Window</span>
+                    <span className="font-bold text-xs text-[#171A18]">
+                      {formValues.required_from || 'Immediate'} {formValues.required_until ? `to ${formValues.required_until}` : ''}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="text-stone-500 text-[10px] uppercase block">Logistics Required</span>
+                    <span className={`font-bold text-xs ${formValues.delivery_required ? 'text-[#173D32]' : 'text-stone-500'}`}>
+                      {formValues.delivery_required ? 'Yes (Tanker Delivery Required)' : 'No (Buyer Self-Pickup)'}
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>

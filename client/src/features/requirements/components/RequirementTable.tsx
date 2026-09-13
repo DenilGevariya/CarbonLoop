@@ -221,14 +221,22 @@ export const RequirementTable: React.FC<RequirementTableProps> = ({
           </div>
 
           {/* Action Column */}
-          <div className="flex items-center gap-3 self-end lg:self-center shrink-0">
+          <div className="flex items-center gap-2 self-end lg:self-center shrink-0">
             {isOwnerView ? (
               <div className="flex items-center gap-2">
+                <Button
+                  size="sm"
+                  onClick={() => navigate(`/dashboard/matches?requirementId=${req.id}`)}
+                  className="bg-[#5D87FF] hover:bg-[#4570EA] text-white text-xs font-semibold h-9 rounded-lg px-3 flex items-center gap-1.5 shadow-xs cursor-pointer"
+                >
+                  <Radio className="w-3.5 h-3.5" /> View Matches
+                </Button>
+
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => navigate(`/dashboard/requirements/${req.id}/edit`)}
-                  className="border-[#E5EAEF] text-xs h-9 rounded-lg flex items-center gap-1.5 text-[#2A3547] hover:bg-[#F6F9FC]"
+                  className="border-[#E5EAEF] text-xs h-9 rounded-lg flex items-center gap-1.5 text-[#2A3547] hover:bg-[#F6F9FC] font-semibold"
                 >
                   <Edit className="w-3.5 h-3.5 text-[#5A6A85]" /> Edit
                 </Button>

@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { matchingApi } from '@/features/matching/api/matching.api';
+import { useMyRequirements } from '@/features/requirements/hooks/useRequirements';
 import type { MatchRecord } from '@/features/matching/types/matching.types';
 import { MatchCard } from '@/features/matching/components/MatchCard';
 import { MatchFilters } from '@/features/matching/components/MatchFilters';
@@ -25,7 +27,20 @@ const SEEDED_REQUIREMENTS = [
 ];
 
 export const MatchesPage: React.FC = () => {
-  const [selectedReqId, setSelectedReqId] = useState(SEEDED_REQUIREMENTS[0].id);
+  const [searchParams] = useSearchParams();
+  const urlReqId = searchParams.get('requirementId');
+
+  const { data: myReqData } = useMyRequirements({ limit: 50 });
+  const realRequirements = (myReqData?.items || []).map((r) => ({
+    id: r.id,
+    code: r.requirement_code || 'REQ',
+    title: `${r.requirement_code || 'REQ'} - ${r.title} (${r.location_city || 'Vadodara'})`,
+  }));
+
+  const allRequirementOptions = [...realRequirements, ...SEEDED_REQUIREMENTS];
+  const initialId = urlReqId || (allRequirementOptions.length > 0 ? allRequirementOptions[0].id : SEEDED_REQUIREMENTS[0].id);
+
+  const [selectedReqId, setSelectedReqId] = useState(initialId);
   const [matches, setMatches] = useState<MatchRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState(false);
@@ -33,6 +48,12 @@ export const MatchesPage: React.FC = () => {
   const [sortBy, setSortBy] = useState('score_desc');
   const [inspectMatch, setInspectMatch] = useState<MatchRecord | null>(null);
   const [inquiryMatch, setInquiryMatch] = useState<MatchRecord | null>(null);
+
+  useEffect(() => {
+    if (urlReqId) {
+      setSelectedReqId(urlReqId);
+    }
+  }, [urlReqId]);
 
   const fetchMatches = async (reqId: string) => {
     setLoading(true);
@@ -48,7 +69,9 @@ export const MatchesPage: React.FC = () => {
   };
 
   useEffect(() => {
-    fetchMatches(selectedReqId);
+    if (selectedReqId) {
+      fetchMatches(selectedReqId);
+    }
   }, [selectedReqId]);
 
   const handleGenerateMatches = async () => {
@@ -110,7 +133,7 @@ export const MatchesPage: React.FC = () => {
               <SelectValue placeholder="Select Requirement" />
             </SelectTrigger>
             <SelectContent className="bg-white border-[#E5EAEF] text-[#2A3547] text-xs font-semibold">
-              {SEEDED_REQUIREMENTS.map((r) => (
+              {allRequirementOptions.map((r) => (
                 <SelectItem key={r.id} value={r.id}>
                   {r.title}
                 </SelectItem>

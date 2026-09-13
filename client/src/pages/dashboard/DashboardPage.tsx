@@ -3,10 +3,12 @@ import { useAuth } from '@/context/AuthContext';
 import { MetricCard } from '@/components/shared/MetricCard';
 import { MatchScoreBadge } from '@/components/shared/MatchScoreBadge';
 import { Button } from '@/components/ui/button';
-import { Factory, RotateCcw, Cpu, Truck, ArrowUpRight, PlusCircle, ShieldCheck, Layers, Building2, Eye, Scale } from 'lucide-react';
+import { Factory, RotateCcw, Cpu, Truck, ArrowUpRight, PlusCircle, ShieldCheck, Layers, Building2, Eye, Scale, Search } from 'lucide-react';
 import { FadeUp, StaggerContainer, StaggerItem } from '@/animations';
 import { useNavigate } from 'react-router-dom';
 import { matchingApi } from '@/features/matching/api/matching.api';
+import { useMyRequirements } from '@/features/requirements/hooks/useRequirements';
+import { useMarketplaceListings } from '@/features/listings/hooks/useListings';
 import type { MatchRecord } from '@/features/matching/types/matching.types';
 import { PriceAnalyticsCharts } from '@/features/analytics/components/PriceAnalyticsCharts';
 
@@ -15,17 +17,40 @@ export const DashboardPage: React.FC = () => {
   const navigate = useNavigate();
   const [topMatches, setTopMatches] = useState<MatchRecord[]>([]);
 
+  // Search Bar Form State
+  const [searchSeller, setSearchSeller] = useState('');
+  const [searchQty, setSearchQty] = useState('');
+  const [searchPurity, setSearchPurity] = useState('');
+  const [searchPrice, setSearchPrice] = useState('');
+  const [searchLocation, setSearchLocation] = useState('');
+
+  // Fetch real buyer data
+  const { data: reqData } = useMyRequirements({ limit: 50 });
+  const { data: listingsData } = useMarketplaceListings({ limit: 50 });
+
+  const buyerReqs = reqData?.items || [];
+  const activeReqs = buyerReqs.filter((r) => r.status === 'PUBLISHED' || r.status === 'ACTIVE');
+  const monthlyDemand = activeReqs.reduce((sum, r) => sum + (r.required_quantity || 0), 0);
+  const totalMarketListings = listingsData?.items?.length || listingsData?.data?.length || 0;
+  
+  // Strike Price
+  const pricesWithTarget = activeReqs.map((r) => r.maximum_price_per_unit).filter((p): p is number => typeof p === 'number' && p > 0);
+  const avgTargetPrice = pricesWithTarget.length > 0
+    ? Math.round(pricesWithTarget.reduce((a, b) => a + b, 0) / pricesWithTarget.length)
+    : 4800;
+
   useEffect(() => {
     async function loadMatches() {
       try {
-        const matches = await matchingApi.getRequirementMatches('70000000-0000-4000-a000-000000000001', 0);
+        const targetReqId = buyerReqs.length > 0 ? buyerReqs[0].id : '70000000-0000-4000-a000-000000000001';
+        const matches = await matchingApi.getRequirementMatches(targetReqId, 0);
         setTopMatches(matches.slice(0, 3));
       } catch (err) {
         console.error('Failed to load dashboard matches:', err);
       }
     }
     loadMatches();
-  }, []);
+  }, [buyerReqs]);
 
   const orgType = activeOrg?.orgType?.toUpperCase() || 'EMITTER';
   const isEmitter = orgType === 'EMITTER';
@@ -33,6 +58,20 @@ export const DashboardPage: React.FC = () => {
   const isLogistics = orgType === 'LOGISTICS_PROVIDER';
   const isRegulator = orgType === 'REGULATOR';
   const isAdmin = (user?.roles || []).some((r) => r.toLowerCase() === 'platform_admin' || r.toLowerCase() === 'admin');
+
+  const handleDashboardSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const queryParams = new URLSearchParams();
+    if (searchSeller) queryParams.set('search', searchSeller);
+    if (searchQty) queryParams.set('minQuantity', searchQty);
+    if (searchPurity) queryParams.set('minPurity', searchPurity.replace(/[^0-9.]/g, ''));
+    if (searchPrice) queryParams.set('maxPrice', searchPrice);
+    if (searchLocation) queryParams.set('location', searchLocation);
+
+    const targetPath = isEmitter ? '/requirements' : '/dashboard/marketplace';
+    const qs = queryParams.toString();
+    navigate(`${targetPath}${qs ? `?${qs}` : ''}`);
+  };
 
   return (
     <div className="space-y-6 bg-[#F6F9FC] text-[#2A3547] font-sans">
@@ -107,65 +146,80 @@ export const DashboardPage: React.FC = () => {
       </FadeUp>
 
       {/* 1.5. ROLE-SPECIFIC SEARCH BAR */}
-      <FadeUp delay={0.15} className="bg-white border border-[#E5EAEF] rounded-2xl p-5 shadow-xs space-y-3">
-        <div className="flex items-center justify-between">
-          <span className="text-xs font-bold text-[#2A3547] uppercase tracking-wider flex items-center gap-2">
-            🔍 {isEmitter ? 'Search Buyers' : isUtilizer ? 'Search Sellers' : isRegulator ? 'Regulator Network Search' : 'Network Exchange Search'}
-          </span>
-          <span className="text-[11px] text-[#5A6A85]">Filter by parameters</span>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-3">
-          <div>
-            <label className="text-[10px] font-bold text-[#5A6A85] uppercase tracking-wider block mb-1">
-              {isEmitter ? 'Buyer Name' : isUtilizer ? 'Seller Name' : 'Party / Company'}
-            </label>
-            <input
-              type="text"
-              placeholder={isEmitter ? 'e.g. GreenForge' : isUtilizer ? 'e.g. TerraCem' : 'Company Name'}
-              className="w-full h-9 px-3 bg-[#F6F9FC] border border-[#E5EAEF] text-xs font-medium text-[#2A3547] rounded-lg focus:outline-none focus:border-[#5D87FF]"
-            />
+      <form onSubmit={handleDashboardSearchSubmit}>
+        <FadeUp delay={0.15} className="bg-white border border-[#E5EAEF] rounded-2xl p-5 shadow-xs space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold text-[#2A3547] uppercase tracking-wider flex items-center gap-2">
+              <Search className="w-4 h-4 text-[#5D87FF]" />
+              {isEmitter ? 'Search Buyers' : isUtilizer ? 'Search Sellers & CO₂ Marketplace' : isRegulator ? 'Regulator Network Search' : 'Network Exchange Search'}
+            </span>
+            <Button type="submit" size="sm" className="bg-[#5D87FF] hover:bg-[#4570EA] text-white text-xs font-semibold h-8 px-4 rounded-lg cursor-pointer">
+              Execute Search
+            </Button>
           </div>
 
-          <div>
-            <label className="text-[10px] font-bold text-[#5A6A85] uppercase tracking-wider block mb-1">
-              {isEmitter ? 'Req Quantity (t)' : 'Offered Quantity (t)'}
-            </label>
-            <input
-              type="number"
-              placeholder="e.g. 500"
-              className="w-full h-9 px-3 bg-[#F6F9FC] border border-[#E5EAEF] text-xs font-medium text-[#2A3547] rounded-lg focus:outline-none focus:border-[#5D87FF]"
-            />
-          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-3">
+            <div>
+              <label className="text-[10px] font-bold text-[#5A6A85] uppercase tracking-wider block mb-1">
+                {isEmitter ? 'Buyer Name' : isUtilizer ? 'Seller Name' : 'Party / Company'}
+              </label>
+              <input
+                type="text"
+                value={searchSeller}
+                onChange={(e) => setSearchSeller(e.target.value)}
+                placeholder={isEmitter ? 'e.g. GreenForge' : isUtilizer ? 'e.g. TerraCem' : 'Company Name'}
+                className="w-full h-9 px-3 bg-[#F6F9FC] border border-[#E5EAEF] text-xs font-medium text-[#2A3547] rounded-lg focus:outline-none focus:border-[#5D87FF]"
+              />
+            </div>
 
-          <div>
-            <label className="text-[10px] font-bold text-[#5A6A85] uppercase tracking-wider block mb-1">Purity (%)</label>
-            <input
-              type="text"
-              placeholder="e.g. ≥ 99.0%"
-              className="w-full h-9 px-3 bg-[#F6F9FC] border border-[#E5EAEF] text-xs font-medium text-[#2A3547] rounded-lg focus:outline-none focus:border-[#5D87FF]"
-            />
-          </div>
+            <div>
+              <label className="text-[10px] font-bold text-[#5A6A85] uppercase tracking-wider block mb-1">
+                {isEmitter ? 'Req Quantity (t)' : 'Offered Quantity (t)'}
+              </label>
+              <input
+                type="number"
+                value={searchQty}
+                onChange={(e) => setSearchQty(e.target.value)}
+                placeholder="e.g. 500"
+                className="w-full h-9 px-3 bg-[#F6F9FC] border border-[#E5EAEF] text-xs font-medium text-[#2A3547] rounded-lg focus:outline-none focus:border-[#5D87FF]"
+              />
+            </div>
 
-          <div>
-            <label className="text-[10px] font-bold text-[#5A6A85] uppercase tracking-wider block mb-1">Price (₹/t)</label>
-            <input
-              type="number"
-              placeholder="e.g. 4800"
-              className="w-full h-9 px-3 bg-[#F6F9FC] border border-[#E5EAEF] text-xs font-medium text-[#2A3547] rounded-lg focus:outline-none focus:border-[#5D87FF]"
-            />
-          </div>
+            <div>
+              <label className="text-[10px] font-bold text-[#5A6A85] uppercase tracking-wider block mb-1">Purity (%)</label>
+              <input
+                type="text"
+                value={searchPurity}
+                onChange={(e) => setSearchPurity(e.target.value)}
+                placeholder="e.g. ≥ 99.0%"
+                className="w-full h-9 px-3 bg-[#F6F9FC] border border-[#E5EAEF] text-xs font-medium text-[#2A3547] rounded-lg focus:outline-none focus:border-[#5D87FF]"
+              />
+            </div>
 
-          <div>
-            <label className="text-[10px] font-bold text-[#5A6A85] uppercase tracking-wider block mb-1">Location</label>
-            <input
-              type="text"
-              placeholder="e.g. Gujarat"
-              className="w-full h-9 px-3 bg-[#F6F9FC] border border-[#E5EAEF] text-xs font-medium text-[#2A3547] rounded-lg focus:outline-none focus:border-[#5D87FF]"
-            />
+            <div>
+              <label className="text-[10px] font-bold text-[#5A6A85] uppercase tracking-wider block mb-1">Price (₹/t)</label>
+              <input
+                type="number"
+                value={searchPrice}
+                onChange={(e) => setSearchPrice(e.target.value)}
+                placeholder="e.g. 4800"
+                className="w-full h-9 px-3 bg-[#F6F9FC] border border-[#E5EAEF] text-xs font-medium text-[#2A3547] rounded-lg focus:outline-none focus:border-[#5D87FF]"
+              />
+            </div>
+
+            <div>
+              <label className="text-[10px] font-bold text-[#5A6A85] uppercase tracking-wider block mb-1">Location</label>
+              <input
+                type="text"
+                value={searchLocation}
+                onChange={(e) => setSearchLocation(e.target.value)}
+                placeholder="e.g. Gujarat"
+                className="w-full h-9 px-3 bg-[#F6F9FC] border border-[#E5EAEF] text-xs font-medium text-[#2A3547] rounded-lg focus:outline-none focus:border-[#5D87FF]"
+              />
+            </div>
           </div>
-        </div>
-      </FadeUp>
+        </FadeUp>
+      </form>
 
       {/* 2. ROLE-SPECIFIC METRIC CARDS */}
       <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
@@ -189,16 +243,40 @@ export const DashboardPage: React.FC = () => {
         {isUtilizer && (
           <>
             <StaggerItem>
-              <MetricCard label="Monthly CO₂ Demand" value={500} suffix=" t/mo" subtext="Vadodara Mineralization Facility" icon={Layers} />
+              <MetricCard
+                label="Monthly CO₂ Demand"
+                value={monthlyDemand || (activeReqs.length > 0 ? monthlyDemand : 0)}
+                suffix=" t/mo"
+                subtext={activeReqs.length > 0 ? `${activeReqs.length} active requirement${activeReqs.length > 1 ? 's' : ''}` : 'No active requirements'}
+                icon={Layers}
+              />
             </StaggerItem>
             <StaggerItem>
-              <MetricCard label="Compatible Streams" value={topMatches.length || 6} subtext="Matched within 150km radius" icon={Cpu} />
+              <MetricCard
+                label="Compatible Streams"
+                value={topMatches.length || totalMarketListings}
+                subtext={topMatches.length > 0 ? `Highest match: ${Math.round(topMatches[0].overall_score || 94)}% match` : 'Scanned active network streams'}
+                icon={Cpu}
+              />
             </StaggerItem>
             <StaggerItem>
-              <MetricCard label="Executed Off-Takes" value={1} suffix=" order" subtext="TerraCem Supply #LST-1042" icon={RotateCcw} />
+              <MetricCard
+                label="Executed Off-Takes"
+                value={1}
+                suffix=" order"
+                subtext="TerraCem Supply #CL-SUP-000001"
+                icon={RotateCcw}
+              />
             </StaggerItem>
             <StaggerItem>
-              <MetricCard label="Target Strike Price" value={4800} prefix="₹" suffix="/t" subtext="Delivered target budget" icon={ShieldCheck} />
+              <MetricCard
+                label="Target Strike Price"
+                value={avgTargetPrice}
+                prefix="₹"
+                suffix="/t"
+                subtext="Average target budget ceiling"
+                icon={ShieldCheck}
+              />
             </StaggerItem>
           </>
         )}
