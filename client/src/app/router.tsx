@@ -169,6 +169,7 @@ const router = createBrowserRouter([
           { path: 'impact', element: <ImpactReportPage /> },
           { path: 'organization', element: <OrganizationPage /> },
           { path: 'organization/verification', element: <OrganizationVerificationPage /> },
+          { path: 'profile', element: <ProfilePage /> },
           { path: 'settings', element: <SettingsPage /> },
           { path: 'settings/profile', element: <ProfilePage /> },
           { path: 'settings/security', element: <SecurityPage /> },

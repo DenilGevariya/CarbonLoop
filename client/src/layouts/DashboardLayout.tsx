@@ -23,7 +23,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import {
   LayoutDashboard,
   Factory,
-  Layers,
   Handshake,
   ShoppingBag,
   Truck,
@@ -32,9 +31,7 @@ import {
   Search,
   LogOut,
   ShieldCheck,
-  Building2,
   User,
-  Lock,
   MessageSquare,
   PlusCircle,
 } from 'lucide-react';
@@ -76,58 +73,32 @@ const DashboardInner: React.FC = () => {
           { label: 'Reports & Analytics', icon: BarChart3, path: '/dashboard/analytics' },
         ],
       },
-      {
-        group: 'SYSTEM & ACCOUNT',
-        items: [
-          { label: 'Organization Registry', icon: Building2, path: '/dashboard/organization' },
-          { label: 'Security Console', icon: Lock, path: '/dashboard/settings/security' },
-        ],
-      },
     ];
   } else if (isRegulator) {
     navSections = [
       {
-        group: 'POLICY REGULATOR PANEL',
+        group: 'POLICY REGULATORS',
         items: [
           { label: 'Dashboard', icon: LayoutDashboard, path: '/dashboard' },
           { label: 'Verification & Oversight', icon: ShieldCheck, path: '/admin/verification' },
-        ],
-      },
-      {
-        group: 'NETWORK AUDIT',
-        items: [
-          { label: 'All Stream Listings', icon: Factory, path: '/dashboard/listings' },
-          { label: 'All Demand Requirements', icon: Layers, path: '/dashboard/requirements' },
-          { label: 'Transaction History', icon: ShoppingBag, path: '/dashboard/orders' },
-          { label: 'Dispatches Audit', icon: Truck, path: '/dashboard/shipments' },
-          { label: 'Price Analytics', icon: BarChart3, path: '/dashboard/analytics' },
         ],
       },
     ];
   } else if (isLogistics) {
     navSections = [
       {
-        group: 'LOGISTICS PROVIDER PANEL',
+        group: 'LOGISTICS PROVIDERS',
         items: [
           { label: 'Dashboard', icon: LayoutDashboard, path: '/dashboard' },
           { label: 'Transportation Request', icon: Truck, path: '/dashboard/logistics' },
           { label: 'Shipment Management', icon: Truck, path: '/dashboard/shipments' },
         ],
       },
-      {
-        group: 'CONTRACTS & ACCOUNT',
-        items: [
-          { label: 'Transport Agreements', icon: ShoppingBag, path: '/dashboard/orders' },
-          { label: 'Inquiries & Offers', icon: Handshake, path: '/dashboard/offers' },
-          { label: 'Fleet Organization', icon: Building2, path: '/dashboard/organization' },
-          { label: 'User Profile', icon: User, path: '/dashboard/settings/profile' },
-        ],
-      },
     ];
   } else if (isUtilizer) {
     navSections = [
       {
-        group: 'UTILIZATION STARTUP PANEL',
+        group: 'CARBON-UTILIZATION STARTUPS',
         items: [
           { label: 'Dashboard', icon: LayoutDashboard, path: '/dashboard' },
           { label: 'Buy CO₂', icon: PlusCircle, path: '/dashboard/requirements/new' },
@@ -135,38 +106,18 @@ const DashboardInner: React.FC = () => {
           { label: 'Shipment Tracking', icon: Truck, path: '/dashboard/shipments' },
         ],
       },
-      {
-        group: 'NETWORK DISCOVERY',
-        items: [
-          { label: 'My Requirements', icon: Layers, path: '/dashboard/requirements' },
-          { label: 'Browse CO₂ Supply', icon: Factory, path: '/dashboard/marketplace' },
-          { label: 'Executed Purchases', icon: ShoppingBag, path: '/dashboard/orders' },
-          { label: 'Impact Analytics', icon: BarChart3, path: '/dashboard/analytics' },
-          { label: 'Organization Profile', icon: Building2, path: '/dashboard/organization' },
-        ],
-      },
     ];
   } else {
-    // Default: Industrial Carbon Emitter
+    // Default: Industrial Carbon Emitters
     navSections = [
       {
-        group: 'INDUSTRIAL EMITTER PANEL',
+        group: 'INDUSTRIAL CARBON EMITTERS',
         items: [
           { label: 'Dashboard', icon: LayoutDashboard, path: '/dashboard' },
           { label: 'Sell CO₂', icon: PlusCircle, path: '/dashboard/listings/new' },
           { label: 'Inquiries & Offers', icon: Handshake, path: '/dashboard/offers' },
           { label: 'Transporters', icon: Truck, path: '/dashboard/logistics' },
           { label: 'Shipment Tracking', icon: Truck, path: '/dashboard/shipments' },
-        ],
-      },
-      {
-        group: 'SUPPLY & CONTRACTS',
-        items: [
-          { label: 'My CO₂ Listings', icon: Factory, path: '/dashboard/listings' },
-          { label: 'Supply Marketplace', icon: Factory, path: '/dashboard/marketplace' },
-          { label: 'Off-Take Orders', icon: ShoppingBag, path: '/dashboard/orders' },
-          { label: 'Impact Analytics', icon: BarChart3, path: '/dashboard/analytics' },
-          { label: 'Organization Profile', icon: Building2, path: '/dashboard/organization' },
         ],
       },
     ];
@@ -237,20 +188,25 @@ const DashboardInner: React.FC = () => {
 
         {/* User Account Footer */}
         <SidebarFooter className="p-4 border-t border-[#E5EAEF] flex flex-col gap-3 bg-white">
-          <div className="flex items-center gap-3 p-2.5 bg-[#F6F9FC] border border-[#E5EAEF] rounded-lg">
-            <Avatar className="size-9 rounded-full border border-[#5D87FF]">
+          <div
+            onClick={() => handleNavClick('/dashboard/settings/profile')}
+            className="flex items-center gap-3 p-2.5 bg-[#F6F9FC] hover:bg-[#ECF2FF] border border-[#E5EAEF] hover:border-[#5D87FF]/40 rounded-lg cursor-pointer transition-all group"
+            title="Manage Profile Settings"
+          >
+            <Avatar className="size-9 rounded-full border border-[#5D87FF] group-hover:scale-105 transition-transform shrink-0">
               <AvatarFallback className="bg-[#5D87FF] text-white font-bold text-xs">
                 {userInitials}
               </AvatarFallback>
             </Avatar>
             <div className="flex flex-col min-w-0 flex-1">
-              <span className="text-xs font-bold text-[#2A3547] truncate">
+              <span className="text-xs font-bold text-[#2A3547] group-hover:text-[#5D87FF] truncate transition-colors">
                 {user?.firstName} {user?.lastName}
               </span>
               <span className="text-[11px] text-[#5A6A85] truncate">
                 {user?.email}
               </span>
             </div>
+            <User className="size-4 text-[#5A6A85] group-hover:text-[#5D87FF] shrink-0" />
           </div>
 
           <Button
@@ -323,6 +279,16 @@ const DashboardInner: React.FC = () => {
               {unreadCount > 0 && (
                 <span className="absolute top-1 right-1 size-2 bg-[#FA896B] rounded-full ring-2 ring-white animate-pulse" />
               )}
+            </Button>
+
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => navigate('/dashboard/settings/profile')}
+              className="text-[#5A6A85] hover:text-[#5D87FF] hover:bg-[#ECF2FF] rounded-lg size-8 sm:size-9 cursor-pointer shrink-0"
+              title="My Profile"
+            >
+              <User className="size-4" />
             </Button>
           </div>
         </header>
