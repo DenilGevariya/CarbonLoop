@@ -166,4 +166,35 @@ export class AuthRepository {
     );
     return res.rows[0];
   }
+  async createDefaultOrganizationForUser(userId: string, data: { orgName: string; orgType: string; gstNumber?: string | null; registrationNumber?: string | null }) {
+    const orgTypeMap: Record<string, string> = {
+      emitter: 'EMITTER',
+      utilizer: 'BUYER',
+      buyer: 'BUYER',
+      regulator: 'REGULATOR',
+      logistics: 'LOGISTICS_PROVIDER',
+      logistics_provider: 'LOGISTICS_PROVIDER',
+      admin: 'EMITTER',
+      platform_admin: 'EMITTER',
+    };
+    const targetOrgType = orgTypeMap[data.orgType.toLowerCase()] || data.orgType.toUpperCase();
+
+    const orgRes = await query(
+      `INSERT INTO organizations (name, legal_name, org_type, registration_number, tax_identifier, verification_status, is_active)
+       VALUES ($1, $1, $2, $3, $4, 'VERIFIED', TRUE)
+       RETURNING id, name, org_type`,
+      [data.orgName, targetOrgType, data.registrationNumber || null, data.gstNumber || null]
+    );
+    const org = orgRes.rows[0];
+
+    if (org) {
+      await query(
+        `INSERT INTO organization_members (organization_id, user_id, role, is_primary_contact)
+         VALUES ($1, $2, 'ORG_ADMIN', TRUE)
+         ON CONFLICT DO NOTHING`,
+        [org.id, userId]
+      );
+    }
+    return org;
+  }
 }

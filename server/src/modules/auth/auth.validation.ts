@@ -1,20 +1,21 @@
 import { z } from 'zod';
 
 export const registerSchema = z.object({
-  firstName: z.string().min(1, 'First name is required').max(100),
-  lastName: z.string().min(1, 'Last name is required').max(100),
+  firstName: z.string().min(1, 'First name is required').max(100).optional().default('Member'),
+  lastName: z.string().min(1, 'Last name is required').max(100).optional().default('User'),
   email: z.string().email('Invalid email address').max(255),
   password: z
     .string()
-    .min(8, 'Password must be at least 8 characters long')
-    .max(100)
-    .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
-    .regex(/[0-9]/, 'Password must contain at least one number'),
-  confirmPassword: z.string().min(8),
+    .min(6, 'Password must be at least 6 characters long')
+    .max(100),
+  confirmPassword: z.string().optional(),
   phone: z.string().optional().nullable(),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords don't match",
-  path: ['confirmPassword'],
+  roleType: z.enum(['EMITTER', 'BUYER', 'UTILIZER', 'REGULATOR', 'LOGISTICS_PROVIDER', 'PLATFORM_ADMIN', 'emitter', 'utilizer', 'regulator', 'logistics', 'admin']).optional().default('EMITTER'),
+  companyName: z.string().optional().nullable(),
+  gstNumber: z.string().optional().nullable(),
+  gstCertificateUrl: z.string().optional().nullable(),
+  registrationNumber: z.string().optional().nullable(),
+  otpCode: z.string().optional().nullable(),
 });
 
 export const loginSchema = z.object({

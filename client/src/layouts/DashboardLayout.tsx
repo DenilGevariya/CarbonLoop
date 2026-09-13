@@ -24,7 +24,6 @@ import {
   LayoutDashboard,
   Factory,
   Layers,
-  Cpu,
   Handshake,
   ShoppingBag,
   Truck,
@@ -37,6 +36,7 @@ import {
   User,
   Lock,
   MessageSquare,
+  PlusCircle,
 } from 'lucide-react';
 import { useNotifications } from '@/features/notifications/hooks/useNotifications';
 import { cn } from '@/lib/utils';
@@ -48,49 +48,129 @@ const DashboardInner: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const isEmitter = activeOrg?.orgType === 'EMITTER' || user?.roles.includes('emitter');
-  const isAdmin = user?.roles.includes('platform_admin') || user?.roles.includes('admin');
+  const orgType = activeOrg?.orgType?.toUpperCase() || 'EMITTER';
+  const isUtilizer = orgType === 'BUYER' || orgType === 'UTILIZER';
+  const isLogistics = orgType === 'LOGISTICS_PROVIDER';
+  const isRegulator = orgType === 'REGULATOR';
+  const isAdmin = (user?.roles || []).some(
+    (r) => r.toLowerCase() === 'platform_admin' || r.toLowerCase() === 'admin'
+  );
 
-  const navSections = [
-    {
-      group: 'OVERVIEW',
-      items: [
-        { label: 'Overview Console', icon: LayoutDashboard, path: '/dashboard' },
-        { label: 'Supply Marketplace', icon: Factory, path: '/dashboard/marketplace' },
-        { label: 'Demand Network', icon: Layers, path: '/requirements' },
-        { label: 'CO₂ Stream Listings', icon: Factory, path: '/dashboard/listings', show: isEmitter || isAdmin },
-        { label: 'Demand Requirements', icon: Layers, path: '/dashboard/requirements' },
-        { label: 'Match Engine', icon: Cpu, path: '/dashboard/matches' },
-      ].filter((item) => item.show !== false),
-    },
-    {
-      group: 'OPERATIONS',
-      items: [
-        { label: 'Commercial Inquiries', icon: MessageSquare, path: '/dashboard/inquiries' },
-        { label: 'Offers & Proposals', icon: Handshake, path: '/dashboard/offers' },
-        { label: 'Off-Take Orders', icon: ShoppingBag, path: '/dashboard/orders' },
-        { label: 'Logistics Network', icon: Truck, path: '/dashboard/logistics' },
-        { label: 'Shipment Tracking', icon: Truck, path: '/dashboard/shipments' },
-      ],
-    },
-    {
-      group: 'INSIGHTS',
-      items: [
-        { label: 'Impact Analytics', icon: BarChart3, path: '/dashboard/analytics' },
-        { label: 'Impact Intelligence', icon: ShieldCheck, path: '/dashboard/impact' },
-        { label: 'Trust & Verification', icon: ShieldCheck, path: '/dashboard/organization/verification' },
-        { label: 'Reviewer Queue', icon: ShieldCheck, path: '/admin/verification', show: isAdmin },
-      ].filter((item) => item.show !== false),
-    },
-    {
-      group: 'ACCOUNT & SYSTEM',
-      items: [
-        { label: 'Organization Profile', icon: Building2, path: '/dashboard/organization' },
-        { label: 'User Profile', icon: User, path: '/dashboard/settings/profile' },
-        { label: 'Security & Sessions', icon: Lock, path: '/dashboard/settings/security' },
-      ],
-    },
-  ];
+  let navSections: {
+    group: string;
+    items: { label: string; icon: React.ElementType; path: string }[];
+  }[] = [];
+
+  if (isAdmin) {
+    navSections = [
+      {
+        group: 'ADMIN PANEL',
+        items: [
+          { label: 'Dashboard', icon: LayoutDashboard, path: '/dashboard' },
+          { label: 'User Management', icon: User, path: '/admin/users' },
+          { label: 'CO₂ Listing Management', icon: Factory, path: '/dashboard/listings' },
+          { label: 'Verification & Certificates', icon: ShieldCheck, path: '/admin/verification' },
+          { label: 'Transaction Monitoring', icon: ShoppingBag, path: '/dashboard/orders' },
+          { label: 'Shipment Monitoring', icon: Truck, path: '/dashboard/shipments' },
+          { label: 'Complaints & Disputes', icon: MessageSquare, path: '/admin/disputes' },
+          { label: 'Reports & Analytics', icon: BarChart3, path: '/dashboard/analytics' },
+        ],
+      },
+      {
+        group: 'SYSTEM & ACCOUNT',
+        items: [
+          { label: 'Organization Registry', icon: Building2, path: '/dashboard/organization' },
+          { label: 'Security Console', icon: Lock, path: '/dashboard/settings/security' },
+        ],
+      },
+    ];
+  } else if (isRegulator) {
+    navSections = [
+      {
+        group: 'POLICY REGULATOR PANEL',
+        items: [
+          { label: 'Dashboard', icon: LayoutDashboard, path: '/dashboard' },
+          { label: 'Verification & Oversight', icon: ShieldCheck, path: '/admin/verification' },
+        ],
+      },
+      {
+        group: 'NETWORK AUDIT',
+        items: [
+          { label: 'All Stream Listings', icon: Factory, path: '/dashboard/listings' },
+          { label: 'All Demand Requirements', icon: Layers, path: '/dashboard/requirements' },
+          { label: 'Transaction History', icon: ShoppingBag, path: '/dashboard/orders' },
+          { label: 'Dispatches Audit', icon: Truck, path: '/dashboard/shipments' },
+          { label: 'Price Analytics', icon: BarChart3, path: '/dashboard/analytics' },
+        ],
+      },
+    ];
+  } else if (isLogistics) {
+    navSections = [
+      {
+        group: 'LOGISTICS PROVIDER PANEL',
+        items: [
+          { label: 'Dashboard', icon: LayoutDashboard, path: '/dashboard' },
+          { label: 'Transportation Request', icon: Truck, path: '/dashboard/logistics' },
+          { label: 'Shipment Management', icon: Truck, path: '/dashboard/shipments' },
+        ],
+      },
+      {
+        group: 'CONTRACTS & ACCOUNT',
+        items: [
+          { label: 'Transport Agreements', icon: ShoppingBag, path: '/dashboard/orders' },
+          { label: 'Inquiries & Offers', icon: Handshake, path: '/dashboard/offers' },
+          { label: 'Fleet Organization', icon: Building2, path: '/dashboard/organization' },
+          { label: 'User Profile', icon: User, path: '/dashboard/settings/profile' },
+        ],
+      },
+    ];
+  } else if (isUtilizer) {
+    navSections = [
+      {
+        group: 'UTILIZATION STARTUP PANEL',
+        items: [
+          { label: 'Dashboard', icon: LayoutDashboard, path: '/dashboard' },
+          { label: 'Buy CO₂', icon: PlusCircle, path: '/dashboard/requirements/new' },
+          { label: 'Inquiries & Offers', icon: Handshake, path: '/dashboard/offers' },
+          { label: 'Shipment Tracking', icon: Truck, path: '/dashboard/shipments' },
+        ],
+      },
+      {
+        group: 'NETWORK DISCOVERY',
+        items: [
+          { label: 'My Requirements', icon: Layers, path: '/dashboard/requirements' },
+          { label: 'Browse CO₂ Supply', icon: Factory, path: '/dashboard/marketplace' },
+          { label: 'Executed Purchases', icon: ShoppingBag, path: '/dashboard/orders' },
+          { label: 'Impact Analytics', icon: BarChart3, path: '/dashboard/analytics' },
+          { label: 'Organization Profile', icon: Building2, path: '/dashboard/organization' },
+        ],
+      },
+    ];
+  } else {
+    // Default: Industrial Carbon Emitter
+    navSections = [
+      {
+        group: 'INDUSTRIAL EMITTER PANEL',
+        items: [
+          { label: 'Dashboard', icon: LayoutDashboard, path: '/dashboard' },
+          { label: 'Sell CO₂', icon: PlusCircle, path: '/dashboard/listings/new' },
+          { label: 'Inquiries & Offers', icon: Handshake, path: '/dashboard/offers' },
+          { label: 'Transporters', icon: Truck, path: '/dashboard/logistics' },
+          { label: 'Shipment Tracking', icon: Truck, path: '/dashboard/shipments' },
+        ],
+      },
+      {
+        group: 'SUPPLY & CONTRACTS',
+        items: [
+          { label: 'My CO₂ Listings', icon: Factory, path: '/dashboard/listings' },
+          { label: 'Supply Marketplace', icon: Factory, path: '/dashboard/marketplace' },
+          { label: 'Off-Take Orders', icon: ShoppingBag, path: '/dashboard/orders' },
+          { label: 'Impact Analytics', icon: BarChart3, path: '/dashboard/analytics' },
+          { label: 'Organization Profile', icon: Building2, path: '/dashboard/organization' },
+        ],
+      },
+    ];
+  }
 
   const userInitials = user ? `${user.firstName[0]}${user.lastName[0]}`.toUpperCase() : 'CL';
 

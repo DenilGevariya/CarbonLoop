@@ -106,6 +106,67 @@ export const DashboardPage: React.FC = () => {
         </div>
       </FadeUp>
 
+      {/* 1.5. ROLE-SPECIFIC SEARCH BAR */}
+      <FadeUp delay={0.15} className="bg-white border border-[#E5EAEF] rounded-2xl p-5 shadow-xs space-y-3">
+        <div className="flex items-center justify-between">
+          <span className="text-xs font-bold text-[#2A3547] uppercase tracking-wider flex items-center gap-2">
+            🔍 {isEmitter ? 'Search Buyers' : isUtilizer ? 'Search Sellers' : isRegulator ? 'Regulator Network Search' : 'Network Exchange Search'}
+          </span>
+          <span className="text-[11px] text-[#5A6A85]">Filter by parameters</span>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-3">
+          <div>
+            <label className="text-[10px] font-bold text-[#5A6A85] uppercase tracking-wider block mb-1">
+              {isEmitter ? 'Buyer Name' : isUtilizer ? 'Seller Name' : 'Party / Company'}
+            </label>
+            <input
+              type="text"
+              placeholder={isEmitter ? 'e.g. GreenForge' : isUtilizer ? 'e.g. TerraCem' : 'Company Name'}
+              className="w-full h-9 px-3 bg-[#F6F9FC] border border-[#E5EAEF] text-xs font-medium text-[#2A3547] rounded-lg focus:outline-none focus:border-[#5D87FF]"
+            />
+          </div>
+
+          <div>
+            <label className="text-[10px] font-bold text-[#5A6A85] uppercase tracking-wider block mb-1">
+              {isEmitter ? 'Req Quantity (t)' : 'Offered Quantity (t)'}
+            </label>
+            <input
+              type="number"
+              placeholder="e.g. 500"
+              className="w-full h-9 px-3 bg-[#F6F9FC] border border-[#E5EAEF] text-xs font-medium text-[#2A3547] rounded-lg focus:outline-none focus:border-[#5D87FF]"
+            />
+          </div>
+
+          <div>
+            <label className="text-[10px] font-bold text-[#5A6A85] uppercase tracking-wider block mb-1">Purity (%)</label>
+            <input
+              type="text"
+              placeholder="e.g. ≥ 99.0%"
+              className="w-full h-9 px-3 bg-[#F6F9FC] border border-[#E5EAEF] text-xs font-medium text-[#2A3547] rounded-lg focus:outline-none focus:border-[#5D87FF]"
+            />
+          </div>
+
+          <div>
+            <label className="text-[10px] font-bold text-[#5A6A85] uppercase tracking-wider block mb-1">Price (₹/t)</label>
+            <input
+              type="number"
+              placeholder="e.g. 4800"
+              className="w-full h-9 px-3 bg-[#F6F9FC] border border-[#E5EAEF] text-xs font-medium text-[#2A3547] rounded-lg focus:outline-none focus:border-[#5D87FF]"
+            />
+          </div>
+
+          <div>
+            <label className="text-[10px] font-bold text-[#5A6A85] uppercase tracking-wider block mb-1">Location</label>
+            <input
+              type="text"
+              placeholder="e.g. Gujarat"
+              className="w-full h-9 px-3 bg-[#F6F9FC] border border-[#E5EAEF] text-xs font-medium text-[#2A3547] rounded-lg focus:outline-none focus:border-[#5D87FF]"
+            />
+          </div>
+        </div>
+      </FadeUp>
+
       {/* 2. ROLE-SPECIFIC METRIC CARDS */}
       <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         {isEmitter && (

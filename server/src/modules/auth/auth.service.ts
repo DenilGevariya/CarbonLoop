@@ -14,11 +14,17 @@ export class AuthService {
   private repo = new AuthRepository();
 
   async register(data: {
-    firstName: string;
-    lastName: string;
+    firstName?: string;
+    lastName?: string;
     email: string;
     password: string;
     phone?: string | null;
+    roleType?: string;
+    companyName?: string | null;
+    gstNumber?: string | null;
+    gstCertificateUrl?: string | null;
+    registrationNumber?: string | null;
+    otpCode?: string | null;
   }) {
     const existing = await this.repo.findUserByEmail(data.email);
     if (existing) {
@@ -30,9 +36,20 @@ export class AuthService {
     const user = await this.repo.createUser({
       email: data.email,
       passwordHash,
-      firstName: data.firstName,
-      lastName: data.lastName,
+      firstName: data.firstName || 'Member',
+      lastName: data.lastName || 'User',
       phone: data.phone,
+    });
+
+    const roleName = data.roleType?.toLowerCase() || 'emitter';
+    await this.repo.assignUserRole(user.id, roleName);
+
+    const defaultOrgName = data.companyName || `${data.firstName || 'Member'} ${data.roleType || 'Enterprise'}`;
+    await this.repo.createDefaultOrganizationForUser(user.id, {
+      orgName: defaultOrgName,
+      orgType: data.roleType || 'EMITTER',
+      gstNumber: data.gstNumber,
+      registrationNumber: data.registrationNumber,
     });
 
     return user;
