@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { apiRequest } from '@/lib/api';
-import { useCreateListing, useUpdateListing } from '../../hooks/useListings';
+import { useCreateListing, useListingStatusAction, useUpdateListing } from '../../hooks/useListings';
 import type { ListingDTO } from '../../types/listing';
 import { 
   Check, 
@@ -27,6 +27,7 @@ import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { NativeSelect } from '@/components/ui/native-select';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { toast } from '@/components/ui/toast';
 import { ReportViewerModal } from '../ReportViewerModal';
 
 const listingFormSchema = z.object({
@@ -86,6 +87,7 @@ export const ListingForm: React.FC<Props> = ({ initialListing, mode = 'create' }
 
   const createMutation = useCreateListing();
   const updateMutation = useUpdateListing();
+  const statusMutation = useListingStatusAction();
 
   const form = useForm<ListingFormValues>({
     resolver: zodResolver(listingFormSchema),
@@ -147,23 +149,29 @@ export const ListingForm: React.FC<Props> = ({ initialListing, mode = 'create' }
     const isValid = await form.trigger();
     if (!isValid) return;
 
-    const values = form.getValues();
-    if (mode === 'create') {
-      const res = await createMutation.mutateAsync({
-        ...values,
-        publishNow: false,
-      });
-      if (res.success) {
+    try {
+      const values = form.getValues();
+      if (mode === 'create') {
+        await createMutation.mutateAsync({
+          ...values,
+          publishNow: false,
+        });
         navigate('/dashboard/listings');
+      } else if (initialListing) {
+        const res = await updateMutation.mutateAsync({
+          id: initialListing.id,
+          input: values,
+        });
+        if (res.success) {
+          navigate('/dashboard/listings');
+        }
       }
-    } else if (initialListing) {
-      const res = await updateMutation.mutateAsync({
-        id: initialListing.id,
-        input: values,
+    } catch (error) {
+      toast.add({
+        title: 'Unable to save listing',
+        description: error instanceof Error ? error.message : 'Please try again.',
+        type: 'error',
       });
-      if (res.success) {
-        navigate('/dashboard/listings');
-      }
     }
   };
 
@@ -171,29 +179,50 @@ export const ListingForm: React.FC<Props> = ({ initialListing, mode = 'create' }
     const isValid = await form.trigger();
     if (!isValid) return;
 
-    const values = form.getValues();
-    if (mode === 'create') {
-      const res = await createMutation.mutateAsync({
-        ...values,
-        publishNow: true,
-      });
-      if (res.success) {
+    try {
+      const values = form.getValues();
+      if (mode === 'create') {
+        await createMutation.mutateAsync({
+          ...values,
+          publishNow: true,
+        });
+        toast.add({
+          title: 'Listing published',
+          description: 'Your CO₂ listing is now visible in My Listings.',
+          type: 'success',
+        });
         navigate('/dashboard/listings', {
           state: { successMessage: 'CO₂ listing published successfully.' },
         });
+      } else if (initialListing) {
+        const res = await updateMutation.mutateAsync({
+          id: initialListing.id,
+          input: values,
+        });
+        if (res.success) {
+          if (initialListing.status !== 'PUBLISHED') {
+            await statusMutation.mutateAsync({ id: initialListing.id, action: 'publish' });
+          }
+          toast.add({
+            title: 'Listing published',
+            description: 'Your CO₂ listing is now visible in My Listings.',
+            type: 'success',
+          });
+          navigate('/dashboard/listings', {
+            state: { successMessage: 'CO₂ listing published successfully.' },
+          });
+        }
       }
-    } else if (initialListing) {
-      const res = await updateMutation.mutateAsync({
-        id: initialListing.id,
-        input: values,
+    } catch (error) {
+      toast.add({
+        title: 'Unable to publish listing',
+        description: error instanceof Error ? error.message : 'Please try again.',
+        type: 'error',
       });
-      if (res.success) {
-        navigate('/dashboard/listings');
-      }
     }
   };
 
-  const isSubmitting = createMutation.isPending || updateMutation.isPending;
+  const isSubmitting = createMutation.isPending || updateMutation.isPending || statusMutation.isPending;
   const values = form.watch();
 
   return (

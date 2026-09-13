@@ -14,6 +14,15 @@ import {
 } from '../api/listingsApi';
 import type { ListingFilterParams, CreateListingInput, UpdateListingInput } from '../types/listing';
 
+function getApiErrorMessage(response: { error?: unknown }) {
+  const error = response.error;
+  if (typeof error === 'string') return error;
+  if (error && typeof error === 'object' && 'message' in error && typeof error.message === 'string') {
+    return error.message;
+  }
+  return 'The listing request could not be completed.';
+}
+
 export function useMarketplaceListings(filters: ListingFilterParams = {}) {
   return useQuery({
     queryKey: ['marketplaceListings', filters],
@@ -67,12 +76,18 @@ export function useListingDetail(identifier?: string) {
 export function useCreateListing() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (input: CreateListingInput) => createListing(input),
+    mutationFn: async (input: CreateListingInput) => {
+      const response = await createListing(input);
+      if (!response.success) {
+        throw new Error(getApiErrorMessage(response));
+      }
+      return response;
+    },
     onSuccess: async () => {
       await Promise.all([
-        queryClient.invalidateQueries({ queryKey: ['mySupplyListings'] }),
-        queryClient.invalidateQueries({ queryKey: ['marketplaceListings'] }),
-        queryClient.invalidateQueries({ queryKey: ['marketplaceStats'] }),
+        queryClient.invalidateQueries({ queryKey: ['mySupplyListings'], refetchType: 'all' }),
+        queryClient.invalidateQueries({ queryKey: ['marketplaceListings'], refetchType: 'all' }),
+        queryClient.invalidateQueries({ queryKey: ['marketplaceStats'], refetchType: 'all' }),
       ]);
     },
   });
@@ -81,7 +96,13 @@ export function useCreateListing() {
 export function useUpdateListing() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, input }: { id: string; input: UpdateListingInput }) => updateListing(id, input),
+    mutationFn: async ({ id, input }: { id: string; input: UpdateListingInput }) => {
+      const response = await updateListing(id, input);
+      if (!response.success) {
+        throw new Error(getApiErrorMessage(response));
+      }
+      return response;
+    },
     onSuccess: async (_, variables) => {
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: ['listingDetail', variables.id] }),
@@ -96,14 +117,19 @@ export function useListingStatusAction() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({ id, action, reason }: { id: string; action: 'publish' | 'pause' | 'resume' | 'archive' | 'exhausted'; reason?: string }) => {
+      let response;
       switch (action) {
-        case 'publish': return publishListing(id);
-        case 'pause': return pauseListing(id, reason);
-        case 'resume': return resumeListing(id);
-        case 'archive': return archiveListing(id, reason);
-        case 'exhausted': return markExhaustedListing(id, reason);
+        case 'publish': response = await publishListing(id); break;
+        case 'pause': response = await pauseListing(id, reason); break;
+        case 'resume': response = await resumeListing(id); break;
+        case 'archive': response = await archiveListing(id, reason); break;
+        case 'exhausted': response = await markExhaustedListing(id, reason); break;
         default: throw new Error('Unknown action');
       }
+      if (!response.success) {
+        throw new Error(getApiErrorMessage(response));
+      }
+      return response;
     },
     onSuccess: async () => {
       await Promise.all([

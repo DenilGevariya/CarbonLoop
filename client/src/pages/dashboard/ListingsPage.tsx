@@ -12,6 +12,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { NativeSelect } from '@/components/ui/native-select';
 import { Skeleton } from '@/components/ui/skeleton';
+import { toast } from '@/components/ui/toast';
 
 export const ListingsPage: React.FC = () => {
   const navigate = useNavigate();
@@ -51,6 +52,11 @@ export const ListingsPage: React.FC = () => {
   const handlePublishConfirm = async () => {
     if (!selectedListing) return;
     await statusMutation.mutateAsync({ id: selectedListing.id, action: 'publish' });
+    toast.add({
+      title: 'Listing published',
+      description: 'Your CO₂ listing is now visible in the marketplace.',
+      type: 'success',
+    });
     setSuccessMessage('CO₂ listing published successfully.');
     setPublishOpen(false);
     setSelectedListing(null);
@@ -72,6 +78,11 @@ export const ListingsPage: React.FC = () => {
 
   const handleResume = async (listing: ListingDTO) => {
     await statusMutation.mutateAsync({ id: listing.id, action: 'resume' });
+    toast.add({
+      title: 'Listing published',
+      description: 'Your CO₂ listing is now visible in the marketplace.',
+      type: 'success',
+    });
     setSuccessMessage('CO₂ listing published successfully.');
   };
 
