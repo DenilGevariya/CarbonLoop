@@ -30,9 +30,13 @@ if (env.DATABASE_URL) {
 
 export const pool = poolInstance as unknown as PgPool;
 
-pool.on('error', (err: any) => {
-  console.error('❌ Unexpected error on idle PostgreSQL client', err);
-});
+// The Neon pool switches to direct TCP when pool listeners are registered.
+// Keep the listener for local pg, but leave Neon fully on its HTTPS path.
+if (!env.DATABASE_URL) {
+  pool.on('error', (err: any) => {
+    console.error('❌ Unexpected error on idle PostgreSQL client', err);
+  });
+}
 
 export async function query<T extends QueryResultRow = any>(
   text: string,
