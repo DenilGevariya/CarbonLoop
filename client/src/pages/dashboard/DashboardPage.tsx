@@ -59,6 +59,14 @@ export const DashboardPage: React.FC = () => {
   const isRegulator = orgType === 'REGULATOR';
   const isAdmin = (user?.roles || []).some((r) => r.toLowerCase() === 'platform_admin' || r.toLowerCase() === 'admin');
 
+  useEffect(() => {
+    if (isAdmin) {
+      navigate('/admin', { replace: true });
+    } else if (isLogistics) {
+      navigate('/logistics', { replace: true });
+    }
+  }, [isAdmin, isLogistics, navigate]);
+
   const handleDashboardSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const queryParams = new URLSearchParams();

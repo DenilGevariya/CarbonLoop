@@ -19,23 +19,20 @@ import { HowItWorksPage } from '@/pages/public/HowItWorksPage';
 import { PublicImpactPage } from '@/pages/public/PublicImpactPage';
 import { PublicOrganizationPage } from '@/pages/public/PublicOrganizationPage';
 
-// Admin Command Center Imports
-import { AdminLayout } from '@/features/admin/components/AdminLayout';
-import { AdminOverviewPage } from '@/pages/admin/AdminOverviewPage';
-import { AdminOrganizationsPage } from '@/pages/admin/AdminOrganizationsPage';
-import { AdminOrganizationDetailPage } from '@/pages/admin/AdminOrganizationDetailPage';
+// Admin Pages
+import AdminDashboardPage from '@/pages/admin/AdminDashboardPage';
 import { AdminUsersPage } from '@/pages/admin/AdminUsersPage';
 import { AdminUserDetailPage } from '@/pages/admin/AdminUserDetailPage';
-import { AdminMatchesPage } from '@/pages/admin/AdminMatchesPage';
-import { AdminAuditLogPage } from '@/pages/admin/AdminAuditLogPage';
-import { AdminNetworkMapPage } from '@/pages/admin/AdminNetworkMapPage';
-import { AdminSystemHealthPage } from '@/pages/admin/AdminSystemHealthPage';
+import AdminListingsPage from '@/pages/admin/AdminListingsPage';
+import AdminVerificationPage from '@/pages/admin/AdminVerificationPage';
+import AdminVerificationDetailPage from '@/pages/admin/AdminVerificationDetailPage';
+import AdminTransactionsPage from '@/pages/admin/AdminTransactionsPage';
+import AdminShipmentsPage from '@/pages/admin/AdminShipmentsPage';
 import { AdminDisputesPage } from '@/pages/admin/AdminDisputesPage';
+import AdminAnalyticsPage from '@/pages/admin/AdminAnalyticsPage';
 
 // Trust Network & Verification Pages
 import OrganizationVerificationPage from '@/pages/dashboard/OrganizationVerificationPage';
-import AdminVerificationPage from '@/pages/admin/AdminVerificationPage';
-import AdminVerificationDetailPage from '@/pages/admin/AdminVerificationDetailPage';
 
 // Auth & Onboarding Pages
 import { LoginPage } from '@/pages/auth/LoginPage';
@@ -43,7 +40,7 @@ import { RegisterPage } from '@/pages/auth/RegisterPage';
 import { ForgotPasswordPage } from '@/pages/auth/ForgotPasswordPage';
 import { OnboardingPage } from '@/pages/auth/OnboardingPage';
 
-// Dashboard Pages
+// Dashboard & Role Pages
 import DashboardPage from '@/pages/dashboard/DashboardPage';
 import ListingsPage from '@/pages/dashboard/ListingsPage';
 import CreateListingPage from '@/pages/dashboard/CreateListingPage';
@@ -62,6 +59,7 @@ import NotificationsPage from '@/pages/dashboard/NotificationsPage';
 import { ShipmentsPage } from '@/pages/dashboard/ShipmentsPage';
 import { ShipmentDetailPage } from '@/pages/dashboard/ShipmentDetailPage';
 import { LogisticsDashboardPage } from '@/pages/dashboard/LogisticsDashboardPage';
+import TransportationRequestsPage from '@/pages/dashboard/TransportationRequestsPage';
 import AnalyticsPage from '@/pages/dashboard/AnalyticsPage';
 import ImpactReportPage from '@/pages/dashboard/ImpactReportPage';
 import SettingsPage from '@/pages/dashboard/SettingsPage';
@@ -90,31 +88,48 @@ const router = createBrowserRouter([
       { path: 'organizations/:slug', element: <PublicOrganizationPage /> },
     ],
   },
-  // Protected Admin Routes
+
+  // Single Protected Admin Console (Single Sidebar)
   {
     path: '/admin',
     element: <ProtectedRoute />,
     children: [
       {
-        element: <AdminLayout />,
+        element: <DashboardLayout />,
         children: [
-          { index: true, element: <AdminOverviewPage /> },
-          { path: 'organizations', element: <AdminOrganizationsPage /> },
-          { path: 'organizations/:id', element: <AdminOrganizationDetailPage /> },
+          { index: true, element: <AdminDashboardPage /> },
           { path: 'users', element: <AdminUsersPage /> },
           { path: 'users/:id', element: <AdminUserDetailPage /> },
-          { path: 'matches', element: <AdminMatchesPage /> },
-          { path: 'audit-logs', element: <AdminAuditLogPage /> },
-          { path: 'network-map', element: <AdminNetworkMapPage /> },
-          { path: 'health', element: <AdminSystemHealthPage /> },
+          { path: 'listings', element: <AdminListingsPage /> },
           { path: 'verification', element: <AdminVerificationPage /> },
           { path: 'verification/:id', element: <AdminVerificationDetailPage /> },
+          { path: 'transactions', element: <AdminTransactionsPage /> },
+          { path: 'shipments', element: <AdminShipmentsPage /> },
           { path: 'disputes', element: <AdminDisputesPage /> },
+          { path: 'analytics', element: <AdminAnalyticsPage /> },
         ],
       },
     ],
   },
-  // Public-only Auth routes (redirect to /dashboard if already logged in)
+
+  // Logistics Provider Console
+  {
+    path: '/logistics',
+    element: <ProtectedRoute />,
+    children: [
+      {
+        element: <DashboardLayout />,
+        children: [
+          { index: true, element: <LogisticsDashboardPage /> },
+          { path: 'requests', element: <TransportationRequestsPage /> },
+          { path: 'shipments', element: <ShipmentsPage /> },
+          { path: 'shipments/:shipmentNumber', element: <ShipmentDetailPage /> },
+        ],
+      },
+    ],
+  },
+
+  // Public-only Auth routes
   {
     path: '/',
     element: <PublicOnlyRoute />,
@@ -129,6 +144,7 @@ const router = createBrowserRouter([
       },
     ],
   },
+
   // Protected Onboarding
   {
     path: '/onboarding',
@@ -137,7 +153,8 @@ const router = createBrowserRouter([
       { index: true, element: <OnboardingPage /> },
     ],
   },
-  // Protected Dashboard Application Shell
+
+  // Protected Dashboard Application Shell (Emitter / Buyer / Regulator)
   {
     path: '/dashboard',
     element: <ProtectedRoute />,

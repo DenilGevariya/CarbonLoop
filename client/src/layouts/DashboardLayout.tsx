@@ -83,14 +83,14 @@ const DashboardInner: React.FC = () => {
       {
         group: 'ADMIN PANEL',
         items: [
-          { label: 'Dashboard', icon: LayoutDashboard, path: '/dashboard' },
+          { label: 'Dashboard', icon: LayoutDashboard, path: '/admin' },
           { label: 'User Management', icon: User, path: '/admin/users' },
-          { label: 'CO₂ Listing Management', icon: Factory, path: '/dashboard/listings' },
+          { label: 'CO₂ Listing Management', icon: Factory, path: '/admin/listings' },
           { label: 'Verification & Certificates', icon: ShieldCheck, path: '/admin/verification' },
-          { label: 'Transaction Monitoring', icon: ShoppingBag, path: '/dashboard/orders' },
-          { label: 'Shipment Monitoring', icon: Truck, path: '/dashboard/shipments' },
+          { label: 'Transaction Monitoring', icon: ShoppingBag, path: '/admin/transactions' },
+          { label: 'Shipment Monitoring', icon: Truck, path: '/admin/shipments' },
           { label: 'Complaints & Disputes', icon: MessageSquare, path: '/admin/disputes' },
-          { label: 'Reports & Analytics', icon: BarChart3, path: '/dashboard/analytics' },
+          { label: 'Reports & Analytics', icon: BarChart3, path: '/admin/analytics' },
         ],
       },
     ];
@@ -109,9 +109,9 @@ const DashboardInner: React.FC = () => {
       {
         group: 'LOGISTICS PROVIDERS',
         items: [
-          { label: 'Dashboard', icon: LayoutDashboard, path: '/dashboard' },
-          { label: 'Transportation Request', icon: Truck, path: '/dashboard/logistics' },
-          { label: 'Shipment Management', icon: Truck, path: '/dashboard/shipments' },
+          { label: 'Dashboard', icon: LayoutDashboard, path: '/logistics' },
+          { label: 'Transportation Request', icon: Truck, path: '/logistics/requests' },
+          { label: 'Shipment Management', icon: Truck, path: '/logistics/shipments' },
         ],
       },
     ];
@@ -306,7 +306,7 @@ const DashboardInner: React.FC = () => {
 
             <Badge variant="outline" className="border-[#5D87FF]/30 text-[#5D87FF] bg-[#ECF2FF] text-[10px] sm:text-xs font-bold rounded-full px-2.5 sm:px-3 py-0.5 sm:py-1 truncate">
               <ShieldCheck className="size-3 sm:size-3.5 mr-1 text-[#5D87FF] shrink-0" />
-              {activeOrg ? activeOrg.orgType : 'VERIFIED'}
+              {isAdmin ? 'ADMIN' : isLogistics ? 'LOGISTICS PROVIDER' : activeOrg ? activeOrg.orgType : 'VERIFIED'}
             </Badge>
 
             <Button

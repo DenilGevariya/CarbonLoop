@@ -191,17 +191,17 @@ export const GlobalCommandSearch: React.FC<GlobalCommandSearchProps> = ({ isOpen
               <div className="grid grid-cols-2 gap-2">
                 {isAdmin ? (
                   <>
-                    <button onClick={() => { onClose(); navigate('/admin/organizations'); }} className="flex items-center gap-2 p-2.5 rounded-lg border border-[#E5EAEF] bg-white hover:bg-[#F6F9FC] transition-colors text-left text-xs font-semibold text-[#2A3547]">
-                      <Building2 className="w-4 h-4 text-[#5D87FF]" /> Manage Organizations
-                    </button>
                     <button onClick={() => { onClose(); navigate('/admin/users'); }} className="flex items-center gap-2 p-2.5 rounded-lg border border-[#E5EAEF] bg-white hover:bg-[#F6F9FC] transition-colors text-left text-xs font-semibold text-[#2A3547]">
-                      <ShieldCheck className="w-4 h-4 text-[#13DEB9]" /> Platform User Access
+                      <ShieldCheck className="w-4 h-4 text-[#5D87FF]" /> User Management
                     </button>
-                    <button onClick={() => { onClose(); navigate('/admin/matches'); }} className="flex items-center gap-2 p-2.5 rounded-lg border border-[#E5EAEF] bg-white hover:bg-[#F6F9FC] transition-colors text-left text-xs font-semibold text-[#2A3547]">
-                      <FileText className="w-4 h-4 text-[#5D87FF]" /> Match Score Debugger
+                    <button onClick={() => { onClose(); navigate('/admin/listings'); }} className="flex items-center gap-2 p-2.5 rounded-lg border border-[#E5EAEF] bg-white hover:bg-[#F6F9FC] transition-colors text-left text-xs font-semibold text-[#2A3547]">
+                      <Package className="w-4 h-4 text-[#13DEB9]" /> CO₂ Listing Management
                     </button>
-                    <button onClick={() => { onClose(); navigate('/admin/health'); }} className="flex items-center gap-2 p-2.5 rounded-lg border border-[#E5EAEF] bg-white hover:bg-[#F6F9FC] transition-colors text-left text-xs font-semibold text-[#2A3547]">
-                      <Factory className="w-4 h-4 text-[#FFAE1F]" /> System Health Diagnostics
+                    <button onClick={() => { onClose(); navigate('/admin/verification'); }} className="flex items-center gap-2 p-2.5 rounded-lg border border-[#E5EAEF] bg-white hover:bg-[#F6F9FC] transition-colors text-left text-xs font-semibold text-[#2A3547]">
+                      <ShieldCheck className="w-4 h-4 text-[#5D87FF]" /> Verification & Certificates
+                    </button>
+                    <button onClick={() => { onClose(); navigate('/admin/transactions'); }} className="flex items-center gap-2 p-2.5 rounded-lg border border-[#E5EAEF] bg-white hover:bg-[#F6F9FC] transition-colors text-left text-xs font-semibold text-[#2A3547]">
+                      <ShoppingCart className="w-4 h-4 text-purple-600" /> Transaction Monitoring
                     </button>
                   </>
                 ) : (
