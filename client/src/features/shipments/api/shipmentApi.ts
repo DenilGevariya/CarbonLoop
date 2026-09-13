@@ -1,4 +1,4 @@
-import { apiClient } from '@/api/client';
+import { apiClient, extractCollection, type CollectionResponse } from '@/api/client';
 import type { TransportMode } from '@/features/logistics/api/logisticsApi';
 
 export type ShipmentStatus =
@@ -96,11 +96,16 @@ export interface ShipmentItem {
 }
 
 export const shipmentApi = {
-  getShipments: (role: 'sent' | 'received' | 'all' = 'all', orderId?: string, status?: string) => {
+  getShipments: async (role: 'sent' | 'received' | 'all' = 'all', orderId?: string, status?: string) => {
     let url = `/shipments?role=${role}`;
     if (orderId) url += `&order_id=${orderId}`;
     if (status) url += `&status=${status}`;
-    return apiClient.get<{ items: ShipmentItem[]; total: number }>(url);
+    const response = await apiClient.get<ShipmentItem[] | CollectionResponse<ShipmentItem>>(url);
+    return {
+      items: extractCollection(response),
+      pagination: !Array.isArray(response) ? response.pagination : undefined,
+      total: !Array.isArray(response) ? response.pagination?.total || response.total || 0 : response.length,
+    };
   },
   getShipmentDetail: (idOrNumber: string) => apiClient.get<ShipmentItem>(`/shipments/${idOrNumber}`),
   scheduleShipment: (id: string, pickupAt?: string, deliveryAt?: string) =>

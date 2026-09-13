@@ -11,6 +11,20 @@ export class ApiError extends Error {
   }
 }
 
+export type CollectionResponse<T> = {
+  data?: T[];
+  items?: T[];
+  pagination?: { page: number; limit: number; total: number; totalPages: number };
+  total?: number;
+};
+
+export function extractCollection<T>(response: T[] | CollectionResponse<T> | null | undefined): T[] {
+  if (Array.isArray(response)) return response;
+  if (Array.isArray(response?.data)) return response.data;
+  if (Array.isArray(response?.items)) return response.items;
+  return [];
+}
+
 async function request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
   const res = await apiRequest<any>(endpoint, options);
 
@@ -22,7 +36,18 @@ async function request<T>(endpoint: string, options: RequestInit = {}): Promise<
     );
   }
 
-  return res.data !== undefined ? res.data : (res as unknown as T);
+  // Strip only the envelope fields (success, error) and return everything else.
+  // This preserves top-level pagination, items, stats, data, etc.
+  const { success: _s, error: _e, ...rest } = res;
+
+  // If there are no extra keys beyond data, return data directly (simple objects/arrays)
+  const restKeys = Object.keys(rest);
+  if (restKeys.length === 1 && 'data' in rest) {
+    return rest.data as T;
+  }
+
+  // Otherwise return the full payload (e.g. { data, pagination } or { items, pagination } or { kpis, health })
+  return rest as unknown as T;
 }
 
 export const apiClient = {
@@ -41,4 +66,3 @@ export const apiClient = {
   delete: <T>(endpoint: string, options?: RequestInit) =>
     request<T>(endpoint, { method: 'DELETE', ...options }),
 };
-

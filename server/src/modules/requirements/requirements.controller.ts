@@ -6,6 +6,33 @@ import {
   statusChangeSchema,
   filterRequirementsSchema,
 } from './requirements.validation';
+import { AuthenticatedRequest } from '../auth/auth.types';
+import { pool } from '../../config/database';
+
+/**
+ * Utility helper to resolve the active organization ID for an authenticated user
+ */
+async function resolveUserOrgId(req: AuthenticatedRequest): Promise<string | null> {
+  const userId = req.user?.userId;
+  if (!userId) return null;
+
+  // Header override if specified
+  const headerOrgId = req.headers['x-organization-id'] as string;
+  if (headerOrgId) {
+    const check = await pool.query(
+      'SELECT organization_id FROM organization_members WHERE user_id = $1 AND organization_id = $2',
+      [userId, headerOrgId]
+    );
+    if (check.rows.length > 0) return headerOrgId;
+  }
+
+  // Primary user organization lookup
+  const res = await pool.query(
+    'SELECT organization_id FROM organization_members WHERE user_id = $1 ORDER BY created_at ASC LIMIT 1',
+    [userId]
+  );
+  return res.rows[0]?.organization_id || null;
+}
 
 export class RequirementController {
   // GET /api/v1/requirements (Public Demand Marketplace)
@@ -25,11 +52,11 @@ export class RequirementController {
   // GET /api/v1/requirements/my-requirements (Authenticated Organization Demand)
   static async getMyRequirements(req: Request, res: Response, next: NextFunction) {
     try {
-      const orgId = (req as any).user?.active_organization_id;
+      const orgId = await resolveUserOrgId(req as AuthenticatedRequest);
       if (!orgId) {
         return res.status(400).json({
           success: false,
-          error: { message: 'Active organization required' },
+          error: { message: 'User does not belong to an active organization' },
         });
       }
 
@@ -87,8 +114,8 @@ export class RequirementController {
   // POST /api/v1/requirements
   static async createRequirement(req: Request, res: Response, next: NextFunction) {
     try {
-      const orgId = (req as any).user?.active_organization_id;
-      const userId = (req as any).user?.id;
+      const orgId = await resolveUserOrgId(req as AuthenticatedRequest);
+      const userId = (req as AuthenticatedRequest).user?.userId;
 
       if (!orgId || !userId) {
         return res.status(400).json({
@@ -114,7 +141,7 @@ export class RequirementController {
   static async updateRequirement(req: Request, res: Response, next: NextFunction) {
     try {
       const id = req.params.id as string;
-      const orgId = (req as any).user?.active_organization_id;
+      const orgId = await resolveUserOrgId(req as AuthenticatedRequest);
 
       if (!orgId) {
         return res.status(400).json({
@@ -140,13 +167,13 @@ export class RequirementController {
   static async publishRequirement(req: Request, res: Response, next: NextFunction) {
     try {
       const id = req.params.id as string;
-      const orgId = (req as any).user?.active_organization_id;
-      const userId = (req as any).user?.id;
+      const orgId = await resolveUserOrgId(req as AuthenticatedRequest);
+      const userId = (req as AuthenticatedRequest).user?.userId;
 
       const updated = await RequirementService.transitionStatus(
         id,
-        orgId,
-        userId,
+        orgId || '',
+        userId || '',
         'PUBLISHED',
         'Published requirement to CarbonLoop demand network'
       );
@@ -164,14 +191,14 @@ export class RequirementController {
   static async pauseRequirement(req: Request, res: Response, next: NextFunction) {
     try {
       const id = req.params.id as string;
-      const orgId = (req as any).user?.active_organization_id;
-      const userId = (req as any).user?.id;
+      const orgId = await resolveUserOrgId(req as AuthenticatedRequest);
+      const userId = (req as AuthenticatedRequest).user?.userId;
       const { reason } = statusChangeSchema.parse(req.body || {});
 
       const updated = await RequirementService.transitionStatus(
         id,
-        orgId,
-        userId,
+        orgId || '',
+        userId || '',
         'PAUSED',
         reason || 'Temporarily paused demand requirement'
       );
@@ -189,13 +216,13 @@ export class RequirementController {
   static async resumeRequirement(req: Request, res: Response, next: NextFunction) {
     try {
       const id = req.params.id as string;
-      const orgId = (req as any).user?.active_organization_id;
-      const userId = (req as any).user?.id;
+      const orgId = await resolveUserOrgId(req as AuthenticatedRequest);
+      const userId = (req as AuthenticatedRequest).user?.userId;
 
       const updated = await RequirementService.transitionStatus(
         id,
-        orgId,
-        userId,
+        orgId || '',
+        userId || '',
         'PUBLISHED',
         'Resumed published requirement'
       );
@@ -213,14 +240,14 @@ export class RequirementController {
   static async archiveRequirement(req: Request, res: Response, next: NextFunction) {
     try {
       const id = req.params.id as string;
-      const orgId = (req as any).user?.active_organization_id;
-      const userId = (req as any).user?.id;
+      const orgId = await resolveUserOrgId(req as AuthenticatedRequest);
+      const userId = (req as AuthenticatedRequest).user?.userId;
       const { reason } = statusChangeSchema.parse(req.body || {});
 
       const updated = await RequirementService.transitionStatus(
         id,
-        orgId,
-        userId,
+        orgId || '',
+        userId || '',
         'ARCHIVED',
         reason || 'Archived requirement'
       );
@@ -238,14 +265,14 @@ export class RequirementController {
   static async markFulfilled(req: Request, res: Response, next: NextFunction) {
     try {
       const id = req.params.id as string;
-      const orgId = (req as any).user?.active_organization_id;
-      const userId = (req as any).user?.id;
+      const orgId = await resolveUserOrgId(req as AuthenticatedRequest);
+      const userId = (req as AuthenticatedRequest).user?.userId;
       const { reason } = statusChangeSchema.parse(req.body || {});
 
       const updated = await RequirementService.transitionStatus(
         id,
-        orgId,
-        userId,
+        orgId || '',
+        userId || '',
         'FULFILLED',
         reason || 'Requirement fulfilled'
       );

@@ -156,7 +156,7 @@ export const adminApi = {
     if (params?.search) q.append('search', params.search);
     if (params?.page) q.append('page', String(params.page));
     if (params?.limit) q.append('limit', String(params.limit));
-    return apiClient.get<{ items: AdminOrgListItem[]; pagination: { page: number; limit: number; total: number; totalPages: number } }>(
+    return apiClient.get<{ data?: AdminOrgListItem[]; items?: AdminOrgListItem[]; pagination?: { page: number; limit: number; total: number; totalPages: number } }>(
       `/admin/organizations?${q.toString()}`
     );
   },
@@ -174,7 +174,7 @@ export const adminApi = {
     if (params?.search) q.append('search', params.search);
     if (params?.page) q.append('page', String(params.page));
     if (params?.limit) q.append('limit', String(params.limit));
-    return apiClient.get<{ items: AdminUserListItem[]; pagination: { page: number; limit: number; total: number; totalPages: number } }>(
+    return apiClient.get<{ data?: AdminUserListItem[]; items?: AdminUserListItem[]; pagination?: { page: number; limit: number; total: number; totalPages: number } }>(
       `/admin/users?${q.toString()}`
     );
   },
@@ -203,7 +203,7 @@ export const adminApi = {
     if (params?.search) q.append('search', params.search);
     if (params?.page) q.append('page', String(params.page));
     if (params?.limit) q.append('limit', String(params.limit));
-    return apiClient.get<{ items: AuditLogRecord[]; pagination: { page: number; limit: number; total: number; totalPages: number } }>(
+    return apiClient.get<{ data?: AuditLogRecord[]; items?: AuditLogRecord[]; pagination?: { page: number; limit: number; total: number; totalPages: number } }>(
       `/admin/audit-logs?${q.toString()}`
     );
   },
@@ -214,7 +214,7 @@ export const adminApi = {
     if (params?.search) q.append('search', params.search);
     if (params?.page) q.append('page', String(params.page));
     if (params?.limit) q.append('limit', String(params.limit));
-    return apiClient.get<{ items: any[]; pagination: { page: number; limit: number; total: number; totalPages: number } }>(
+    return apiClient.get<{ data?: any[]; items?: any[]; pagination?: { page: number; limit: number; total: number; totalPages: number } }>(
       `/admin/disputes?${q.toString()}`
     );
   },
@@ -222,4 +222,3 @@ export const adminApi = {
   updateDisputeStatus: (id: string, status: string, resolutionNotes?: string) =>
     apiClient.patch<any>(`/admin/disputes/${id}/status`, { status, resolutionNotes }),
 };
-

@@ -77,7 +77,7 @@ export const LogisticsDashboardPage: React.FC = () => {
       if (filterMinQty) queryObj.min_quantity = filterMinQty;
 
       const res = await logisticsApi.getAvailableRequests(queryObj);
-      if (res?.items) setRequests(res.items);
+      setRequests(Array.isArray(res?.items) ? res.items : []);
     } catch (err: any) {
       console.error('Failed to load available transport requests:', err);
     } finally {

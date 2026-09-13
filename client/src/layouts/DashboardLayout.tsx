@@ -65,14 +65,22 @@ const DashboardInner: React.FC = () => {
     setIsSearchOpen(true);
   };
 
-  const orgType = activeOrg?.orgType?.toUpperCase() || 'EMITTER';
-  const isUtilizer = orgType === 'BUYER' || orgType === 'UTILIZER';
-  const isLogistics = orgType === 'LOGISTICS_PROVIDER';
-  const isRegulator = orgType === 'REGULATOR';
-  const isAdmin = (user?.roles || []).some(
-    (r) => r.toLowerCase() === 'platform_admin' || r.toLowerCase() === 'admin'
-  );
+  const userRoles = (user?.roles || []).map((r) => r.toLowerCase().replace('-', '_'));
+  const activeOrgType = (activeOrg?.orgType || '').toLowerCase().replace('-', '_');
 
+  const isAdmin = userRoles.some((r) => r === 'platform_admin' || r === 'admin' || r === 'platform_administrator');
+  const isRegulator = !isAdmin && (
+    userRoles.some((r) => r === 'regulator' || r === 'policy_regulator' || r === 'gpcb') ||
+    activeOrgType === 'regulator' || activeOrgType === 'policy_regulator'
+  );
+  const isLogistics = !isAdmin && !isRegulator && (
+    userRoles.some((r) => r === 'logistics_provider' || r === 'logistics' || r === 'transporter') ||
+    activeOrgType === 'logistics_provider' || activeOrgType === 'logistics'
+  );
+  const isUtilizer = !isAdmin && !isRegulator && !isLogistics && (
+    userRoles.some((r) => r === 'utilizer' || r === 'buyer' || r === 'carbon_utilizer') ||
+    activeOrgType === 'buyer' || activeOrgType === 'utilizer'
+  );
   let navSections: {
     group: string;
     items: { label: string; icon: React.ElementType; path: string }[];
@@ -101,6 +109,9 @@ const DashboardInner: React.FC = () => {
         items: [
           { label: 'Dashboard', icon: LayoutDashboard, path: '/dashboard' },
           { label: 'Verification & Oversight', icon: ShieldCheck, path: '/admin/verification' },
+          { label: 'Marketplace Watch', icon: Search, path: '/dashboard/marketplace' },
+          { label: 'Transaction Audits', icon: ShoppingBag, path: '/admin/transactions' },
+          { label: 'Impact Reports', icon: BarChart3, path: '/dashboard/impact' },
         ],
       },
     ];
@@ -110,20 +121,24 @@ const DashboardInner: React.FC = () => {
         group: 'LOGISTICS PROVIDERS',
         items: [
           { label: 'Dashboard', icon: LayoutDashboard, path: '/logistics' },
-          { label: 'Transportation Request', icon: Truck, path: '/logistics/requests' },
+          { label: 'Transport Requests', icon: Truck, path: '/logistics/requests' },
           { label: 'Shipment Management', icon: Truck, path: '/logistics/shipments' },
+          { label: 'Fleet & Analytics', icon: BarChart3, path: '/dashboard/analytics' },
         ],
       },
     ];
   } else if (isUtilizer) {
     navSections = [
       {
-        group: 'CARBON-UTILIZATION STARTUPS',
+        group: 'CARBON UTILIZERS & BUYERS',
         items: [
           { label: 'Dashboard', icon: LayoutDashboard, path: '/dashboard' },
           { label: 'Buy CO₂', icon: PlusCircle, path: '/dashboard/requirements/new' },
+          { label: 'My Requirements', icon: ShoppingBag, path: '/dashboard/requirements' },
+          { label: 'CO₂ Marketplace', icon: Search, path: '/dashboard/marketplace' },
           { label: 'Inquiries & Offers', icon: Handshake, path: '/dashboard/offers' },
           { label: 'Shipment Tracking', icon: Truck, path: '/dashboard/shipments' },
+          { label: 'Impact Reports', icon: BarChart3, path: '/dashboard/impact' },
         ],
       },
     ];
@@ -135,9 +150,11 @@ const DashboardInner: React.FC = () => {
         items: [
           { label: 'Dashboard', icon: LayoutDashboard, path: '/dashboard' },
           { label: 'Sell CO₂', icon: PlusCircle, path: '/dashboard/listings/new' },
+          { label: 'My Listings', icon: Factory, path: '/dashboard/listings' },
           { label: 'Inquiries & Offers', icon: Handshake, path: '/dashboard/offers' },
           { label: 'Transporters', icon: Truck, path: '/dashboard/logistics' },
           { label: 'Shipment Tracking', icon: Truck, path: '/dashboard/shipments' },
+          { label: 'Analytics & Impact', icon: BarChart3, path: '/dashboard/analytics' },
         ],
       },
     ];
@@ -183,7 +200,9 @@ const DashboardInner: React.FC = () => {
               <SidebarMenu className="space-y-1">
                 {sec.items.map((item) => {
                   const Icon = item.icon;
-                  const isActive = location.pathname === item.path;
+                  const isActive = item.path === '/dashboard' || item.path === '/admin' || item.path === '/logistics'
+                    ? location.pathname === item.path
+                    : location.pathname === item.path || location.pathname.startsWith(item.path + '/');
                   return (
                     <SidebarMenuItem key={item.path}>
                       <SidebarMenuButton
@@ -306,7 +325,7 @@ const DashboardInner: React.FC = () => {
 
             <Badge variant="outline" className="border-[#5D87FF]/30 text-[#5D87FF] bg-[#ECF2FF] text-[10px] sm:text-xs font-bold rounded-full px-2.5 sm:px-3 py-0.5 sm:py-1 truncate">
               <ShieldCheck className="size-3 sm:size-3.5 mr-1 text-[#5D87FF] shrink-0" />
-              {isAdmin ? 'ADMIN' : isLogistics ? 'LOGISTICS PROVIDER' : activeOrg ? activeOrg.orgType : 'VERIFIED'}
+              {isAdmin ? 'PLATFORM ADMIN' : isRegulator ? 'POLICY REGULATOR' : isLogistics ? 'LOGISTICS PROVIDER' : isUtilizer ? 'CARBON UTILIZER' : (activeOrg?.orgType || 'INDUSTRIAL EMITTER')}
             </Badge>
 
             <Button

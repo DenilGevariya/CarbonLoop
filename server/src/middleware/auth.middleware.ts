@@ -100,10 +100,10 @@ export function forbidRegulatorCommercialActions(req: AuthenticatedRequest, res:
   if (!userId) return next();
 
   query(
-    `SELECT o.organization_type 
+    `SELECT o.org_type 
      FROM organization_members om
      JOIN organizations o ON om.organization_id = o.id
-     WHERE om.user_id = $1 AND UPPER(o.organization_type) = 'REGULATOR'`,
+     WHERE om.user_id = $1 AND UPPER(o.org_type) = 'REGULATOR'`,
     [userId]
   )
     .then((result) => {

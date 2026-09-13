@@ -3,6 +3,7 @@
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1';
 
 let accessTokenMemory: string | null = null;
+let activeOrganizationId: string | null = null;
 let isRefreshing = false;
 let refreshSubscribers: ((token: string) => void)[] = [];
 
@@ -12,6 +13,10 @@ export function getMemoryToken(): string | null {
 
 export function setMemoryToken(token: string | null) {
   accessTokenMemory = token;
+}
+
+export function setActiveOrganizationId(organizationId: string | null) {
+  activeOrganizationId = organizationId;
 }
 
 function onRefreshed(token: string) {
@@ -37,6 +42,10 @@ export async function apiRequest<T = any>(
 
   if (accessTokenMemory) {
     headers['Authorization'] = `Bearer ${accessTokenMemory}`;
+  }
+
+  if (activeOrganizationId) {
+    headers['x-organization-id'] = activeOrganizationId;
   }
 
   try {

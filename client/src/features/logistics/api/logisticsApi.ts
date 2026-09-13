@@ -1,4 +1,4 @@
-import { apiClient } from '@/api/client';
+import { apiClient, extractCollection, type CollectionResponse } from '@/api/client';
 
 export type TransportMode = 'ROAD' | 'RAIL' | 'PIPELINE' | 'SHIP' | 'OTHER' | 'ISO_TANK_TRUCK' | 'CYLINDER_CASCADE' | 'RAIL_TANKER';
 export type QuoteStatus = 'DRAFT' | 'SUBMITTED' | 'ACCEPTED' | 'REJECTED' | 'WITHDRAWN' | 'EXPIRED' | 'PENDING';
@@ -91,19 +91,29 @@ export interface LogisticsDashboardStats {
 export const logisticsApi = {
   getProviders: () => apiClient.get<LogisticsProviderInfo[]>('/logistics/providers'),
   getDashboardStats: () => apiClient.get<LogisticsDashboardStats>('/logistics/stats'),
-  getAvailableRequests: (params?: Record<string, any>) => {
+  getAvailableRequests: async (params?: Record<string, any>) => {
     const searchParams = new URLSearchParams(params || {}).toString();
-    return apiClient.get<{ items: TransportRequest[]; total: number }>(`/logistics/requests?${searchParams}`);
+    const response = await apiClient.get<TransportRequest[] | CollectionResponse<TransportRequest>>(`/logistics/requests?${searchParams}`);
+    return {
+      items: extractCollection(response),
+      pagination: !Array.isArray(response) ? response.pagination : undefined,
+      total: !Array.isArray(response) ? response.pagination?.total || response.total || 0 : response.length,
+    };
   },
   acceptRequest: (orderId: string) => apiClient.post<any>(`/logistics/requests/${orderId}/accept`, {}),
   rejectRequest: (orderId: string, reason?: string) => apiClient.post<void>(`/logistics/requests/${orderId}/reject`, { reason }),
   counterBidRequest: (orderId: string, data: { proposed_price: number; message?: string; estimated_delivery_time?: string; conditions?: string }) =>
     apiClient.post<any>(`/logistics/requests/${orderId}/counter-bid`, data),
-  getQuotes: (role: 'sent' | 'received' | 'all' = 'all', orderId?: string, status?: string) => {
+  getQuotes: async (role: 'sent' | 'received' | 'all' = 'all', orderId?: string, status?: string) => {
     let url = `/logistics/quotes?role=${role}`;
     if (orderId) url += `&order_id=${orderId}`;
     if (status) url += `&status=${status}`;
-    return apiClient.get<{ items: LogisticsQuote[]; total: number }>(url);
+    const response = await apiClient.get<LogisticsQuote[] | CollectionResponse<LogisticsQuote>>(url);
+    return {
+      items: extractCollection(response),
+      pagination: !Array.isArray(response) ? response.pagination : undefined,
+      total: !Array.isArray(response) ? response.pagination?.total || response.total || 0 : response.length,
+    };
   },
   getQuoteDetail: (id: string) => apiClient.get<LogisticsQuote>(`/logistics/quotes/${id}`),
   createQuote: (data: CreateQuoteInput) => apiClient.post<LogisticsQuote>('/logistics/quotes', data),
@@ -112,4 +122,3 @@ export const logisticsApi = {
   withdrawQuote: (id: string, reason?: string) => apiClient.post<void>(`/logistics/quotes/${id}/withdraw`, { reason }),
   requestLogistics: (orderId: string, notes?: string) => apiClient.post<any>(`/orders/${orderId}/logistics/request`, { notes }),
 };
-

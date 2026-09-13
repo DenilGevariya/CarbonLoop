@@ -34,9 +34,24 @@ export interface OrderItem {
   updated_at: string;
 }
 
+type OrdersResponse =
+  | OrderItem[]
+  | {
+      data?: OrderItem[];
+      items?: OrderItem[];
+    };
+
 export const orderApi = {
-  getOrders: (role: 'sent' | 'received' | 'all' = 'all', status?: string) =>
-    apiClient.get<OrderItem[]>(`/orders?role=${role}${status ? `&status=${status}` : ''}`),
+  getOrders: async (role: 'sent' | 'received' | 'all' = 'all', status?: string): Promise<OrderItem[]> => {
+    const response = await apiClient.get<OrdersResponse>(`/orders?role=${role}${status ? `&status=${status}` : ''}`);
+
+    // The list endpoint includes pagination alongside the data array. Keep the
+    // hook contract stable for consumers that only need the order collection.
+    if (Array.isArray(response)) return response;
+    if (Array.isArray(response.data)) return response.data;
+    if (Array.isArray(response.items)) return response.items;
+    return [];
+  },
   getOrderDetail: (id: string) => apiClient.get<OrderItem>(`/orders/${id}`),
   confirmHandshake: (id: string) => apiClient.post<OrderItem>(`/orders/${id}/confirm-handshake`, {}),
   updateTerms: (id: string, terms: { quantity?: number; unitPrice?: number; deliveryCost?: number }) =>

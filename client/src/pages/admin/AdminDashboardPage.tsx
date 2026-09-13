@@ -38,11 +38,13 @@ export const AdminDashboardPage: React.FC = () => {
 
       // Fetch recent verifications
       const verifRes = await adminApi.listOrganizations({ status: 'PENDING' });
-      setRecentVerifications(verifRes?.items?.slice(0, 5) || []);
+      const verifications = Array.isArray(verifRes?.items) ? verifRes.items : Array.isArray(verifRes?.data) ? verifRes.data : [];
+      setRecentVerifications(verifications.slice(0, 5));
 
       // Fetch recent disputes
       const disputesRes = await adminApi.listDisputes({ limit: 5 });
-      setDisputes(disputesRes?.items?.slice(0, 5) || []);
+      const disputeItems = Array.isArray(disputesRes?.items) ? disputesRes.items : Array.isArray(disputesRes?.data) ? disputesRes.data : [];
+      setDisputes(disputeItems.slice(0, 5));
     } catch (err) {
       console.error('Error fetching admin dashboard data:', err);
     } finally {

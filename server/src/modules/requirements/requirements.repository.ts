@@ -195,7 +195,7 @@ export class RequirementRepository {
         br.*,
         o.name as org_name,
         o.slug as org_slug,
-        o.organization_type as org_type,
+        o.org_type,
         o.verification_status as org_verification_status,
         f.name as facility_name,
         f.facility_code,
@@ -207,7 +207,7 @@ export class RequirementRepository {
         u.code as util_code,
         u.name as util_name,
         u.description as util_description,
-        usr.full_name as creator_name,
+        CONCAT(usr.first_name, ' ', usr.last_name) as creator_name,
         usr.email as creator_email
       FROM buyer_requirements br
       JOIN organizations o ON br.organization_id = o.id
@@ -274,7 +274,7 @@ export class RequirementRepository {
         br.*,
         o.name as org_name,
         o.slug as org_slug,
-        o.organization_type as org_type,
+        o.org_type,
         o.verification_status as org_verification_status,
         f.name as facility_name,
         f.facility_code,
@@ -286,7 +286,7 @@ export class RequirementRepository {
         u.code as util_code,
         u.name as util_name,
         u.description as util_description,
-        usr.full_name as creator_name,
+        CONCAT(usr.first_name, ' ', usr.last_name) as creator_name,
         usr.email as creator_email
       FROM buyer_requirements br
       JOIN organizations o ON br.organization_id = o.id
@@ -322,7 +322,7 @@ export class RequirementRepository {
         br.*,
         o.name as org_name,
         o.slug as org_slug,
-        o.organization_type as org_type,
+        o.org_type,
         o.verification_status as org_verification_status,
         f.name as facility_name,
         f.facility_code,
@@ -334,7 +334,7 @@ export class RequirementRepository {
         u.code as util_code,
         u.name as util_name,
         u.description as util_description,
-        usr.full_name as creator_name,
+        CONCAT(usr.first_name, ' ', usr.last_name) as creator_name,
         usr.email as creator_email
       FROM buyer_requirements br
       JOIN organizations o ON br.organization_id = o.id

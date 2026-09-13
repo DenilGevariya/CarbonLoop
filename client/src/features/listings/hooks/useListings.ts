@@ -19,8 +19,10 @@ export function useMarketplaceListings(filters: ListingFilterParams = {}) {
     queryKey: ['marketplaceListings', filters],
     queryFn: async () => {
       const res = await getMarketplaceListings(filters);
-      if (!res.success) throw new Error(res.error?.message || 'Failed to load marketplace listings');
-      return res.data;
+      if (!res.success) throw new Error((res as any).error?.message || 'Failed to load marketplace listings');
+      // Return full response so consumers can access data/items and pagination
+      const { success: _s, error: _e, ...rest } = res as any;
+      return rest as { data?: any[]; items?: any[]; pagination?: any };
     },
   });
 }
@@ -41,8 +43,10 @@ export function useMySupplyListings(filters: ListingFilterParams = {}) {
     queryKey: ['mySupplyListings', filters],
     queryFn: async () => {
       const res = await getMySupplyListings(filters);
-      if (!res.success) throw new Error(res.error?.message || 'Failed to load supply listings');
-      return res.data;
+      if (!res.success) throw new Error((res as any).error?.message || 'Failed to load supply listings');
+      // Return full response so consumers can access data/items, stats, and pagination
+      const { success: _s, error: _e, ...rest } = res as any;
+      return rest as { data?: any[]; items?: any[]; stats?: any; pagination?: any };
     },
   });
 }
@@ -64,10 +68,12 @@ export function useCreateListing() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (input: CreateListingInput) => createListing(input),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['mySupplyListings'] });
-      queryClient.invalidateQueries({ queryKey: ['marketplaceListings'] });
-      queryClient.invalidateQueries({ queryKey: ['marketplaceStats'] });
+    onSuccess: async () => {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['mySupplyListings'] }),
+        queryClient.invalidateQueries({ queryKey: ['marketplaceListings'] }),
+        queryClient.invalidateQueries({ queryKey: ['marketplaceStats'] }),
+      ]);
     },
   });
 }
@@ -76,10 +82,12 @@ export function useUpdateListing() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({ id, input }: { id: string; input: UpdateListingInput }) => updateListing(id, input),
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['listingDetail', variables.id] });
-      queryClient.invalidateQueries({ queryKey: ['mySupplyListings'] });
-      queryClient.invalidateQueries({ queryKey: ['marketplaceListings'] });
+    onSuccess: async (_, variables) => {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['listingDetail', variables.id] }),
+        queryClient.invalidateQueries({ queryKey: ['mySupplyListings'] }),
+        queryClient.invalidateQueries({ queryKey: ['marketplaceListings'] }),
+      ]);
     },
   });
 }
@@ -97,11 +105,13 @@ export function useListingStatusAction() {
         default: throw new Error('Unknown action');
       }
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['mySupplyListings'] });
-      queryClient.invalidateQueries({ queryKey: ['marketplaceListings'] });
-      queryClient.invalidateQueries({ queryKey: ['marketplaceStats'] });
-      queryClient.invalidateQueries({ queryKey: ['listingDetail'] });
+    onSuccess: async () => {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['mySupplyListings'] }),
+        queryClient.invalidateQueries({ queryKey: ['marketplaceListings'] }),
+        queryClient.invalidateQueries({ queryKey: ['marketplaceStats'] }),
+        queryClient.invalidateQueries({ queryKey: ['listingDetail'] }),
+      ]);
     },
   });
 }

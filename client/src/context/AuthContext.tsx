@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { apiRequest, setMemoryToken } from '@/lib/api';
+import { apiRequest, setActiveOrganizationId, setMemoryToken } from '@/lib/api';
 
 export interface UserOrg {
   organizationId: string;
@@ -56,8 +56,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (userData.organizations && userData.organizations.length > 0) {
       const active = userData.organizations.find((o) => o.organizationId === userData.activeOrganizationId) || userData.organizations[0];
       setActiveOrg(active);
+      setActiveOrganizationId(active.organizationId);
     } else {
       setActiveOrg(null);
+      setActiveOrganizationId(null);
     }
   };
 
@@ -130,6 +132,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const logout = async () => {
     await apiRequest('/auth/logout', { method: 'POST' });
     setMemoryToken(null);
+    setActiveOrganizationId(null);
     setUser(null);
     setActiveOrg(null);
     setIsAuthenticated(false);
@@ -158,6 +161,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const found = user.organizations.find((o) => o.organizationId === orgId);
       if (found) {
         setActiveOrg(found);
+        setActiveOrganizationId(found.organizationId);
       }
     }
   };

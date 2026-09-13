@@ -24,10 +24,11 @@ export function useRequirements(filters: RequirementFilterParams = {}) {
     queryKey: REQUIREMENT_KEYS.list(filters),
     queryFn: async () => {
       const res = await requirementsApi.getPublicRequirements(filters);
-      if (!res.success || !res.data) {
-        throw new Error(res.error?.message || 'Failed to fetch CO₂ requirements');
+      if (!res.success) {
+        throw new Error((res as any).error?.message || 'Failed to fetch CO₂ requirements');
       }
-      return res.data;
+      // Backend spreads { items, pagination } at top level
+      return res as { items?: any[]; data?: any[]; pagination?: any };
     },
   });
 }
@@ -38,10 +39,11 @@ export function useMyRequirements(filters: RequirementFilterParams = {}) {
     queryKey: REQUIREMENT_KEYS.myList(filters),
     queryFn: async () => {
       const res = await requirementsApi.getMyRequirements(filters);
-      if (!res.success || !res.data) {
-        throw new Error(res.error?.message || 'Failed to fetch organization requirements');
+      if (!res.success) {
+        throw new Error((res as any).error?.message || 'Failed to fetch organization requirements');
       }
-      return res.data;
+      // Backend spreads { items, pagination } at top level
+      return res as { items?: any[]; data?: any[]; pagination?: any };
     },
   });
 }
@@ -68,10 +70,10 @@ export function useRequirementStats() {
     queryKey: REQUIREMENT_KEYS.stats(),
     queryFn: async () => {
       const res = await requirementsApi.getStats();
-      if (!res.success || !res.data) {
-        throw new Error(res.error?.message || 'Failed to fetch demand statistics');
+      if (!res.success) {
+        throw new Error((res as any).error?.message || 'Failed to fetch demand statistics');
       }
-      return res.data;
+      return (res as any).data;
     },
   });
 }
@@ -82,10 +84,10 @@ export function useUtilizationTypes() {
     queryKey: REQUIREMENT_KEYS.utilizationTypes(),
     queryFn: async () => {
       const res = await requirementsApi.getUtilizationTypes();
-      if (!res.success || !res.data) {
-        throw new Error(res.error?.message || 'Failed to fetch utilization categories');
+      if (!res.success) {
+        throw new Error((res as any).error?.message || 'Failed to fetch utilization categories');
       }
-      return res.data;
+      return (res as any).data;
     },
   });
 }
@@ -96,10 +98,10 @@ export function useCreateRequirement() {
   return useMutation({
     mutationFn: async (input: CreateRequirementInput) => {
       const res = await requirementsApi.createRequirement(input);
-      if (!res.success || !res.data) {
-        throw new Error(res.error?.message || 'Failed to create requirement');
+      if (!res.success) {
+        throw new Error((res as any).error?.message || 'Failed to create requirement');
       }
-      return res.data;
+      return (res as any).data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: REQUIREMENT_KEYS.all });
@@ -113,10 +115,10 @@ export function useUpdateRequirement() {
   return useMutation({
     mutationFn: async ({ id, data }: { id: string; data: UpdateRequirementInput }) => {
       const res = await requirementsApi.updateRequirement(id, data);
-      if (!res.success || !res.data) {
-        throw new Error(res.error?.message || 'Failed to update requirement');
+      if (!res.success) {
+        throw new Error((res as any).error?.message || 'Failed to update requirement');
       }
-      return res.data;
+      return (res as any).data;
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: REQUIREMENT_KEYS.all });

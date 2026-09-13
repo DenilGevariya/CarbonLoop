@@ -178,7 +178,9 @@ export const ListingForm: React.FC<Props> = ({ initialListing, mode = 'create' }
         publishNow: true,
       });
       if (res.success) {
-        navigate('/dashboard/listings');
+        navigate('/dashboard/listings', {
+          state: { successMessage: 'CO₂ listing published successfully.' },
+        });
       }
     } else if (initialListing) {
       const res = await updateMutation.mutateAsync({

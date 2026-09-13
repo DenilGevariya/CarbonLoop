@@ -16,9 +16,8 @@ export const AdminDisputesPage: React.FC = () => {
         status: filterStatus === 'all' ? undefined : filterStatus,
         search: searchQuery || undefined,
       });
-      if (res?.items) {
-        setDisputes(res.items);
-      }
+      const items = Array.isArray(res?.items) ? res.items : Array.isArray(res?.data) ? res.data : [];
+      setDisputes(items);
     } catch (err: any) {
       console.error('Failed to fetch disputes:', err);
     } finally {

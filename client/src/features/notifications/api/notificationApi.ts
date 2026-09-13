@@ -1,4 +1,4 @@
-import { apiClient } from '@/api/client';
+import { apiClient, extractCollection, type CollectionResponse } from '@/api/client';
 
 export interface NotificationItem {
   id: string;
@@ -15,7 +15,10 @@ export interface NotificationItem {
 }
 
 export const notificationApi = {
-  getNotifications: () => apiClient.get<NotificationItem[]>('/notifications'),
+  getNotifications: async (): Promise<NotificationItem[]> => {
+    const response = await apiClient.get<NotificationItem[] | CollectionResponse<NotificationItem>>('/notifications');
+    return extractCollection(response);
+  },
   getUnreadCount: () => apiClient.get<{ count: number }>('/notifications/unread-count'),
   markAsRead: (id: string) => apiClient.patch<{ success: boolean }>(`/notifications/${id}/read`),
   markAllAsRead: () => apiClient.post<{ success: boolean; count: number }>('/notifications/mark-all-read'),

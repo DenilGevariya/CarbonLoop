@@ -101,6 +101,10 @@ export class MatchingService {
     return match;
   }
 
+  async listMatches(limit = 100): Promise<StoredMatch[]> {
+    return this.repo.listMatches(limit);
+  }
+
   /**
    * Get requirement matches
    */

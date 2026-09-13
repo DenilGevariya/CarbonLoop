@@ -1,4 +1,4 @@
-import { apiClient } from '@/api/client';
+import { apiClient, extractCollection, type CollectionResponse } from '@/api/client';
 
 export interface OfferItem {
   id: string;
@@ -53,8 +53,12 @@ export interface CounterOfferInput {
 
 export const offerApi = {
   createOffer: (input: CreateOfferInput) => apiClient.post<OfferItem>('/offers', input),
-  getOffers: (role: 'sent' | 'received' | 'all' = 'all', status?: string) =>
-    apiClient.get<OfferItem[]>(`/offers?role=${role}${status ? `&status=${status}` : ''}`),
+  getOffers: async (role: 'sent' | 'received' | 'all' = 'all', status?: string): Promise<OfferItem[]> => {
+    const response = await apiClient.get<OfferItem[] | CollectionResponse<OfferItem>>(
+      `/offers?role=${role}${status ? `&status=${status}` : ''}`
+    );
+    return extractCollection(response);
+  },
   getOfferDetail: (id: string) => apiClient.get<OfferItem>(`/offers/${id}`),
   counterOffer: (id: string, input: CounterOfferInput) => apiClient.post<OfferItem>(`/offers/${id}/counter`, input),
   acceptOffer: (id: string, destination_address?: string) => apiClient.post<any>(`/offers/${id}/accept`, { destination_address }),

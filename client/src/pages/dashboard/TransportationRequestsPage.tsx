@@ -20,9 +20,7 @@ export const TransportationRequestsPage: React.FC = () => {
     setLoading(true);
     try {
       const res = await logisticsApi.getAvailableRequests({ seller_name: search || undefined });
-      if (res?.items) {
-        setRequests(res.items);
-      }
+      setRequests(Array.isArray(res?.items) ? res.items : []);
     } catch (err) {
       console.error('Error fetching transport requests:', err);
     } finally {

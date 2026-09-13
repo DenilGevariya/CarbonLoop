@@ -46,9 +46,9 @@ export function useAdminAlerts(resolved: boolean = false) {
       setIsLoading(true);
       setError(null);
       const res = await adminApi.getAlerts(resolved);
-      if (Array.isArray(res)) {
-        setAlerts(res);
-      }
+      // Alerts returns { data: [...] } after apiClient fix, or plain array
+      const alertData = Array.isArray(res) ? res : ((res as any)?.data || []);
+      setAlerts(alertData);
     } catch (err: any) {
       setError(err?.message || 'Failed to load system alerts.');
     } finally {
@@ -80,8 +80,11 @@ export function useAdminOrganizations(params?: { type?: string; status?: string;
       setIsLoading(true);
       setError(null);
       const res = await adminApi.listOrganizations(params);
-      if (res?.items) setItems(res.items);
-      if (res?.pagination) setPagination(res.pagination);
+      // Backend returns { data: [...], pagination } — apiClient now preserves this shape
+      const orgData = (res as any)?.data || (res as any)?.items || (Array.isArray(res) ? res : []);
+      const paginationData = (res as any)?.pagination;
+      if (Array.isArray(orgData)) setItems(orgData);
+      if (paginationData) setPagination(paginationData);
     } catch (err: any) {
       setError(err?.message || 'Failed to load organizations.');
     } finally {
@@ -107,8 +110,11 @@ export function useAdminUsers(params?: { role?: string; status?: string; search?
       setIsLoading(true);
       setError(null);
       const res = await adminApi.listUsers(params);
-      if (res?.items) setItems(res.items);
-      if (res?.pagination) setPagination(res.pagination);
+      // Backend returns { data: [...], pagination } — apiClient now preserves this shape
+      const userData = (res as any)?.data || (res as any)?.items || (Array.isArray(res) ? res : []);
+      const paginationData = (res as any)?.pagination;
+      if (Array.isArray(userData)) setItems(userData);
+      if (paginationData) setPagination(paginationData);
     } catch (err: any) {
       setError(err?.message || 'Failed to load users.');
     } finally {
@@ -134,8 +140,11 @@ export function useAdminAuditLogs(params?: { actorId?: string; organizationId?: 
       setIsLoading(true);
       setError(null);
       const res = await adminApi.listAuditLogs(params);
-      if (res?.items) setItems(res.items);
-      if (res?.pagination) setPagination(res.pagination);
+      // Backend returns { data: [...], pagination } — apiClient now preserves this shape
+      const logData = (res as any)?.data || (res as any)?.items || (Array.isArray(res) ? res : []);
+      const paginationData = (res as any)?.pagination;
+      if (Array.isArray(logData)) setItems(logData);
+      if (paginationData) setPagination(paginationData);
     } catch (err: any) {
       setError(err?.message || 'Failed to load audit logs.');
     } finally {

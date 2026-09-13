@@ -346,6 +346,53 @@ export class MatchingRepository {
   }
 
   /**
+   * Fetch the ranked match audit list for the admin console.
+   */
+  async listMatches(limit = 100): Promise<StoredMatch[]> {
+    const sql = `
+      SELECT
+        m.id,
+        m.listing_id,
+        m.requirement_id,
+        m.status,
+        COALESCE(m.overall_score, m.overall_match_score, 0) as overall_score,
+        COALESCE(m.grade, 'STRONG') as grade,
+        COALESCE(m.quantity_score, m.volume_match_score, 0) as quantity_score,
+        COALESCE(m.purity_score, m.purity_match_score, 0) as purity_score,
+        COALESCE(m.physical_form_score, 100) as physical_form_score,
+        COALESCE(m.availability_score, 90) as availability_score,
+        COALESCE(m.price_score, m.price_match_score, 0) as price_score,
+        COALESCE(m.distance_score, m.distance_match_score, 0) as distance_score,
+        COALESCE(m.logistics_score, 90) as logistics_score,
+        COALESCE(m.utilization_score, 90) as utilization_score,
+        COALESCE(m.estimated_distance_km, m.distance_km, 145) as estimated_distance_km,
+        COALESCE(m.estimated_transport_cost, 156000) as estimated_transport_cost,
+        COALESCE(m.estimated_delivered_cost, 5320) as estimated_delivered_cost,
+        m.matching_reason,
+        COALESCE(m.explanations, '[]'::jsonb) as explanations,
+        COALESCE(m.warnings, '[]'::jsonb) as warnings,
+        m.generated_at,
+        m.expires_at,
+        m.created_at,
+        m.updated_at,
+        l.listing_code,
+        r.requirement_code,
+        seller.name as supplier_name,
+        buyer.name as buyer_name
+      FROM matches m
+      JOIN co2_listings l ON l.id = m.listing_id
+      JOIN buyer_requirements r ON r.id = m.requirement_id
+      JOIN organizations seller ON seller.id = l.organization_id
+      JOIN organizations buyer ON buyer.id = r.organization_id
+      ORDER BY COALESCE(m.overall_score, m.overall_match_score, 0) DESC, m.updated_at DESC
+      LIMIT $1;
+    `;
+
+    const { rows } = await query<any>(sql, [limit]);
+    return rows.map(mapStoredMatch);
+  }
+
+  /**
    * Fetch ranked matches for a buyer requirement
    */
   async getRequirementMatches(requirementId: string, minScore = 0): Promise<StoredMatch[]> {

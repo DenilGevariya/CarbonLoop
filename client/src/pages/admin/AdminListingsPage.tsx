@@ -22,7 +22,11 @@ export const AdminListingsPage: React.FC = () => {
   const [selectedDoc, setSelectedDoc] = useState<{ code: string; name: string; purity: number } | null>(null);
   const [actionSuccess, setActionSuccess] = useState<string | null>(null);
 
-  const listings = listingsData?.items || [];
+  const listings = Array.isArray(listingsData?.items)
+    ? listingsData.items
+    : Array.isArray(listingsData?.data)
+      ? listingsData.data
+      : [];
 
   const handleApprove = async (id: string, code: string) => {
     try {

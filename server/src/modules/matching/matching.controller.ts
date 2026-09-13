@@ -5,6 +5,20 @@ const service = new MatchingService();
 
 export class MatchingController {
   /**
+   * GET /api/v1/matches
+   */
+  async listMatches(req: Request, res: Response, next: NextFunction) {
+    try {
+      const requestedLimit = Number(req.query.limit || 100);
+      const limit = Number.isFinite(requestedLimit) ? Math.min(Math.max(Math.floor(requestedLimit), 1), 100) : 100;
+      const matches = await service.listMatches(limit);
+      res.json({ success: true, data: matches });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  /**
    * POST /api/v1/matches/generate
    */
   async generateMatches(req: Request, res: Response, next: NextFunction) {

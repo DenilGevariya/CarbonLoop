@@ -1,4 +1,4 @@
-import { apiClient } from '@/api/client';
+import { apiClient, extractCollection, type CollectionResponse } from '@/api/client';
 
 export interface InquiryItem {
   id: string;
@@ -67,8 +67,12 @@ export interface CreateInquiryInput {
 
 export const inquiryApi = {
   createInquiry: (input: CreateInquiryInput) => apiClient.post<InquiryItem>('/inquiries', input),
-  getInquiries: (role: 'sent' | 'received' | 'all' = 'all', status?: string) =>
-    apiClient.get<InquiryItem[]>(`/inquiries?role=${role}${status ? `&status=${status}` : ''}`),
+  getInquiries: async (role: 'sent' | 'received' | 'all' = 'all', status?: string): Promise<InquiryItem[]> => {
+    const response = await apiClient.get<InquiryItem[] | CollectionResponse<InquiryItem>>(
+      `/inquiries?role=${role}${status ? `&status=${status}` : ''}`
+    );
+    return extractCollection(response);
+  },
   getInquiryDetail: (id: string) => apiClient.get<InquiryDetail>(`/inquiries/${id}`),
   getMessages: (id: string) => apiClient.get<InquiryMessage[]>(`/inquiries/${id}/messages`),
   sendMessage: (id: string, message: string) => apiClient.post<InquiryMessage>(`/inquiries/${id}/messages`, { message }),

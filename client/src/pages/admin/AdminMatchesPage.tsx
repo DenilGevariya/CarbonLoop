@@ -13,33 +13,10 @@ export const AdminMatchesPage: React.FC = () => {
       try {
         setIsLoading(true);
         const res = await apiClient.get<any[]>('/matches');
-        if (Array.isArray(res)) {
-          setMatches(res);
-        }
-      } catch {
-        // Fallback demo matches if /matches empty
-        setMatches([
-          {
-            id: 'm-2026-001',
-            overall_score: 94.5,
-            match_grade: 'EXCELLENT',
-            supplier_name: 'TerraCem Emitters Ltd',
-            buyer_name: 'GreenForge Concrete Synthetics',
-            listing_code: 'CL-SUP-9012',
-            requirement_code: 'CL-REQ-4401',
-            distance_km: 78,
-          },
-          {
-            id: 'm-2026-002',
-            overall_score: 86.0,
-            match_grade: 'STRONG',
-            supplier_name: 'Gujarat Ammonia Gas Processing',
-            buyer_name: 'Narmada Poly-Carbonates Inc',
-            listing_code: 'CL-SUP-8821',
-            requirement_code: 'CL-REQ-3102',
-            distance_km: 145,
-          },
-        ]);
+        setMatches(Array.isArray(res) ? res : []);
+      } catch (error) {
+        console.error('Failed to load database matches:', error);
+        setMatches([]);
       } finally {
         setIsLoading(false);
       }

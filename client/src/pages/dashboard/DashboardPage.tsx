@@ -52,12 +52,23 @@ export const DashboardPage: React.FC = () => {
     loadMatches();
   }, [buyerReqs]);
 
-  const orgType = activeOrg?.orgType?.toUpperCase() || 'EMITTER';
-  const isEmitter = orgType === 'EMITTER';
-  const isUtilizer = orgType === 'BUYER' || orgType === 'UTILIZER';
-  const isLogistics = orgType === 'LOGISTICS_PROVIDER';
-  const isRegulator = orgType === 'REGULATOR';
-  const isAdmin = (user?.roles || []).some((r) => r.toLowerCase() === 'platform_admin' || r.toLowerCase() === 'admin');
+  const userRoles = (user?.roles || []).map((r) => r.toLowerCase().replace('-', '_'));
+  const activeOrgType = (activeOrg?.orgType || '').toLowerCase().replace('-', '_');
+
+  const isAdmin = userRoles.some((r) => r === 'platform_admin' || r === 'admin' || r === 'platform_administrator');
+  const isRegulator = !isAdmin && (
+    userRoles.some((r) => r === 'regulator' || r === 'policy_regulator' || r === 'gpcb') ||
+    activeOrgType === 'regulator' || activeOrgType === 'policy_regulator'
+  );
+  const isLogistics = !isAdmin && !isRegulator && (
+    userRoles.some((r) => r === 'logistics_provider' || r === 'logistics' || r === 'transporter') ||
+    activeOrgType === 'logistics_provider' || activeOrgType === 'logistics'
+  );
+  const isUtilizer = !isAdmin && !isRegulator && !isLogistics && (
+    userRoles.some((r) => r === 'utilizer' || r === 'buyer' || r === 'carbon_utilizer') ||
+    activeOrgType === 'buyer' || activeOrgType === 'utilizer'
+  );
+  const isEmitter = !isAdmin && !isRegulator && !isLogistics && !isUtilizer;
 
   useEffect(() => {
     if (isAdmin) {
@@ -89,7 +100,7 @@ export const DashboardPage: React.FC = () => {
         <div>
           <div className="flex items-center gap-2">
             <span className="text-xs font-bold text-[#5D87FF] bg-[#ECF2FF] px-3 py-1 rounded-full border border-[#5D87FF]/20 uppercase tracking-wider">
-              {activeOrg?.organizationName || 'Industrial Complex'} ({orgType})
+              {activeOrg?.organizationName || 'Industrial Node'} ({isAdmin ? 'ADMIN' : isRegulator ? 'REGULATOR' : isLogistics ? 'LOGISTICS' : isUtilizer ? 'BUYER / UTILIZER' : (activeOrg?.orgType || 'EMITTER')})
             </span>
             {isRegulator && (
               <span className="text-xs font-bold text-[#13DEB9] bg-[#E8F9F5] px-3 py-1 rounded-full border border-[#13DEB9]/20 uppercase tracking-wider">

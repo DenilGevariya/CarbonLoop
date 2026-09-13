@@ -601,7 +601,7 @@ export const RequirementForm: React.FC<RequirementFormProps> = ({
                 <div className="bg-white p-3.5 rounded-lg border border-[#E5EAEF] flex items-center justify-between">
                   <div>
                     <span className="font-bold text-[#2A3547]">
-                      {utilizationTypes.find((u) => u.id === formValues.utilization_type_id)?.name || 'Mineralization & Materials Curing'}
+                      {utilizationTypes.find((u: { id: string; name: string }) => u.id === formValues.utilization_type_id)?.name || 'Mineralization & Materials Curing'}
                     </span>
                     <p className="text-[11px] text-[#5A6A85] mt-0.5">
                       {formValues.intended_use || 'Direct chemical or industrial feedstock process consumption.'}

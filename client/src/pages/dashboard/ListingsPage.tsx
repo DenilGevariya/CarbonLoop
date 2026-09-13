@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
-import { useNavigate, Link, useSearchParams } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useNavigate, Link, useLocation, useSearchParams } from 'react-router-dom';
 import { useMySupplyListings, useListingStatusAction } from '@/features/listings/hooks/useListings';
 import { ListingStatusBadge } from '@/features/listings/components/ListingStatusBadge';
 import { PublishDialog } from '@/features/listings/components/PublishDialog';
 import { PauseDialog } from '@/features/listings/components/PauseDialog';
 import { ArchiveDialog } from '@/features/listings/components/ArchiveDialog';
 import type { ListingDTO, ListingFilterParams } from '@/features/listings/types/listing';
-import { Factory, Plus, Search } from 'lucide-react';
+import { CheckCircle2, Factory, Plus, Search } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -15,15 +15,23 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 export const ListingsPage: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [searchParams] = useSearchParams();
   const initialSearch = searchParams.get('search') || '';
+  const routeSuccessMessage = (location.state as { successMessage?: string } | null)?.successMessage;
+  const [successMessage, setSuccessMessage] = useState<string | null>(routeSuccessMessage || null);
 
   const [filters, setFilters] = useState<ListingFilterParams>({
     status: 'ALL',
     search: initialSearch,
     page: 1,
-    limit: 12,
+    limit: 100,
   });
+
+  useEffect(() => {
+    if (!routeSuccessMessage) return;
+    navigate(location.pathname, { replace: true, state: null });
+  }, [location.pathname, navigate, routeSuccessMessage]);
 
   const { data: supplyData, isLoading } = useMySupplyListings(filters);
   const statusMutation = useListingStatusAction();
@@ -33,12 +41,17 @@ export const ListingsPage: React.FC = () => {
   const [pauseOpen, setPauseOpen] = useState(false);
   const [archiveOpen, setArchiveOpen] = useState(false);
 
-  const items = supplyData?.items || supplyData?.data || [];
+  const items = Array.isArray(supplyData?.items)
+    ? supplyData.items
+    : Array.isArray(supplyData?.data)
+      ? supplyData.data
+      : [];
   const stats = supplyData?.stats || { activeListings: 0, draftListings: 0, pausedListings: 0, totalListedTonnes: 0, totalRemainingTonnes: 0 };
 
   const handlePublishConfirm = async () => {
     if (!selectedListing) return;
     await statusMutation.mutateAsync({ id: selectedListing.id, action: 'publish' });
+    setSuccessMessage('CO₂ listing published successfully.');
     setPublishOpen(false);
     setSelectedListing(null);
   };
@@ -59,10 +72,28 @@ export const ListingsPage: React.FC = () => {
 
   const handleResume = async (listing: ListingDTO) => {
     await statusMutation.mutateAsync({ id: listing.id, action: 'resume' });
+    setSuccessMessage('CO₂ listing published successfully.');
   };
 
   return (
     <div className="space-y-6">
+      {successMessage && (
+        <div className="flex items-center justify-between gap-4 rounded-xl border border-[#13DEB9]/30 bg-[#E8F9F5] px-4 py-3 text-sm text-[#173D32]">
+          <div className="flex items-center gap-2 font-semibold">
+            <CheckCircle2 className="h-4 w-4 shrink-0 text-[#13DEB9]" />
+            {successMessage}
+          </div>
+          <button
+            type="button"
+            onClick={() => setSuccessMessage(null)}
+            className="text-xs font-bold text-[#173D32]/70 hover:text-[#173D32]"
+            aria-label="Dismiss success message"
+          >
+            Dismiss
+          </button>
+        </div>
+      )}
+
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#E5EAEF] pb-5">
         <div>
