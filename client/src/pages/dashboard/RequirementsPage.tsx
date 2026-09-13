@@ -41,8 +41,8 @@ export const RequirementsPage: React.FC = () => {
   const archiveMutation = useArchiveRequirement();
   const fulfillMutation = useFulfillRequirement();
 
-  const items = data?.items || [];
-  const totalCount = data?.pagination?.total || 0;
+  const items = data?.items || data?.data || [];
+  const totalCount = data?.pagination?.total || items.length;
 
   // Calculate metrics
   const activeCount = items.filter((r) => r.status === 'PUBLISHED' || r.status === 'ACTIVE').length;

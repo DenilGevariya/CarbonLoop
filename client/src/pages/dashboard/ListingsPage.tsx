@@ -33,7 +33,7 @@ export const ListingsPage: React.FC = () => {
   const [pauseOpen, setPauseOpen] = useState(false);
   const [archiveOpen, setArchiveOpen] = useState(false);
 
-  const items = supplyData?.data || [];
+  const items = supplyData?.items || supplyData?.data || [];
   const stats = supplyData?.stats || { activeListings: 0, draftListings: 0, pausedListings: 0, totalListedTonnes: 0, totalRemainingTonnes: 0 };
 
   const handlePublishConfirm = async () => {

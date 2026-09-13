@@ -27,6 +27,7 @@ import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { NativeSelect } from '@/components/ui/native-select';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { ReportViewerModal } from '../ReportViewerModal';
 
 const listingFormSchema = z.object({
   facilityId: z.string().min(1, { message: 'Select an operational facility' }),
@@ -34,7 +35,7 @@ const listingFormSchema = z.object({
   description: z.string().max(2000).optional(),
   availableQuantity: z.number().gt(0, { message: 'Available quantity must be greater than 0' }),
   quantityUnit: z.string().optional(),
-  minimumOrderQuantity: z.number().gt(0, { message: 'Minimum order must be greater than 0' }),
+  minimumOrderQuantity: z.number().optional(),
   purityPercentage: z.number().gt(0, { message: 'Purity must be > 0%' }).lte(100, { message: 'Purity cannot exceed 100%' }),
   physicalForm: z.enum(['liquid', 'gaseous', 'supercritical', 'solid_dry_ice']),
   captureMethod: z.string().optional(),
@@ -47,16 +48,8 @@ const listingFormSchema = z.object({
   availableUntil: z.string().optional(),
   deliveryAvailable: z.boolean().optional(),
   pickupAvailable: z.boolean().optional(),
-  labReportUrl: z.string().min(1, { message: 'Laboratory Purity Report is required to verify purity' }),
+  labReportUrl: z.string().optional(),
   labReportFilename: z.string().optional(),
-}).refine((data) => {
-  if (data.minimumOrderQuantity > data.availableQuantity) {
-    return false;
-  }
-  return true;
-}, {
-  message: 'Minimum order quantity cannot exceed available quantity',
-  path: ['minimumOrderQuantity'],
 }).refine((data) => {
   if (data.availableUntil && data.availableFrom) {
     return new Date(data.availableUntil) >= new Date(data.availableFrom);
@@ -75,7 +68,7 @@ interface Props {
 }
 
 const STEPS = [
-  { id: '01', title: 'SUPPLY', desc: 'Quantity & MOQ' },
+  { id: '01', title: 'SUPPLY', desc: 'Quantity & Facility' },
   { id: '02', title: 'SPECIFICATION', desc: 'Composition & Telematics' },
   { id: '03', title: 'COMMERCIAL', desc: 'Pricing & Terms' },
   { id: '04', title: 'AVAILABILITY', desc: 'Time Window' },
@@ -89,6 +82,7 @@ export const ListingForm: React.FC<Props> = ({ initialListing, mode = 'create' }
   const [currentStep, setCurrentStep] = useState(0);
   const [facilities, setFacilities] = useState<{ id: string; name: string; city: string; state: string }[]>([]);
   const [facilitiesLoading, setFacilitiesLoading] = useState(true);
+  const [isReportPreviewOpen, setIsReportPreviewOpen] = useState(false);
 
   const createMutation = useCreateListing();
   const updateMutation = useUpdateListing();
@@ -101,7 +95,7 @@ export const ListingForm: React.FC<Props> = ({ initialListing, mode = 'create' }
       description: initialListing?.description || '',
       availableQuantity: initialListing?.quantity.available || 500,
       quantityUnit: initialListing?.quantity.unit || 'tonne',
-      minimumOrderQuantity: initialListing?.quantity.minimumOrder || 20,
+      minimumOrderQuantity: initialListing?.quantity.minimumOrder || 1,
       purityPercentage: initialListing?.purityPercentage || 99.5,
       physicalForm: (initialListing?.physicalForm?.toLowerCase() as any) || 'liquid',
       captureMethod: initialListing?.captureMethod || 'Chemical Amine Gas Absorption',
@@ -114,8 +108,8 @@ export const ListingForm: React.FC<Props> = ({ initialListing, mode = 'create' }
       availableUntil: initialListing?.availability.until ? new Date(initialListing.availability.until).toISOString().split('T')[0] : '',
       deliveryAvailable: initialListing?.deliveryAvailable !== false,
       pickupAvailable: initialListing?.pickupAvailable !== false,
-      labReportUrl: initialListing?.labReportUrl || 'https://raw.githubusercontent.com/mozilla/pdf.js/ba2edeae/web/compressed.tracemonkey-pldi-09.pdf',
-      labReportFilename: initialListing?.labReportFilename || 'Certified_ISO_CO2_Purity_Lab_Assay.pdf',
+      labReportUrl: initialListing?.labReportUrl || '',
+      labReportFilename: initialListing?.labReportFilename || '',
     },
   });
 
@@ -290,34 +284,18 @@ export const ListingForm: React.FC<Props> = ({ initialListing, mode = 'create' }
                 )}
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="text-xs uppercase tracking-wider text-[#5A6A85] font-semibold block mb-1.5">
-                    Available Volume (Tonnes) *
-                  </label>
-                  <Input
-                    type="number"
-                    {...form.register('availableQuantity', { valueAsNumber: true })}
-                    className="bg-[#F6F9FC] border-[#E5EAEF] text-xs text-[#2A3547] rounded-lg focus-visible:ring-[#5D87FF]"
-                  />
-                  {form.formState.errors.availableQuantity && (
-                    <p className="text-xs text-[#FA896B] mt-1">{form.formState.errors.availableQuantity.message}</p>
-                  )}
-                </div>
-
-                <div>
-                  <label className="text-xs uppercase tracking-wider text-[#5A6A85] font-semibold block mb-1.5">
-                    Minimum Order Quantity (MOQ) *
-                  </label>
-                  <Input
-                    type="number"
-                    {...form.register('minimumOrderQuantity', { valueAsNumber: true })}
-                    className="bg-[#F6F9FC] border-[#E5EAEF] text-xs text-[#2A3547] rounded-lg focus-visible:ring-[#5D87FF]"
-                  />
-                  {form.formState.errors.minimumOrderQuantity && (
-                    <p className="text-xs text-[#FA896B] mt-1">{form.formState.errors.minimumOrderQuantity.message}</p>
-                  )}
-                </div>
+              <div>
+                <label className="text-xs uppercase tracking-wider text-[#5A6A85] font-semibold block mb-1.5">
+                  Available Volume (Tonnes) *
+                </label>
+                <Input
+                  type="number"
+                  {...form.register('availableQuantity', { valueAsNumber: true })}
+                  className="bg-[#F6F9FC] border-[#E5EAEF] text-xs text-[#2A3547] rounded-lg focus-visible:ring-[#5D87FF]"
+                />
+                {form.formState.errors.availableQuantity && (
+                  <p className="text-xs text-[#FA896B] mt-1">{form.formState.errors.availableQuantity.message}</p>
+                )}
               </div>
             </div>
           </div>
@@ -421,13 +399,12 @@ export const ListingForm: React.FC<Props> = ({ initialListing, mode = 'create' }
                         <p className="text-[10px] text-[#13DEB9] font-semibold">✓ Report attached to this CO₂ supply declaration</p>
                       </div>
                     </div>
-
                     <div className="flex items-center gap-2 shrink-0">
                       <Button
                         type="button"
                         variant="outline"
                         size="sm"
-                        onClick={() => window.open(values.labReportUrl, '_blank')}
+                        onClick={() => setIsReportPreviewOpen(true)}
                         className="text-xs border-[#E5EAEF] text-[#5D87FF] hover:bg-[#ECF2FF] h-8 rounded-md cursor-pointer"
                       >
                         <Eye className="w-3.5 h-3.5 mr-1" /> View Report
@@ -606,7 +583,7 @@ export const ListingForm: React.FC<Props> = ({ initialListing, mode = 'create' }
                     type="button"
                     variant="outline"
                     size="sm"
-                    onClick={() => window.open(values.labReportUrl, '_blank')}
+                    onClick={() => setIsReportPreviewOpen(true)}
                     className="text-xs text-[#5D87FF] border-[#5D87FF]/30 hover:bg-[#ECF2FF]"
                   >
                     <Eye className="w-3.5 h-3.5 mr-1" /> View Report
@@ -648,14 +625,10 @@ export const ListingForm: React.FC<Props> = ({ initialListing, mode = 'create' }
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 text-xs">
                 <div>
                   <span className="text-[#5A6A85] uppercase text-[10px] font-semibold">Volume</span>
                   <span className="font-bold text-[#2A3547] block">{values.availableQuantity} {values.quantityUnit}s</span>
-                </div>
-                <div>
-                  <span className="text-[#5A6A85] uppercase text-[10px] font-semibold">Minimum Order</span>
-                  <span className="font-bold text-[#2A3547] block">{values.minimumOrderQuantity} {values.quantityUnit}s</span>
                 </div>
                 <div>
                   <span className="text-[#5A6A85] uppercase text-[10px] font-semibold">Delivery</span>
@@ -695,7 +668,7 @@ export const ListingForm: React.FC<Props> = ({ initialListing, mode = 'create' }
                           type="button"
                           variant="outline"
                           size="sm"
-                          onClick={() => window.open(values.labReportUrl, '_blank')}
+                          onClick={() => setIsReportPreviewOpen(true)}
                           className="h-6 text-[10px] px-2 text-[#5D87FF] border-[#5D87FF]/30 hover:bg-[#ECF2FF]"
                         >
                           <Eye className="w-3 h-3 mr-1" /> View Report
@@ -760,6 +733,15 @@ export const ListingForm: React.FC<Props> = ({ initialListing, mode = 'create' }
           </div>
         </div>
       </form>
+
+      {/* Report PDF / Document Viewer Modal */}
+      <ReportViewerModal
+        isOpen={isReportPreviewOpen}
+        onClose={() => setIsReportPreviewOpen(false)}
+        reportUrl={values.labReportUrl}
+        filename={values.labReportFilename}
+        purityPercentage={values.purityPercentage}
+      />
     </div>
   );
 };

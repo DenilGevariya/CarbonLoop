@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { INDUSTRIAL_IMAGES } from '@/lib/images';
-import { ArrowRight, Lock, Mail, Factory, Building2, Truck, ShieldCheck } from 'lucide-react';
+import { ArrowRight, Lock, Mail, Factory, Building2, Truck, ShieldCheck, FileCheck } from 'lucide-react';
 import { FadeUp } from '@/animations';
 
 export const LoginPage: React.FC = () => {
@@ -84,10 +84,15 @@ export const LoginPage: React.FC = () => {
 
           {/* Quick Fill Demo Accounts */}
           <div className="space-y-2 bg-[#F6F9FC] p-3.5 rounded-xl border border-[#E5EAEF]">
-            <span className="text-[11px] font-bold text-[#2A3547] uppercase tracking-wider block">
-              ⚡ Quick Fill Demo Accounts:
-            </span>
-            <div className="grid grid-cols-2 gap-2 text-xs">
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] font-bold text-[#2A3547] uppercase tracking-wider block">
+                ⚡ Quick Fill Demo Accounts:
+              </span>
+              <span className="text-[10px] bg-[#5D87FF]/10 text-[#5D87FF] font-semibold px-2 py-0.5 rounded border border-[#5D87FF]/20">
+                Pass: Password123!
+              </span>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs">
               <button
                 type="button"
                 onClick={() => setDemoAccount('supply@terracem.com')}
@@ -102,7 +107,7 @@ export const LoginPage: React.FC = () => {
                 className="p-2 rounded-lg bg-white hover:bg-[#ECF2FF] text-[#2A3547] hover:text-[#5D87FF] border border-[#E5EAEF] flex items-center gap-2 transition-all text-left font-semibold cursor-pointer shadow-2xs"
               >
                 <Building2 className="w-3.5 h-3.5 text-[#5D87FF] shrink-0" />
-                <span className="truncate">Utilizer</span>
+                <span className="truncate">Buyer</span>
               </button>
               <button
                 type="button"
@@ -114,11 +119,19 @@ export const LoginPage: React.FC = () => {
               </button>
               <button
                 type="button"
+                onClick={() => setDemoAccount('regulator@gpcb.gov.in')}
+                className="p-2 rounded-lg bg-white hover:bg-[#FEF5E5] text-[#2A3547] hover:text-[#FFAE1F] border border-[#E5EAEF] flex items-center gap-2 transition-all text-left font-semibold cursor-pointer shadow-2xs"
+              >
+                <FileCheck className="w-3.5 h-3.5 text-[#FFAE1F] shrink-0" />
+                <span className="truncate">Regulator</span>
+              </button>
+              <button
+                type="button"
                 onClick={() => setDemoAccount('admin@carbonloop.io')}
-                className="p-2 rounded-lg bg-white hover:bg-[#E8F9F5] text-[#2A3547] hover:text-[#13DEB9] border border-[#E5EAEF] flex items-center gap-2 transition-all text-left font-semibold cursor-pointer shadow-2xs"
+                className="p-2 rounded-lg bg-white hover:bg-[#E8F9F5] text-[#2A3547] hover:text-[#13DEB9] border border-[#E5EAEF] flex items-center gap-2 transition-all text-left font-semibold cursor-pointer shadow-2xs col-span-2 sm:col-span-2"
               >
                 <ShieldCheck className="w-3.5 h-3.5 text-[#13DEB9] shrink-0" />
-                <span className="truncate">Admin</span>
+                <span className="truncate">Admin (Platform)</span>
               </button>
             </div>
           </div>

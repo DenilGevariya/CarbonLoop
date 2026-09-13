@@ -363,13 +363,13 @@ export const RequirementForm: React.FC<RequirementFormProps> = ({
         {currentStep === 3 && (
           <div className="space-y-6">
             <div>
-              <span className="font-mono text-[10px] font-bold text-[#173D32] uppercase tracking-wider block mb-1">
+              <span className="text-xs font-semibold text-[#5D87FF] uppercase tracking-wider bg-[#ECF2FF] px-2.5 py-1 rounded-md block w-fit mb-2">
                 Section 03 / Utilization Pathway
               </span>
-              <h2 className="font-sans font-bold text-xl text-[#171A18]">
+              <h2 className="font-bold text-xl text-[#2A3547]">
                 Intended Application Taxonomy
               </h2>
-              <p className="font-sans text-xs text-stone-600 mt-1">
+              <p className="text-xs text-[#5A6A85] font-medium mt-1">
                 Select the utilization pathway for your facility. This structures matching and impact tracking.
               </p>
             </div>
@@ -380,14 +380,14 @@ export const RequirementForm: React.FC<RequirementFormProps> = ({
               onSelect={(typeId) => setValue('utilization_type_id', typeId)}
             />
 
-            <div className="font-mono text-xs">
-              <label className="block text-[#171A18] font-bold mb-1.5">
+            <div className="text-xs">
+              <label className="text-xs font-semibold uppercase tracking-wider text-[#5A6A85] block mb-1.5">
                 Specific End-Product or Application Details
               </label>
               <Input
                 {...register('intended_use')}
                 placeholder="e.g. Accelerating concrete block curing line #2 in Vadodara plant..."
-                className="border-[#E2DDD5] rounded-none text-xs h-10 font-sans"
+                className="bg-[#F6F9FC] border-[#E5EAEF] text-xs text-[#2A3547] rounded-lg focus-visible:ring-[#5D87FF]"
               />
             </div>
           </div>
@@ -397,17 +397,17 @@ export const RequirementForm: React.FC<RequirementFormProps> = ({
         {currentStep === 4 && (
           <div className="space-y-6">
             <div>
-              <span className="font-mono text-[10px] font-bold text-[#173D32] uppercase tracking-wider block mb-1">
+              <span className="text-xs font-semibold text-[#5D87FF] uppercase tracking-wider bg-[#ECF2FF] px-2.5 py-1 rounded-md block w-fit mb-2">
                 Section 04 / Commercial Limits
               </span>
-              <h2 className="font-sans font-bold text-xl text-[#171A18]">
+              <h2 className="font-bold text-xl text-[#2A3547]">
                 Off-take Budget & Priority Level
               </h2>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 font-mono text-xs">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs">
               <div>
-                <label className="block text-[#171A18] font-bold mb-1.5">
+                <label className="text-xs font-semibold uppercase tracking-wider text-[#5A6A85] block mb-1.5">
                   Maximum Acceptable Price per Tonne (INR)
                 </label>
                 <Input
@@ -415,23 +415,23 @@ export const RequirementForm: React.FC<RequirementFormProps> = ({
                   step="0.01"
                   {...register('maximum_price_per_unit', { valueAsNumber: true })}
                   placeholder="e.g. 5200"
-                  className="border-[#E2DDD5] rounded-none text-xs h-10 font-sans"
+                  className="bg-[#F6F9FC] border-[#E5EAEF] text-xs text-[#2A3547] rounded-lg focus-visible:ring-[#5D87FF]"
                 />
-                <span className="text-[10px] text-stone-500 block mt-1">
+                <span className="text-[10px] text-[#5A6A85] block mt-1">
                   Ceiling price threshold. Leave blank if open to market quotes.
                 </span>
               </div>
 
               <div>
-                <label className="block text-[#171A18] font-bold mb-1.5">Urgency / Priority</label>
+                <label className="text-xs font-semibold uppercase tracking-wider text-[#5A6A85] block mb-1.5">Urgency / Priority</label>
                 <Select
                   value={formValues.priority}
                   onValueChange={(val: any) => setValue('priority', val)}
                 >
-                  <SelectTrigger className="h-10 text-xs border-[#E2DDD5] rounded-none bg-white">
+                  <SelectTrigger className="h-10 text-xs bg-[#F6F9FC] border-[#E5EAEF] rounded-lg text-[#2A3547]">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="rounded-none border-[#E2DDD5]">
+                  <SelectContent className="rounded-lg border-[#E5EAEF] bg-white">
                     <SelectItem value="normal">Normal Priority</SelectItem>
                     <SelectItem value="high">High Priority</SelectItem>
                     <SelectItem value="urgent">Urgent Procurement</SelectItem>
@@ -446,25 +446,25 @@ export const RequirementForm: React.FC<RequirementFormProps> = ({
         {currentStep === 5 && (
           <div className="space-y-6">
             <div>
-              <span className="font-mono text-[10px] font-bold text-[#173D32] uppercase tracking-wider block mb-1">
+              <span className="text-xs font-semibold text-[#5D87FF] uppercase tracking-wider bg-[#ECF2FF] px-2.5 py-1 rounded-md block w-fit mb-2">
                 Section 05 / Timing & Logistics Destination
               </span>
-              <h2 className="font-sans font-bold text-xl text-[#171A18]">
+              <h2 className="font-bold text-xl text-[#2A3547]">
                 Delivery Window & Destination Facility
               </h2>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 font-mono text-xs">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs">
               {/* Destination Facility */}
               <div className="md:col-span-2">
-                <label className="block text-[#171A18] font-bold mb-1.5">
-                  Destination Off-Take Facility <span className="text-rose-600">*</span>
+                <label className="text-xs font-semibold uppercase tracking-wider text-[#5A6A85] block mb-1.5">
+                  Destination Off-Take Facility <span className="text-[#FA896B]">*</span>
                 </label>
 
                 {facilitiesLoading ? (
-                  <p className="text-xs text-stone-500">Loading registered facilities...</p>
+                  <p className="text-xs text-[#5A6A85]">Loading registered facilities...</p>
                 ) : facilities.length === 0 ? (
-                  <div className="p-4 bg-amber-50 border border-amber-200 text-amber-800 text-xs font-sans">
+                  <div className="p-4 bg-[#FEF5E5] border border-[#FFAE1F]/30 text-[#FFAE1F] text-xs rounded-lg font-medium">
                     No registered off-take facility found for your organization. You can enter location city/state below.
                   </div>
                 ) : (
@@ -472,10 +472,10 @@ export const RequirementForm: React.FC<RequirementFormProps> = ({
                     value={formValues.destination_facility_id}
                     onValueChange={handleFacilityChange}
                   >
-                    <SelectTrigger className="h-10 text-xs border-[#E2DDD5] rounded-none bg-white">
+                    <SelectTrigger className="h-10 text-xs bg-[#F6F9FC] border-[#E5EAEF] rounded-lg text-[#2A3547]">
                       <SelectValue placeholder="Select Destination Facility" />
                     </SelectTrigger>
-                    <SelectContent className="rounded-none border-[#E2DDD5]">
+                    <SelectContent className="rounded-lg border-[#E5EAEF] bg-white">
                       {facilities.map((fac) => (
                         <SelectItem key={fac.id} value={fac.id}>
                           {fac.name} — {fac.city}, {fac.state}
@@ -487,27 +487,27 @@ export const RequirementForm: React.FC<RequirementFormProps> = ({
               </div>
 
               <div>
-                <label className="block text-[#171A18] font-bold mb-1.5">Required From Date</label>
+                <label className="text-xs font-semibold uppercase tracking-wider text-[#5A6A85] block mb-1.5">Required From Date</label>
                 <Input
                   type="date"
                   {...register('required_from')}
-                  className="border-[#E2DDD5] rounded-none text-xs h-10 font-sans"
+                  className="bg-[#F6F9FC] border-[#E5EAEF] text-xs text-[#2A3547] rounded-lg focus-visible:ring-[#5D87FF]"
                 />
               </div>
 
               <div>
-                <label className="block text-[#171A18] font-bold mb-1.5">Required Until Date</label>
+                <label className="text-xs font-semibold uppercase tracking-wider text-[#5A6A85] block mb-1.5">Required Until Date</label>
                 <Input
                   type="date"
                   {...register('required_until')}
-                  className="border-[#E2DDD5] rounded-none text-xs h-10 font-sans"
+                  className="bg-[#F6F9FC] border-[#E5EAEF] text-xs text-[#2A3547] rounded-lg focus-visible:ring-[#5D87FF]"
                 />
               </div>
 
-              <div className="md:col-span-2 flex items-center justify-between p-4 bg-[#FAF8F5] border border-[#E2DDD5]">
+              <div className="md:col-span-2 flex items-center justify-between p-4 bg-[#F6F9FC] border border-[#E5EAEF] rounded-xl">
                 <div className="space-y-0.5">
-                  <span className="font-bold text-[#171A18]">Logistics Delivery Required</span>
-                  <p className="font-sans text-xs text-stone-500">
+                  <span className="font-bold text-[#2A3547]">Logistics Delivery Required</span>
+                  <p className="text-xs text-[#5A6A85]">
                     Require supplier or CarbonLoop logistics network to transport CO₂ directly to site.
                   </p>
                 </div>
@@ -527,66 +527,66 @@ export const RequirementForm: React.FC<RequirementFormProps> = ({
         {currentStep === 6 && (
           <div className="space-y-6">
             <div>
-              <span className="font-mono text-[10px] font-bold text-[#173D32] uppercase tracking-wider block mb-1">
+              <span className="text-xs font-semibold text-[#5D87FF] uppercase tracking-wider bg-[#ECF2FF] px-2.5 py-1 rounded-md block w-fit mb-2">
                 Section 06 / Final Review
               </span>
-              <h2 className="font-sans font-bold text-xl text-[#171A18]">
+              <h2 className="font-bold text-xl text-[#2A3547]">
                 Review Complete Requirement Specification
               </h2>
-              <p className="text-xs text-stone-500 font-sans mt-0.5">
+              <p className="text-xs text-[#5A6A85] mt-0.5">
                 Verify all parameters before publishing your requirement to the CarbonLoop CO₂ Network.
               </p>
             </div>
 
             {/* Organized 5-Section Review Card */}
-            <div className="bg-[#FAF8F5] border border-[#E2DDD5] p-6 space-y-6 font-sans text-xs">
+            <div className="bg-[#F6F9FC] border border-[#E5EAEF] rounded-xl p-6 space-y-6 text-xs">
               {/* 1. REQUIREMENT */}
-              <div className="space-y-2 border-b border-[#E2DDD5] pb-4">
-                <span className="font-mono text-[10px] font-bold uppercase text-[#173D32] tracking-wider block">
+              <div className="space-y-2 border-b border-[#E5EAEF] pb-4">
+                <span className="text-[10px] font-bold uppercase text-[#5D87FF] tracking-wider block">
                   01. REQUIREMENT
                 </span>
                 <div className="flex justify-between items-start">
                   <div>
-                    <h3 className="font-bold text-base text-[#171A18]">
+                    <h3 className="font-bold text-base text-[#2A3547]">
                       {formValues.title}
                     </h3>
-                    <p className="text-xs text-stone-600 mt-1 leading-relaxed">
+                    <p className="text-xs text-[#5A6A85] mt-1 leading-relaxed">
                       {formValues.description || 'No detailed operational description provided.'}
                     </p>
                   </div>
-                  <span className="px-2.5 py-0.5 bg-[#173D32] text-white text-[10px] uppercase font-bold tracking-wider rounded-none">
+                  <span className="px-3 py-1 bg-[#ECF2FF] text-[#5D87FF] border border-[#5D87FF]/20 text-[10px] uppercase font-bold tracking-wider rounded-full">
                     {formValues.priority} Priority
                   </span>
                 </div>
               </div>
 
               {/* 2. VOLUME & PURITY */}
-              <div className="space-y-2 border-b border-[#E2DDD5] pb-4">
-                <span className="font-mono text-[10px] font-bold uppercase text-[#173D32] tracking-wider block">
+              <div className="space-y-2 border-b border-[#E5EAEF] pb-4">
+                <span className="text-[10px] font-bold uppercase text-[#5D87FF] tracking-wider block">
                   02. VOLUME & PURITY
                 </span>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 bg-white p-3 border border-[#E2DDD5]">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 bg-white p-3.5 rounded-lg border border-[#E5EAEF]">
                   <div>
-                    <span className="text-stone-500 text-[10px] uppercase block">Required Volume</span>
-                    <span className="font-bold text-sm text-[#171A18]">
+                    <span className="text-[#5A6A85] text-[10px] uppercase block font-semibold">Required Volume</span>
+                    <span className="font-bold text-sm text-[#2A3547]">
                       {formValues.required_quantity} {formValues.quantity_unit}s
                     </span>
                   </div>
                   <div>
-                    <span className="text-stone-500 text-[10px] uppercase block">Minimum Purity</span>
-                    <span className="font-bold text-sm text-[#173D32]">
+                    <span className="text-[#5A6A85] text-[10px] uppercase block font-semibold">Minimum Purity</span>
+                    <span className="font-bold text-sm text-[#5D87FF]">
                       ≥{formValues.minimum_purity}%
                     </span>
                   </div>
                   <div>
-                    <span className="text-stone-500 text-[10px] uppercase block">Maximum Purity</span>
-                    <span className="font-bold text-sm text-[#171A18]">
+                    <span className="text-[#5A6A85] text-[10px] uppercase block font-semibold">Maximum Purity</span>
+                    <span className="font-bold text-sm text-[#2A3547]">
                       {formValues.maximum_purity ? `≤${formValues.maximum_purity}%` : 'Not Capped'}
                     </span>
                   </div>
                   <div>
-                    <span className="text-stone-500 text-[10px] uppercase block">Physical Form</span>
-                    <span className="font-bold text-xs text-[#171A18] uppercase">
+                    <span className="text-[#5A6A85] text-[10px] uppercase block font-semibold">Physical Form</span>
+                    <span className="font-bold text-xs text-[#2A3547] uppercase">
                       {formValues.acceptable_physical_form}
                     </span>
                   </div>
@@ -594,16 +594,16 @@ export const RequirementForm: React.FC<RequirementFormProps> = ({
               </div>
 
               {/* 3. UTILIZATION */}
-              <div className="space-y-2 border-b border-[#E2DDD5] pb-4">
-                <span className="font-mono text-[10px] font-bold uppercase text-[#173D32] tracking-wider block">
+              <div className="space-y-2 border-b border-[#E5EAEF] pb-4">
+                <span className="text-[10px] font-bold uppercase text-[#5D87FF] tracking-wider block">
                   03. UTILIZATION
                 </span>
-                <div className="bg-white p-3 border border-[#E2DDD5] flex items-center justify-between">
+                <div className="bg-white p-3.5 rounded-lg border border-[#E5EAEF] flex items-center justify-between">
                   <div>
-                    <span className="font-bold text-stone-800">
+                    <span className="font-bold text-[#2A3547]">
                       {utilizationTypes.find((u) => u.id === formValues.utilization_type_id)?.name || 'Mineralization & Materials Curing'}
                     </span>
-                    <p className="text-[11px] text-stone-500 mt-0.5">
+                    <p className="text-[11px] text-[#5A6A85] mt-0.5">
                       {formValues.intended_use || 'Direct chemical or industrial feedstock process consumption.'}
                     </p>
                   </div>
@@ -611,22 +611,22 @@ export const RequirementForm: React.FC<RequirementFormProps> = ({
               </div>
 
               {/* 4. COMMERCIAL */}
-              <div className="space-y-2 border-b border-[#E2DDD5] pb-4">
-                <span className="font-mono text-[10px] font-bold uppercase text-[#173D32] tracking-wider block">
+              <div className="space-y-2 border-b border-[#E5EAEF] pb-4">
+                <span className="text-[10px] font-bold uppercase text-[#5D87FF] tracking-wider block">
                   04. COMMERCIAL
                 </span>
-                <div className="grid grid-cols-2 gap-4 bg-white p-3 border border-[#E2DDD5]">
+                <div className="grid grid-cols-2 gap-4 bg-white p-3.5 rounded-lg border border-[#E5EAEF]">
                   <div>
-                    <span className="text-stone-500 text-[10px] uppercase block">Maximum Acceptable Price</span>
-                    <span className="font-bold text-sm text-[#171A18]">
+                    <span className="text-[#5A6A85] text-[10px] uppercase block font-semibold">Maximum Acceptable Price</span>
+                    <span className="font-bold text-sm text-[#2A3547]">
                       {formValues.maximum_price_per_unit
                         ? `₹${formValues.maximum_price_per_unit.toLocaleString()} / ${formValues.quantity_unit}`
                         : 'Open / Negotiable'}
                     </span>
                   </div>
                   <div>
-                    <span className="text-stone-500 text-[10px] uppercase block">Currency & Settlement</span>
-                    <span className="font-bold text-xs text-[#171A18]">
+                    <span className="text-[#5A6A85] text-[10px] uppercase block font-semibold">Currency & Settlement</span>
+                    <span className="font-bold text-xs text-[#2A3547]">
                       {formValues.currency || 'INR'} (Indian Rupee)
                     </span>
                   </div>
@@ -635,25 +635,25 @@ export const RequirementForm: React.FC<RequirementFormProps> = ({
 
               {/* 5. TIMING & DESTINATION */}
               <div className="space-y-2">
-                <span className="font-mono text-[10px] font-bold uppercase text-[#173D32] tracking-wider block">
+                <span className="text-[10px] font-bold uppercase text-[#5D87FF] tracking-wider block">
                   05. TIMING & DESTINATION
                 </span>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-white p-3 border border-[#E2DDD5]">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-white p-3.5 rounded-lg border border-[#E5EAEF]">
                   <div>
-                    <span className="text-stone-500 text-[10px] uppercase block">Destination Location</span>
-                    <span className="font-bold text-xs text-[#171A18]">
+                    <span className="text-[#5A6A85] text-[10px] uppercase block font-semibold">Destination Location</span>
+                    <span className="font-bold text-xs text-[#2A3547]">
                       {formValues.location_city || 'Vadodara'}, {formValues.location_state || 'Gujarat'}
                     </span>
                   </div>
                   <div>
-                    <span className="text-stone-500 text-[10px] uppercase block">Date Window</span>
-                    <span className="font-bold text-xs text-[#171A18]">
+                    <span className="text-[#5A6A85] text-[10px] uppercase block font-semibold">Date Window</span>
+                    <span className="font-bold text-xs text-[#2A3547]">
                       {formValues.required_from || 'Immediate'} {formValues.required_until ? `to ${formValues.required_until}` : ''}
                     </span>
                   </div>
                   <div>
-                    <span className="text-stone-500 text-[10px] uppercase block">Logistics Required</span>
-                    <span className={`font-bold text-xs ${formValues.delivery_required ? 'text-[#173D32]' : 'text-stone-500'}`}>
+                    <span className="text-[#5A6A85] text-[10px] uppercase block font-semibold">Logistics Required</span>
+                    <span className={`font-bold text-xs ${formValues.delivery_required ? 'text-[#5D87FF]' : 'text-[#5A6A85]'}`}>
                       {formValues.delivery_required ? 'Yes (Tanker Delivery Required)' : 'No (Buyer Self-Pickup)'}
                     </span>
                   </div>
@@ -662,13 +662,13 @@ export const RequirementForm: React.FC<RequirementFormProps> = ({
             </div>
 
             {/* Dual Action Buttons */}
-            <div className="pt-4 border-t border-[#E2DDD5] flex flex-col sm:flex-row items-center justify-end gap-3">
+            <div className="pt-4 border-t border-[#E5EAEF] flex flex-col sm:flex-row items-center justify-end gap-3">
               <Button
                 type="button"
                 variant="outline"
                 disabled={isSubmitting}
                 onClick={handleSubmit((data) => onFinalFormSubmit(data, false))}
-                className="w-full sm:w-auto border-[#E2DDD5] text-stone-700 font-mono text-xs h-10 px-6 rounded-none cursor-pointer"
+                className="w-full sm:w-auto border-[#E5EAEF] text-[#5A6A85] font-semibold text-xs h-10 px-6 rounded-lg cursor-pointer"
               >
                 Save Draft Only
               </Button>
@@ -677,7 +677,7 @@ export const RequirementForm: React.FC<RequirementFormProps> = ({
                 type="button"
                 disabled={isSubmitting}
                 onClick={handleSubmit((data) => onFinalFormSubmit(data, true))}
-                className="w-full sm:w-auto bg-[#173D32] hover:bg-[#133027] text-white font-mono text-xs font-bold h-10 px-8 rounded-none cursor-pointer flex items-center justify-center gap-2 shadow-2xs"
+                className="w-full sm:w-auto bg-[#5D87FF] hover:bg-[#4570EA] text-white text-xs font-semibold h-10 px-8 rounded-lg cursor-pointer flex items-center justify-center gap-2 shadow-xs"
               >
                 <Sparkles className="w-4 h-4" />
                 <span>{isSubmitting ? 'Publishing...' : 'Publish to Demand Network'}</span>
@@ -688,13 +688,13 @@ export const RequirementForm: React.FC<RequirementFormProps> = ({
 
         {/* Step Navigation Footer */}
         {currentStep < 6 && (
-          <div className="pt-6 mt-6 border-t border-[#E2DDD5] flex items-center justify-between font-mono text-xs">
+          <div className="pt-6 mt-6 border-t border-[#E5EAEF] flex items-center justify-between text-xs">
             <Button
               type="button"
               variant="outline"
               onClick={handlePrevStep}
               disabled={currentStep === 1}
-              className="border-[#E2DDD5] rounded-none h-9 text-xs"
+              className="border-[#E5EAEF] text-[#5A6A85] font-semibold rounded-lg h-9 text-xs"
             >
               <ArrowLeft className="w-3.5 h-3.5 mr-1" /> Previous Step
             </Button>
@@ -702,7 +702,7 @@ export const RequirementForm: React.FC<RequirementFormProps> = ({
             <Button
               type="button"
               onClick={handleNextStep}
-              className="bg-[#173D32] hover:bg-[#133027] text-white rounded-none h-9 text-xs px-6 font-semibold cursor-pointer"
+              className="bg-[#5D87FF] hover:bg-[#4570EA] text-white rounded-lg h-9 text-xs px-6 font-semibold cursor-pointer"
             >
               Next Step <ArrowRight className="w-3.5 h-3.5 ml-1" />
             </Button>
