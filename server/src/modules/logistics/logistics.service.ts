@@ -332,4 +332,25 @@ export class LogisticsService {
   async withdrawQuote(id: string, userOrgId: string, userId: string, reason?: string): Promise<void> {
     await this.repo.updateStatus(id, 'WITHDRAWN', userId, reason);
   }
+
+  async getAvailableRequests(providerOrgId: string, searchFilters: any = {}) {
+    return this.repo.getAvailableTransportRequests(providerOrgId, searchFilters);
+  }
+
+  async acceptTransportRequest(orderId: string, providerOrgId: string, userId: string) {
+    return this.repo.acceptTransportRequest(orderId, providerOrgId, userId);
+  }
+
+  async rejectTransportRequest(orderId: string, providerOrgId: string, reason?: string) {
+    return this.repo.rejectTransportRequest(orderId, providerOrgId, reason);
+  }
+
+  async createCounterBid(orderId: string, providerOrgId: string, userId: string, data: any) {
+    return this.repo.createCounterBid(orderId, providerOrgId, userId, data);
+  }
+
+  async getDashboardStats(providerOrgId: string) {
+    return this.repo.getLogisticsDashboardStats(providerOrgId);
+  }
 }
+

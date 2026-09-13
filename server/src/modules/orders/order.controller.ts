@@ -64,15 +64,21 @@ export class OrderController {
   async listOrders(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
     try {
       const userOrgId = await resolveUserOrgId(req);
-      if (!userOrgId) {
+      const isPlatformAdmin = (req.user?.roles || []).some(
+        (r) => r.toLowerCase() === 'platform_admin' || r.toLowerCase() === 'admin'
+      );
+
+      if (!userOrgId && !isPlatformAdmin) {
         res.status(400).json({ success: false, error: { code: 'NO_ORG', message: 'User does not belong to an active organization.' } });
         return;
       }
 
       const queryParams = orderFilterSchema.parse(req.query);
+      const effectiveRole = isPlatformAdmin ? 'admin' : queryParams.role;
+
       const result = await orderService.listOrders(
-        userOrgId,
-        queryParams.role,
+        userOrgId || '',
+        effectiveRole as any,
         queryParams.status,
         queryParams.page,
         queryParams.limit

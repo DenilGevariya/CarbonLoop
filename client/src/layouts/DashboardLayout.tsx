@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
+import { GlobalCommandSearch } from '@/features/admin/components/GlobalCommandSearch';
 import {
   SidebarProvider,
   Sidebar,
@@ -44,6 +45,25 @@ const DashboardInner: React.FC = () => {
   const { setOpenMobile, isMobile } = useSidebar();
   const location = useLocation();
   const navigate = useNavigate();
+
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        setIsSearchOpen((prev) => !prev);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
+  const handleHeaderSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSearchOpen(true);
+  };
 
   const orgType = activeOrg?.orgType?.toUpperCase() || 'EMITTER';
   const isUtilizer = orgType === 'BUYER' || orgType === 'UTILIZER';
@@ -255,13 +275,34 @@ const DashboardInner: React.FC = () => {
 
           {/* Search & Actions */}
           <div className="flex items-center gap-2 sm:gap-3">
-            <div className="relative w-48 md:w-64 hidden lg:block">
-              <Search className="size-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#5A6A85]" />
-              <Input
-                placeholder="Search exchange..."
-                className="pl-9 h-9 bg-[#F6F9FC] border-[#E5EAEF] text-xs text-[#2A3547] placeholder:text-[#5A6A85] rounded-lg focus-visible:ring-[#5D87FF]"
+            {/* Desktop / Tablet Search Input */}
+            <form onSubmit={handleHeaderSearchSubmit} className="relative w-40 sm:w-60 md:w-72 hidden sm:flex items-center">
+              <Search
+                className="size-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#5A6A85] cursor-pointer hover:text-[#5D87FF] transition-colors"
+                onClick={() => setIsSearchOpen(true)}
               />
-            </div>
+              <Input
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onFocus={() => setIsSearchOpen(true)}
+                placeholder="Search exchange... (Ctrl+K)"
+                className="pl-9 pr-12 h-9 bg-[#F6F9FC] border-[#E5EAEF] text-xs text-[#2A3547] placeholder:text-[#5A6A85] rounded-lg focus-visible:ring-[#5D87FF] cursor-text"
+              />
+              <kbd className="hidden lg:flex absolute right-2.5 top-1/2 -translate-y-1/2 items-center gap-0.5 pointer-events-none px-1.5 py-0.5 text-[10px] font-semibold text-[#5A6A85] bg-white border border-[#E5EAEF] rounded shadow-2xs">
+                ⌘K
+              </kbd>
+            </form>
+
+            {/* Mobile Search Button */}
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setIsSearchOpen(true)}
+              className="sm:hidden text-[#5A6A85] hover:text-[#5D87FF] hover:bg-[#ECF2FF] rounded-lg size-8 cursor-pointer shrink-0"
+              title="Search Exchange"
+            >
+              <Search className="size-4" />
+            </Button>
 
             <Badge variant="outline" className="border-[#5D87FF]/30 text-[#5D87FF] bg-[#ECF2FF] text-[10px] sm:text-xs font-bold rounded-full px-2.5 sm:px-3 py-0.5 sm:py-1 truncate">
               <ShieldCheck className="size-3 sm:size-3.5 mr-1 text-[#5D87FF] shrink-0" />
@@ -298,6 +339,13 @@ const DashboardInner: React.FC = () => {
           <Outlet />
         </main>
       </div>
+
+      {/* Global Command Search Overlay */}
+      <GlobalCommandSearch
+        isOpen={isSearchOpen}
+        onClose={() => setIsSearchOpen(false)}
+        initialQuery={searchQuery}
+      />
     </div>
   );
 };

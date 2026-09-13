@@ -95,7 +95,9 @@ export class ShipmentRepository {
       params.push(orderId);
     }
 
-    if (role === 'sent') {
+    if ((role as string) === 'admin' || !orgId) {
+      // Platform admin: list all shipments across all organizations
+    } else if (role === 'sent') {
       whereConditions.push(`s.logistics_provider_id = $${paramIndex++}`);
       params.push(orgId);
     } else if (role === 'received') {

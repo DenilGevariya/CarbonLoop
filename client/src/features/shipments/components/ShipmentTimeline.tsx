@@ -8,23 +8,24 @@ interface Props {
 }
 
 const STAGES = [
-  { key: 'SCHEDULED', label: 'SCHEDULED' },
+  { key: 'TRANSPORTER_ASSIGNED', label: 'TRANSPORTER ASSIGNED' },
   { key: 'PICKED_UP', label: 'PICKED UP' },
   { key: 'IN_TRANSIT', label: 'IN TRANSIT' },
-  { key: 'ARRIVING', label: 'ARRIVING' },
   { key: 'DELIVERED', label: 'DELIVERED' },
-  { key: 'COMPLETED', label: 'COMPLETED' },
+  { key: 'BUYER_CONFIRMED_RECEIPT', label: 'BUYER CONFIRMED' },
 ];
 
 const STAGE_ORDER: Record<string, number> = {
   PLANNED: 0,
+  TRANSPORTER_ASSIGNED: 1,
   SCHEDULED: 1,
   PICKED_UP: 2,
   IN_TRANSIT: 3,
-  ARRIVING: 4,
-  DELIVERED: 5,
-  COMPLETED: 6,
-  EXCEPTION: 3.5,
+  ARRIVING: 3.5,
+  DELIVERED: 4,
+  BUYER_CONFIRMED_RECEIPT: 5,
+  COMPLETED: 5,
+  EXCEPTION: 3.2,
   CANCELLED: -1,
 };
 

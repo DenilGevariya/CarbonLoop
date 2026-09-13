@@ -75,18 +75,6 @@ export const ShipmentDetailPage: React.FC = () => {
     }
   };
 
-  const handleArrive = async () => {
-    try {
-      setActionLoading('arrive');
-      await shipmentApi.arriveShipment(shipment.id, 'Transport vehicle arrived at destination plant gate.');
-      refetch();
-    } catch (err: any) {
-      alert(err.response?.data?.message || err.message);
-    } finally {
-      setActionLoading(null);
-    }
-  };
-
   const handleDeliver = async () => {
     try {
       setActionLoading('deliver');
@@ -172,13 +160,13 @@ export const ShipmentDetailPage: React.FC = () => {
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          {shipment.status === 'SCHEDULED' && (
+          {(shipment.status === 'SCHEDULED' || shipment.status === 'TRANSPORTER_ASSIGNED') && (
             <button
               onClick={handlePickup}
               disabled={actionLoading === 'pickup'}
-              className="px-4 py-2 bg-[#173D32] text-white font-semibold rounded hover:bg-[#173D32]/90 disabled:opacity-50"
+              className="px-4 py-2 bg-[#5D87FF] text-white text-xs font-bold rounded-lg hover:bg-[#4570EA] flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
             >
-              {actionLoading === 'pickup' ? 'Processing Pickup...' : '✓ Log Pickup Started'}
+              {actionLoading === 'pickup' ? 'Processing Pickup...' : '✓ Mark Picked Up'}
             </button>
           )}
 
@@ -186,9 +174,9 @@ export const ShipmentDetailPage: React.FC = () => {
             <button
               onClick={handleDepart}
               disabled={actionLoading === 'depart'}
-              className="px-4 py-2 bg-[#173D32] text-white font-semibold rounded hover:bg-[#173D32]/90 disabled:opacity-50"
+              className="px-4 py-2 bg-[#5D87FF] text-white text-xs font-bold rounded-lg hover:bg-[#4570EA] flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
             >
-              {actionLoading === 'depart' ? 'Marking Departed...' : '🚀 Depart Origin Facility'}
+              {actionLoading === 'depart' ? 'Marking In Transit...' : '🚀 Mark In Transit'}
             </button>
           )}
 
@@ -196,16 +184,16 @@ export const ShipmentDetailPage: React.FC = () => {
             <>
               <button
                 onClick={() => setIsEventModalOpen(true)}
-                className="px-3 py-2 bg-[#F7F5EF] border border-[#E2DDD5] text-[#171A18] font-medium rounded hover:bg-[#E2DDD5]/40"
+                className="px-3 py-2 bg-white border border-[#E5EAEF] text-[#2A3547] text-xs font-semibold rounded-lg hover:bg-[#F6F9FC] cursor-pointer"
               >
                 + Checkpoint Event
               </button>
               <button
-                onClick={handleArrive}
-                disabled={actionLoading === 'arrive'}
-                className="px-4 py-2 bg-[#173D32] text-white font-semibold rounded hover:bg-[#173D32]/90 disabled:opacity-50"
+                onClick={handleDeliver}
+                disabled={actionLoading === 'deliver'}
+                className="px-4 py-2 bg-[#13DEB9] text-white text-xs font-bold rounded-lg hover:bg-[#0EBA9B] flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
               >
-                {actionLoading === 'arrive' ? 'Marking Arriving...' : '📍 Arrive at Destination'}
+                {actionLoading === 'deliver' ? 'Processing Delivery...' : '📦 Mark Delivered'}
               </button>
             </>
           )}
@@ -214,9 +202,9 @@ export const ShipmentDetailPage: React.FC = () => {
             <button
               onClick={handleDeliver}
               disabled={actionLoading === 'deliver'}
-              className="px-4 py-2 bg-[#173D32] text-white font-semibold rounded hover:bg-[#173D32]/90 disabled:opacity-50"
+              className="px-4 py-2 bg-[#13DEB9] text-white text-xs font-bold rounded-lg hover:bg-[#0EBA9B] flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
             >
-              {actionLoading === 'deliver' ? 'Processing Delivery...' : '📦 Confirm Delivery Completed'}
+              {actionLoading === 'deliver' ? 'Processing Delivery...' : '📦 Mark Delivered'}
             </button>
           )}
 
@@ -224,16 +212,16 @@ export const ShipmentDetailPage: React.FC = () => {
             <button
               onClick={handleConfirmReceipt}
               disabled={actionLoading === 'confirm'}
-              className="px-4 py-2 bg-[#171A18] text-[#F7F5EF] font-bold rounded hover:bg-black disabled:opacity-50"
+              className="px-4 py-2 bg-[#2A3547] text-white text-xs font-bold rounded-lg hover:bg-[#1A2332] flex items-center gap-1.5 cursor-pointer shadow-xs disabled:opacity-50"
             >
-              {actionLoading === 'confirm' ? 'Confirming...' : '🛡️ Buyer Receipt Confirmation (Complete Order)'}
+              {actionLoading === 'confirm' ? 'Confirming...' : '🛡️ Confirm Receipt (Buyer Action)'}
             </button>
           )}
 
-          {shipment.status === 'COMPLETED' && (
-            <span className="px-3 py-1.5 bg-emerald-50 text-emerald-800 border border-emerald-200 font-bold rounded flex items-center gap-1.5">
-              <ShieldCheck className="w-4 h-4 text-emerald-600" />
-              FULLY DELIVERED & COMPLETED
+          {(shipment.status === 'COMPLETED' || shipment.status === 'BUYER_CONFIRMED_RECEIPT') && (
+            <span className="px-3 py-1.5 bg-[#E6FFFA] text-[#13DEB9] border border-[#13DEB9]/30 text-xs font-bold rounded-lg flex items-center gap-1.5">
+              <ShieldCheck className="w-4 h-4 text-[#13DEB9]" />
+              BUYER CONFIRMED RECEIPT & COMPLETED
             </span>
           )}
         </div>

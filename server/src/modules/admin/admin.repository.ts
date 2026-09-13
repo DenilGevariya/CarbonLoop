@@ -390,4 +390,77 @@ export class AdminRepository {
     const res = await query(sql, values);
     return { items: res.rows as AuditLogRecord[], total };
   }
+
+  // --- Complaints & Disputes ---
+  public async listDisputes(params: { status?: string; search?: string; limit?: number; offset?: number }) {
+    const conditions: string[] = [];
+    const values: any[] = [];
+
+    if (params.status) {
+      values.push(params.status.toUpperCase());
+      conditions.push(`d.status = $${values.length}`);
+    }
+
+    if (params.search) {
+      values.push(`%${params.search.trim()}%`);
+      conditions.push(`(d.dispute_code ILIKE $${values.length} OR c_org.name ILIKE $${values.length} OR r_org.name ILIKE $${values.length} OR d.description ILIKE $${values.length})`);
+    }
+
+    const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
+
+    const countRes = await query(`SELECT COUNT(d.id) as total FROM disputes d JOIN organizations c_org ON d.complainant_organization_id = c_org.id JOIN organizations r_org ON d.respondent_organization_id = r_org.id ${whereClause}`, values);
+    const total = parseInt(countRes.rows[0]?.total || '0', 10);
+
+    const limit = params.limit || 20;
+    const offset = params.offset || 0;
+    values.push(limit, offset);
+
+    const sql = `
+      SELECT 
+        d.id,
+        d.dispute_code as "disputeCode",
+        d.order_id as "orderId",
+        d.shipment_id as "shipmentId",
+        d.listing_id as "listingId",
+        d.complainant_organization_id as "complainantOrganizationId",
+        c_org.name as "complainantName",
+        d.respondent_organization_id as "respondentOrganizationId",
+        r_org.name as "respondentName",
+        CONCAT(c_org.name, ' vs. ', r_org.name) as parties,
+        d.dispute_type as "disputeType",
+        d.dispute_type as category,
+        d.description,
+        d.evidence_url as "evidenceUrl",
+        d.evidence_notes as "evidenceNotes",
+        d.status,
+        d.resolution_notes as "resolutionNotes",
+        d.resolved_at as "resolvedAt",
+        d.created_at as "createdAt"
+      FROM disputes d
+      JOIN organizations c_org ON d.complainant_organization_id = c_org.id
+      JOIN organizations r_org ON d.respondent_organization_id = r_org.id
+      ${whereClause}
+      ORDER BY d.created_at DESC
+      LIMIT $${values.length - 1} OFFSET $${values.length}
+    `;
+
+    const res = await query(sql, values);
+    return { items: res.rows, total };
+  }
+
+  public async updateDisputeStatus(id: string, status: string, adminUserId: string, resolutionNotes?: string) {
+    const res = await query(
+      `UPDATE disputes 
+       SET status = $2, assigned_reviewer_id = $3, resolution_notes = COALESCE($4, resolution_notes),
+           resolved_at = CASE WHEN $2 = 'RESOLVED' THEN NOW() ELSE resolved_at END,
+           updated_at = NOW()
+       WHERE id = $1 OR dispute_code = $1
+       RETURNING *`,
+      [id, status, adminUserId, resolutionNotes || null]
+    );
+
+    if (res.rows.length === 0) throw new Error(`Dispute record ${id} not found.`);
+    return res.rows[0];
+  }
 }
+

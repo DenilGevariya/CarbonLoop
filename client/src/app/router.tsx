@@ -30,7 +30,7 @@ import { AdminMatchesPage } from '@/pages/admin/AdminMatchesPage';
 import { AdminAuditLogPage } from '@/pages/admin/AdminAuditLogPage';
 import { AdminNetworkMapPage } from '@/pages/admin/AdminNetworkMapPage';
 import { AdminSystemHealthPage } from '@/pages/admin/AdminSystemHealthPage';
-import AdminDisputesPage from '@/pages/admin/AdminDisputesPage';
+import { AdminDisputesPage } from '@/pages/admin/AdminDisputesPage';
 
 // Trust Network & Verification Pages
 import OrganizationVerificationPage from '@/pages/dashboard/OrganizationVerificationPage';

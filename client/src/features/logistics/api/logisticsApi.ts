@@ -60,8 +60,45 @@ export interface CreateQuoteInput {
   destination_facility_id?: string;
 }
 
+export interface TransportRequest {
+  order_id: string;
+  request_id: string;
+  order_number: string;
+  seller_organization_id: string;
+  seller_name: string;
+  buyer_organization_id: string;
+  buyer_name: string;
+  co2_quantity: number;
+  quantity_unit: string;
+  co2_purity: number;
+  pickup_location: string;
+  delivery_location: string;
+  distance_km: number;
+  proposed_transport_price: number;
+  delivery_deadline: string;
+  status: string;
+  created_at: string;
+}
+
+export interface LogisticsDashboardStats {
+  availableRequestsCount: number;
+  activeShipmentsCount: number;
+  completedShipmentsCount: number;
+  overdueShipmentsCount: number;
+  activeProposalsCount: number;
+}
+
 export const logisticsApi = {
   getProviders: () => apiClient.get<LogisticsProviderInfo[]>('/logistics/providers'),
+  getDashboardStats: () => apiClient.get<LogisticsDashboardStats>('/logistics/stats'),
+  getAvailableRequests: (params?: Record<string, any>) => {
+    const searchParams = new URLSearchParams(params || {}).toString();
+    return apiClient.get<{ items: TransportRequest[]; total: number }>(`/logistics/requests?${searchParams}`);
+  },
+  acceptRequest: (orderId: string) => apiClient.post<any>(`/logistics/requests/${orderId}/accept`, {}),
+  rejectRequest: (orderId: string, reason?: string) => apiClient.post<void>(`/logistics/requests/${orderId}/reject`, { reason }),
+  counterBidRequest: (orderId: string, data: { proposed_price: number; message?: string; estimated_delivery_time?: string; conditions?: string }) =>
+    apiClient.post<any>(`/logistics/requests/${orderId}/counter-bid`, data),
   getQuotes: (role: 'sent' | 'received' | 'all' = 'all', orderId?: string, status?: string) => {
     let url = `/logistics/quotes?role=${role}`;
     if (orderId) url += `&order_id=${orderId}`;
@@ -75,3 +112,4 @@ export const logisticsApi = {
   withdrawQuote: (id: string, reason?: string) => apiClient.post<void>(`/logistics/quotes/${id}/withdraw`, { reason }),
   requestLogistics: (orderId: string, notes?: string) => apiClient.post<any>(`/orders/${orderId}/logistics/request`, { notes }),
 };
+

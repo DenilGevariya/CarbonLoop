@@ -1,16 +1,23 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, Building2, Factory, Package, FileText, Truck, ShieldCheck, ShoppingCart, ArrowRight, X } from 'lucide-react';
+import { useAuth } from '@/context/AuthContext';
 import { adminApi } from '../api/adminApi';
 import type { GlobalSearchResultItem } from '../api/adminApi';
 
 interface GlobalCommandSearchProps {
   isOpen: boolean;
   onClose: () => void;
+  initialQuery?: string;
 }
 
-export const GlobalCommandSearch: React.FC<GlobalCommandSearchProps> = ({ isOpen, onClose }) => {
-  const [query, setQuery] = useState('');
+export const GlobalCommandSearch: React.FC<GlobalCommandSearchProps> = ({ isOpen, onClose, initialQuery = '' }) => {
+  const { user } = useAuth();
+  const isAdmin = (user?.roles || []).some(
+    (r) => r.toLowerCase() === 'platform_admin' || r.toLowerCase() === 'admin'
+  );
+
+  const [query, setQuery] = useState(initialQuery);
   const [results, setResults] = useState<GlobalSearchResultItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -19,12 +26,15 @@ export const GlobalCommandSearch: React.FC<GlobalCommandSearchProps> = ({ isOpen
 
   useEffect(() => {
     if (isOpen) {
+      if (initialQuery) {
+        setQuery(initialQuery);
+      }
       setTimeout(() => inputRef.current?.focus(), 50);
     } else {
       setQuery('');
       setResults([]);
     }
-  }, [isOpen]);
+  }, [isOpen, initialQuery]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -64,7 +74,30 @@ export const GlobalCommandSearch: React.FC<GlobalCommandSearchProps> = ({ isOpen
 
   const handleSelect = (item: GlobalSearchResultItem) => {
     onClose();
-    navigate(item.url);
+    if (isAdmin) {
+      navigate(item.url);
+    } else {
+      switch (item.category) {
+        case 'LISTING':
+          navigate(`/dashboard/marketplace/${item.publicCode || item.id}`);
+          break;
+        case 'REQUIREMENT':
+          navigate(`/requirements/${item.publicCode || item.id}`);
+          break;
+        case 'ORDER':
+          navigate(`/dashboard/orders/${item.id}`);
+          break;
+        case 'SHIPMENT':
+          navigate(`/dashboard/shipments?search=${encodeURIComponent(item.publicCode || item.id)}`);
+          break;
+        case 'ORGANIZATION':
+          navigate(`/dashboard/marketplace?search=${encodeURIComponent(item.title)}`);
+          break;
+        default:
+          navigate('/dashboard');
+          break;
+      }
+    }
   };
 
   const handleKeyNavigation = (e: React.KeyboardEvent) => {
@@ -152,20 +185,41 @@ export const GlobalCommandSearch: React.FC<GlobalCommandSearchProps> = ({ isOpen
 
           {!isLoading && !query.trim() && (
             <div className="p-6 text-[#5A6A85] text-xs">
-              <span className="font-semibold text-[#2A3547] block mb-2 uppercase tracking-wider text-[11px]">Quick Admin Shortcuts</span>
+              <span className="font-semibold text-[#2A3547] block mb-2 uppercase tracking-wider text-[11px]">
+                {isAdmin ? 'Quick Admin Shortcuts' : 'Quick Exchange Shortcuts'}
+              </span>
               <div className="grid grid-cols-2 gap-2">
-                <button onClick={() => { onClose(); navigate('/admin/organizations'); }} className="flex items-center gap-2 p-2.5 rounded-lg border border-[#E5EAEF] bg-white hover:bg-[#F6F9FC] transition-colors text-left text-xs font-semibold text-[#2A3547]">
-                  <Building2 className="w-4 h-4 text-[#5D87FF]" /> Manage Organizations
-                </button>
-                <button onClick={() => { onClose(); navigate('/admin/users'); }} className="flex items-center gap-2 p-2.5 rounded-lg border border-[#E5EAEF] bg-white hover:bg-[#F6F9FC] transition-colors text-left text-xs font-semibold text-[#2A3547]">
-                  <ShieldCheck className="w-4 h-4 text-[#13DEB9]" /> Platform User Access
-                </button>
-                <button onClick={() => { onClose(); navigate('/admin/matches'); }} className="flex items-center gap-2 p-2.5 rounded-lg border border-[#E5EAEF] bg-white hover:bg-[#F6F9FC] transition-colors text-left text-xs font-semibold text-[#2A3547]">
-                  <FileText className="w-4 h-4 text-[#5D87FF]" /> Match Score Debugger
-                </button>
-                <button onClick={() => { onClose(); navigate('/admin/health'); }} className="flex items-center gap-2 p-2.5 rounded-lg border border-[#E5EAEF] bg-white hover:bg-[#F6F9FC] transition-colors text-left text-xs font-semibold text-[#2A3547]">
-                  <Factory className="w-4 h-4 text-[#FFAE1F]" /> System Health Diagnostics
-                </button>
+                {isAdmin ? (
+                  <>
+                    <button onClick={() => { onClose(); navigate('/admin/organizations'); }} className="flex items-center gap-2 p-2.5 rounded-lg border border-[#E5EAEF] bg-white hover:bg-[#F6F9FC] transition-colors text-left text-xs font-semibold text-[#2A3547]">
+                      <Building2 className="w-4 h-4 text-[#5D87FF]" /> Manage Organizations
+                    </button>
+                    <button onClick={() => { onClose(); navigate('/admin/users'); }} className="flex items-center gap-2 p-2.5 rounded-lg border border-[#E5EAEF] bg-white hover:bg-[#F6F9FC] transition-colors text-left text-xs font-semibold text-[#2A3547]">
+                      <ShieldCheck className="w-4 h-4 text-[#13DEB9]" /> Platform User Access
+                    </button>
+                    <button onClick={() => { onClose(); navigate('/admin/matches'); }} className="flex items-center gap-2 p-2.5 rounded-lg border border-[#E5EAEF] bg-white hover:bg-[#F6F9FC] transition-colors text-left text-xs font-semibold text-[#2A3547]">
+                      <FileText className="w-4 h-4 text-[#5D87FF]" /> Match Score Debugger
+                    </button>
+                    <button onClick={() => { onClose(); navigate('/admin/health'); }} className="flex items-center gap-2 p-2.5 rounded-lg border border-[#E5EAEF] bg-white hover:bg-[#F6F9FC] transition-colors text-left text-xs font-semibold text-[#2A3547]">
+                      <Factory className="w-4 h-4 text-[#FFAE1F]" /> System Health Diagnostics
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <button onClick={() => { onClose(); navigate('/dashboard/marketplace'); }} className="flex items-center gap-2 p-2.5 rounded-lg border border-[#E5EAEF] bg-white hover:bg-[#F6F9FC] transition-colors text-left text-xs font-semibold text-[#2A3547]">
+                      <Package className="w-4 h-4 text-[#13DEB9]" /> CO₂ Supply Streams
+                    </button>
+                    <button onClick={() => { onClose(); navigate('/requirements'); }} className="flex items-center gap-2 p-2.5 rounded-lg border border-[#E5EAEF] bg-white hover:bg-[#F6F9FC] transition-colors text-left text-xs font-semibold text-[#2A3547]">
+                      <FileText className="w-4 h-4 text-[#5D87FF]" /> CO₂ Demand Requirements
+                    </button>
+                    <button onClick={() => { onClose(); navigate('/dashboard/logistics'); }} className="flex items-center gap-2 p-2.5 rounded-lg border border-[#E5EAEF] bg-white hover:bg-[#F6F9FC] transition-colors text-left text-xs font-semibold text-[#2A3547]">
+                      <Truck className="w-4 h-4 text-[#FFAE1F]" /> Tanker & Transport Fleet
+                    </button>
+                    <button onClick={() => { onClose(); navigate('/dashboard/shipments'); }} className="flex items-center gap-2 p-2.5 rounded-lg border border-[#E5EAEF] bg-white hover:bg-[#F6F9FC] transition-colors text-left text-xs font-semibold text-[#2A3547]">
+                      <ShieldCheck className="w-4 h-4 text-[#5D87FF]" /> Active Shipment Tracking
+                    </button>
+                  </>
+                )}
               </div>
             </div>
           )}

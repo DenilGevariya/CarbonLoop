@@ -5,7 +5,10 @@ import { useAdminUsers } from '../../features/admin/hooks/useAdmin';
 import { adminApi } from '../../features/admin/api/adminApi';
 import type { AdminUserListItem } from '../../features/admin/api/adminApi';
 
+import { useAuth } from '@/context/AuthContext';
+
 export const AdminUsersPage: React.FC = () => {
+  const { user: currentUser } = useAuth();
   const [search, setSearch] = useState('');
   const [status, setStatus] = useState('');
   const [page, setPage] = useState(1);
@@ -20,12 +23,17 @@ export const AdminUsersPage: React.FC = () => {
   const [togglingId, setTogglingId] = useState<string | null>(null);
 
   const handleToggleActive = async (user: AdminUserListItem) => {
+    if (user.id === currentUser?.id && user.isActive) {
+      alert('You cannot suspend your own active admin account.');
+      return;
+    }
+
     try {
       setTogglingId(user.id);
       await adminApi.toggleUserActive(user.id, !user.isActive);
       await refresh();
-    } catch (err) {
-      console.error('Failed to toggle user active status', err);
+    } catch (err: any) {
+      alert(err.response?.data?.error?.message || err.message || 'Failed to toggle user status');
     } finally {
       setTogglingId(null);
     }

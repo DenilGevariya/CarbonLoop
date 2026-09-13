@@ -4,11 +4,14 @@ import type { TransportMode } from '@/features/logistics/api/logisticsApi';
 export type ShipmentStatus =
   | 'PLANNED'
   | 'SCHEDULED'
+  | 'TRANSPORTER_ASSIGNED'
   | 'PICKED_UP'
   | 'IN_TRANSIT'
   | 'ARRIVING'
   | 'DELIVERED'
+  | 'BUYER_CONFIRMED_RECEIPT'
   | 'COMPLETED'
+  | 'OVERDUE'
   | 'CANCELLED'
   | 'EXCEPTION';
 

@@ -48,15 +48,21 @@ export class ShipmentController {
   async listShipments(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
     try {
       const userOrgId = await resolveUserOrgId(req);
-      if (!userOrgId) {
+      const isPlatformAdmin = (req.user?.roles || []).some(
+        (r) => r.toLowerCase() === 'platform_admin' || r.toLowerCase() === 'admin'
+      );
+
+      if (!userOrgId && !isPlatformAdmin) {
         res.status(400).json({ success: false, error: { code: 'NO_ORG', message: 'User organization not found.' } });
         return;
       }
 
       const queryParams = shipmentFilterSchema.parse(req.query);
+      const effectiveRole = isPlatformAdmin ? 'admin' : queryParams.role;
+
       const result = await shipmentService.listShipments(
-        userOrgId,
-        queryParams.role,
+        userOrgId || '',
+        effectiveRole as any,
         queryParams.order_id,
         queryParams.status,
         queryParams.page,

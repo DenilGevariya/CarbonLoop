@@ -63,7 +63,9 @@ export class OrderRepository {
     let params: any[] = [];
     let paramIndex = 1;
 
-    if (role === 'sent') {
+    if ((role as string) === 'admin' || !orgId) {
+      // Platform admin: list all transactions
+    } else if (role === 'sent') {
       whereConditions.push(`o.buyer_organization_id = $${paramIndex++}`);
       params.push(orgId);
     } else if (role === 'received') {

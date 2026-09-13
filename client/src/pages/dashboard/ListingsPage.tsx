@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import { useMySupplyListings, useListingStatusAction } from '@/features/listings/hooks/useListings';
 import { ListingStatusBadge } from '@/features/listings/components/ListingStatusBadge';
 import { PublishDialog } from '@/features/listings/components/PublishDialog';
@@ -15,9 +15,12 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 export const ListingsPage: React.FC = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const initialSearch = searchParams.get('search') || '';
+
   const [filters, setFilters] = useState<ListingFilterParams>({
     status: 'ALL',
-    search: '',
+    search: initialSearch,
     page: 1,
     limit: 12,
   });

@@ -590,6 +590,17 @@ export class ListingRepository {
       WHERE id = $1;
     `;
     await pool.query(sql, values);
+
+    if (input.verificationStatus !== undefined) {
+      const vStatus = input.verificationStatus.toUpperCase() === 'VERIFIED' ? 'VERIFIED' : input.verificationStatus.toUpperCase() === 'REJECTED' ? 'REJECTED' : 'UNDER_REVIEW';
+      await pool.query(
+        `UPDATE verification_requests 
+         SET status = $2, review_notes = $3, reviewed_at = NOW(), updated_at = NOW() 
+         WHERE listing_id = $1 AND status IN ('SUBMITTED', 'UNDER_REVIEW', 'PENDING')`,
+        [listingId, vStatus, input.verificationNotes || null]
+      );
+    }
+
     const updated = await this.findByCodeOrId(listingId);
     return updated!;
   }

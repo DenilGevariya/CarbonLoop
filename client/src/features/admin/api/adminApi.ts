@@ -207,4 +207,19 @@ export const adminApi = {
       `/admin/audit-logs?${q.toString()}`
     );
   },
+
+  listDisputes: (params?: { status?: string; search?: string; page?: number; limit?: number }) => {
+    const q = new URLSearchParams();
+    if (params?.status) q.append('status', params.status);
+    if (params?.search) q.append('search', params.search);
+    if (params?.page) q.append('page', String(params.page));
+    if (params?.limit) q.append('limit', String(params.limit));
+    return apiClient.get<{ items: any[]; pagination: { page: number; limit: number; total: number; totalPages: number } }>(
+      `/admin/disputes?${q.toString()}`
+    );
+  },
+
+  updateDisputeStatus: (id: string, status: string, resolutionNotes?: string) =>
+    apiClient.patch<any>(`/admin/disputes/${id}/status`, { status, resolutionNotes }),
 };
+

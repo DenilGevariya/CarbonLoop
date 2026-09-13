@@ -169,6 +169,14 @@ export class AdminController {
         return;
       }
 
+      if (id === req.user?.userId && !isActive) {
+        res.status(400).json({
+          success: false,
+          error: { code: 'SELF_SUSPENSION_PREVENTED', message: 'You cannot suspend your own active admin account.' },
+        });
+        return;
+      }
+
       const updated = await adminService.toggleUserActive(id, isActive, req.user!.userId);
       res.json({ success: true, data: updated, message: `User active state set to ${isActive}.` });
     } catch (err) {
@@ -241,4 +249,45 @@ export class AdminController {
       next(err);
     }
   }
+
+  public async listDisputes(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const status = req.query.status as string | undefined;
+      const search = req.query.search as string | undefined;
+      const page = parseInt((req.query.page as string) || '1', 10);
+      const limit = parseInt((req.query.limit as string) || '20', 10);
+      const offset = (page - 1) * limit;
+
+      const result = await adminService.listDisputes({ status, search, limit, offset });
+      res.json({
+        success: true,
+        data: result.items,
+        pagination: {
+          page,
+          limit,
+          total: result.total,
+          totalPages: Math.ceil(result.total / limit),
+        },
+      });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  public async updateDisputeStatus(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const id = req.params.id as string;
+      const { status, resolutionNotes } = req.body || {};
+      if (!status) {
+        res.status(400).json({ success: false, error: { code: 'INVALID_STATUS', message: 'Status is required.' } });
+        return;
+      }
+
+      const updated = await adminService.updateDisputeStatus(id, status, req.user!.userId, resolutionNotes);
+      res.json({ success: true, data: updated, message: `Dispute status set to ${status}.` });
+    } catch (err) {
+      next(err);
+    }
+  }
 }
+

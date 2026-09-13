@@ -1,15 +1,18 @@
 import React, { useState } from 'react';
 import { useShipments } from '@/features/shipments/hooks/useShipments';
 import { ShipmentStatusBadge } from '@/features/shipments/components/ShipmentStatusBadge';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Truck, Search, Filter, ArrowRight, MapPin, Calendar, Scale, ChevronRight } from 'lucide-react';
 import { format as formatDate } from 'date-fns';
 
 export const ShipmentsPage: React.FC = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const initialSearch = searchParams.get('search') || '';
+
   const [role, setRole] = useState<'all' | 'sent' | 'received'>('all');
   const [statusFilter, setStatusFilter] = useState<string>('');
-  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [searchQuery, setSearchQuery] = useState<string>(initialSearch);
 
   const { shipments, loading, error, refetch } = useShipments(role, undefined, statusFilter || undefined);
 

@@ -15,8 +15,13 @@ export const ShipmentStatusBadge: React.FC<Props> = ({ status, size = 'md' }) =>
   let label: string = upper;
 
   switch (upper) {
+    case 'TRANSPORTER_ASSIGNED':
+      bg = 'bg-blue-50 text-[#5D87FF] border-blue-200';
+      icon = <Truck className="w-3.5 h-3.5 text-[#5D87FF]" />;
+      label = 'TRANSPORTER ASSIGNED';
+      break;
     case 'PLANNED':
-      bg = 'bg-[#E2DDD5]/40 text-[#55524D] border-[#E2DDD5]';
+      bg = 'bg-[#E5EAEF] text-[#5A6A85] border-[#E5EAEF]';
       icon = <Clock className="w-3.5 h-3.5" />;
       label = 'PLANNED';
       break;
@@ -31,8 +36,8 @@ export const ShipmentStatusBadge: React.FC<Props> = ({ status, size = 'md' }) =>
       label = 'PICKED UP';
       break;
     case 'IN_TRANSIT':
-      bg = 'bg-[#173D32] text-white border-[#173D32]';
-      icon = <Navigation className="w-3.5 h-3.5 text-[#A3E635] animate-pulse" />;
+      bg = 'bg-[#5D87FF] text-white border-[#5D87FF]';
+      icon = <Navigation className="w-3.5 h-3.5 text-emerald-300 animate-pulse" />;
       label = 'IN TRANSIT';
       break;
     case 'ARRIVING':
@@ -41,14 +46,20 @@ export const ShipmentStatusBadge: React.FC<Props> = ({ status, size = 'md' }) =>
       label = 'ARRIVING';
       break;
     case 'DELIVERED':
-      bg = 'bg-emerald-50 text-emerald-800 border-emerald-200';
-      icon = <PackageCheck className="w-3.5 h-3.5 text-emerald-600" />;
+      bg = 'bg-teal-50 text-[#13DEB9] border-teal-200';
+      icon = <PackageCheck className="w-3.5 h-3.5 text-[#13DEB9]" />;
       label = 'DELIVERED';
       break;
+    case 'BUYER_CONFIRMED_RECEIPT':
     case 'COMPLETED':
-      bg = 'bg-[#171A18] text-[#F7F5EF] border-[#171A18]';
-      icon = <ShieldCheck className="w-3.5 h-3.5 text-[#173D32]" />;
-      label = 'COMPLETED';
+      bg = 'bg-[#2A3547] text-white border-[#2A3547]';
+      icon = <ShieldCheck className="w-3.5 h-3.5 text-[#13DEB9]" />;
+      label = upper === 'BUYER_CONFIRMED_RECEIPT' ? 'BUYER CONFIRMED RECEIPT' : 'COMPLETED';
+      break;
+    case 'OVERDUE':
+      bg = 'bg-[#FA896B] text-white border-[#FA896B]';
+      icon = <AlertTriangle className="w-3.5 h-3.5 text-white animate-pulse" />;
+      label = 'OVERDUE';
       break;
     case 'EXCEPTION':
       bg = 'bg-rose-50 text-rose-800 border-rose-200';

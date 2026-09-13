@@ -86,4 +86,13 @@ export class AdminService {
   }) {
     return this.repo.listAuditLogs(params);
   }
+
+  public async listDisputes(params: { status?: string; search?: string; limit?: number; offset?: number }) {
+    return this.repo.listDisputes(params);
+  }
+
+  public async updateDisputeStatus(id: string, status: string, adminUserId: string, resolutionNotes?: string) {
+    return this.repo.updateDisputeStatus(id, status, adminUserId, resolutionNotes);
+  }
 }
+

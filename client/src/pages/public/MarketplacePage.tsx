@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useMarketplaceListings, useMarketplaceStats } from '@/features/listings/hooks/useListings';
 import { MarketplaceHeader } from '@/features/listings/components/MarketplaceHeader';
 import { MarketplaceFilterBar } from '@/features/listings/components/MarketplaceFilterBar';
@@ -8,10 +9,14 @@ import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 export const MarketplacePage: React.FC = () => {
+  const [searchParams] = useSearchParams();
+  const initialSearch = searchParams.get('search') || '';
+
   const [filters, setFilters] = useState<ListingFilterParams>({
     page: 1,
     limit: 12,
     sort: 'newest',
+    search: initialSearch,
   });
 
   const { data: listingsData, isLoading: listingsLoading } = useMarketplaceListings(filters);

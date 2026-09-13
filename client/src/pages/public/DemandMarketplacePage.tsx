@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import {
   useRequirements,
   useRequirementStats,
@@ -12,10 +13,14 @@ import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight, PieChart } from 'lucide-react';
 
 export const DemandMarketplacePage: React.FC = () => {
+  const [searchParams] = useSearchParams();
+  const initialSearch = searchParams.get('search') || '';
+
   const [filters, setFilters] = useState<RequirementFilterParams>({
     page: 1,
     limit: 12,
     sort: 'newest',
+    search: initialSearch,
   });
 
   const { data: reqData, isLoading: reqLoading } = useRequirements(filters);

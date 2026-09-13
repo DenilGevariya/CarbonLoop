@@ -155,4 +155,104 @@ export class LogisticsController {
       next(err);
     }
   }
+
+  async getAvailableRequests(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const userOrgId = await resolveUserOrgId(req);
+      if (!userOrgId) {
+        res.status(400).json({ success: false, error: { code: 'NO_ORG', message: 'User organization not found.' } });
+        return;
+      }
+
+      const result = await logisticsService.getAvailableRequests(userOrgId, req.query);
+      res.json({
+        success: true,
+        data: result.items,
+        pagination: {
+          page: result.page,
+          limit: result.limit,
+          total: result.total,
+          totalPages: result.totalPages,
+        },
+      });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  async acceptRequest(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const userOrgId = await resolveUserOrgId(req);
+      if (!userOrgId) {
+        res.status(400).json({ success: false, error: { code: 'NO_ORG', message: 'User organization not found.' } });
+        return;
+      }
+
+      const orderId = req.params.id as string;
+      const shipment = await logisticsService.acceptTransportRequest(orderId, userOrgId, req.user!.userId);
+
+      res.status(201).json({
+        success: true,
+        data: shipment,
+        message: 'Transportation request accepted successfully. Transporter assigned.',
+      });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  async rejectRequest(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const userOrgId = await resolveUserOrgId(req);
+      if (!userOrgId) {
+        res.status(400).json({ success: false, error: { code: 'NO_ORG', message: 'User organization not found.' } });
+        return;
+      }
+
+      const orderId = req.params.id as string;
+      const { reason } = req.body || {};
+      await logisticsService.rejectTransportRequest(orderId, userOrgId, reason);
+
+      res.json({ success: true, message: 'Transportation request rejected.' });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  async counterBidRequest(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const userOrgId = await resolveUserOrgId(req);
+      if (!userOrgId) {
+        res.status(400).json({ success: false, error: { code: 'NO_ORG', message: 'User organization not found.' } });
+        return;
+      }
+
+      const orderId = req.params.id as string;
+      const proposal = await logisticsService.createCounterBid(orderId, userOrgId, req.user!.userId, req.body);
+
+      res.status(201).json({
+        success: true,
+        data: proposal,
+        message: 'Counter bid submitted to order participants.',
+      });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  async getDashboardStats(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const userOrgId = await resolveUserOrgId(req);
+      if (!userOrgId) {
+        res.status(400).json({ success: false, error: { code: 'NO_ORG', message: 'User organization not found.' } });
+        return;
+      }
+
+      const stats = await logisticsService.getDashboardStats(userOrgId);
+      res.json({ success: true, data: stats });
+    } catch (err) {
+      next(err);
+    }
+  }
 }
+

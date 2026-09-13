@@ -5,13 +5,17 @@ import { authenticateUser, requireRole } from '../../middleware/auth.middleware'
 const router = Router();
 const controller = new AdminController();
 
-// Require logged in platform admin or admin for all admin endpoints
+// Require logged in user
 router.use(authenticateUser);
+
+// Global entity search accessible by any authenticated platform user
+router.get('/search', (req, res, next) => controller.search(req, res, next));
+
+// Require platform admin privileges for management endpoints
 router.use(requireRole('platform_admin', 'admin'));
 
 router.get('/overview', (req, res, next) => controller.getOverview(req, res, next));
 router.get('/health', (req, res, next) => controller.getHealth(req, res, next));
-router.get('/search', (req, res, next) => controller.search(req, res, next));
 router.get('/alerts', (req, res, next) => controller.getAlerts(req, res, next));
 router.post('/alerts/:id/resolve', (req, res, next) => controller.resolveAlert(req, res, next));
 
@@ -27,5 +31,8 @@ router.delete('/sessions/:sessionId', (req, res, next) => controller.revokeUserS
 
 router.get('/matches/:id/debug', (req, res, next) => controller.getMatchDebug(req, res, next));
 router.get('/audit-logs', (req, res, next) => controller.listAuditLogs(req, res, next));
+router.get('/disputes', (req, res, next) => controller.listDisputes(req, res, next));
+router.patch('/disputes/:id/status', (req, res, next) => controller.updateDisputeStatus(req, res, next));
 
 export default router;
+
