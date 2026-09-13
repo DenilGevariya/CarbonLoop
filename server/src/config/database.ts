@@ -1,15 +1,16 @@
 import { Pool as PgPool, QueryResult, QueryResultRow } from 'pg';
 import { Pool as NeonPool, neonConfig } from '@neondatabase/serverless';
 import ws from 'ws';
-import dns from 'dns';
 import { env } from './env';
-
-dns.setDefaultResultOrder('ipv4first');
 
 let poolInstance: PgPool | NeonPool;
 
 if (env.DATABASE_URL) {
   neonConfig.webSocketConstructor = ws;
+  // Neon supports HTTP query execution over port 443. This keeps normal page
+  // loads working in environments where direct PostgreSQL connections are
+  // blocked, while transactions still use the same pool's SQL connection.
+  neonConfig.poolQueryViaFetch = true;
   poolInstance = new NeonPool({
     connectionString: env.DATABASE_URL,
     connectionTimeoutMillis: 15000,
@@ -23,7 +24,7 @@ if (env.DATABASE_URL) {
     password: env.DB_PASSWORD,
     max: 20,
     idleTimeoutMillis: 30000,
-    connectionTimeoutMillis: 10000,
+    connectionTimeoutMillis: 15000,
   });
 }
 

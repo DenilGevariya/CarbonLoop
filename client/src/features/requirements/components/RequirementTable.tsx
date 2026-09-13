@@ -242,15 +242,17 @@ export const RequirementTable: React.FC<RequirementTableProps> = ({
                 </Button>
 
                 <DropdownMenu>
-                  <DropdownMenuTrigger>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="border-[#E5EAEF] text-xs h-9 w-9 p-0 rounded-lg cursor-pointer"
-                    >
-                      <MoreVertical className="w-4 h-4 text-[#5A6A85]" />
-                    </Button>
-                  </DropdownMenuTrigger>
+                  <DropdownMenuTrigger
+                    render={
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="border-[#E5EAEF] text-xs h-9 w-9 p-0 rounded-lg cursor-pointer"
+                      >
+                        <MoreVertical className="w-4 h-4 text-[#5A6A85]" />
+                      </Button>
+                    }
+                  />
                   <DropdownMenuContent align="end" className="rounded-lg border-[#E5EAEF] bg-white">
                     {req.status === 'DRAFT' && onPublish && (
                       <DropdownMenuItem
