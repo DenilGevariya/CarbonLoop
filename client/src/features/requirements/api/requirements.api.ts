@@ -20,8 +20,9 @@ export const requirementsApi = {
 
     const endpoint = `/requirements?${query.toString()}`;
     return apiRequest<{
-      items: BuyerRequirement[];
-      pagination: {
+      items?: BuyerRequirement[];
+      data?: BuyerRequirement[];
+      pagination?: {
         page: number;
         limit: number;
         total: number;
@@ -41,8 +42,9 @@ export const requirementsApi = {
 
     const endpoint = `/requirements/my-requirements?${query.toString()}`;
     return apiRequest<{
-      items: BuyerRequirement[];
-      pagination: {
+      items?: BuyerRequirement[];
+      data?: BuyerRequirement[];
+      pagination?: {
         page: number;
         limit: number;
         total: number;

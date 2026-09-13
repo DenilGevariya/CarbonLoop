@@ -41,14 +41,14 @@ export const RequirementsPage: React.FC = () => {
   const archiveMutation = useArchiveRequirement();
   const fulfillMutation = useFulfillRequirement();
 
-  const items = data?.items || data?.data || [];
+  const items: BuyerRequirement[] = data?.items || data?.data || [];
   const totalCount = data?.pagination?.total || items.length;
 
   // Calculate metrics
-  const activeCount = items.filter((r) => r.status === 'PUBLISHED' || r.status === 'ACTIVE').length;
-  const draftCount = items.filter((r) => r.status === 'DRAFT').length;
-  const totalVolume = items.reduce((sum, r) => sum + (r.required_quantity || 0), 0);
-  const fulfilledCount = items.filter((r) => r.status === 'FULFILLED').length;
+  const activeCount = items.filter((r: BuyerRequirement) => r.status === 'PUBLISHED' || r.status === 'ACTIVE').length;
+  const draftCount = items.filter((r: BuyerRequirement) => r.status === 'DRAFT').length;
+  const totalVolume = items.reduce((sum: number, r: BuyerRequirement) => sum + (r.required_quantity || 0), 0);
+  const fulfilledCount = items.filter((r: BuyerRequirement) => r.status === 'FULFILLED').length;
 
   const handlePublishConfirm = async () => {
     if (!publishTarget) return;

@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, FileText, Download, ShieldCheck } from 'lucide-react';
+import { FileText, Download, ShieldCheck } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 

@@ -49,9 +49,10 @@ export async function getMySupplyListings(params: ListingFilterParams = {}) {
 
   const qs = queryParams.toString();
   return apiRequest<{
-    data: ListingDTO[];
-    stats: EmitterSupplyStatsDTO;
-    pagination: { page: number; limit: number; total: number; totalPages: number };
+    items?: ListingDTO[];
+    data?: ListingDTO[];
+    stats?: EmitterSupplyStatsDTO;
+    pagination?: { page: number; limit: number; total: number; totalPages: number };
   }>(`/listings/my-supply${qs ? `?${qs}` : ''}`);
 }
 
