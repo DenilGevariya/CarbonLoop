@@ -104,6 +104,32 @@ export class AdminController {
     }
   }
 
+  public async listListings(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const page = Math.max(parseInt((req.query.page as string) || '1', 10), 1);
+      const limit = Math.min(Math.max(parseInt((req.query.limit as string) || '20', 10), 1), 100);
+      const result = await adminService.listListings({
+        status: req.query.status as string | undefined,
+        search: req.query.search as string | undefined,
+        minPurity: req.query.minPurity ? Number(req.query.minPurity) : undefined,
+        limit,
+        offset: (page - 1) * limit,
+      });
+      res.json({
+        success: true,
+        data: result.items,
+        pagination: {
+          page,
+          limit,
+          total: result.total,
+          totalPages: Math.ceil(result.total / limit) || 1,
+        },
+      });
+    } catch (err) {
+      next(err);
+    }
+  }
+
   public async setOrganizationStatus(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
     try {
       const id = req.params.id as string;
@@ -290,4 +316,3 @@ export class AdminController {
     }
   }
 }
-

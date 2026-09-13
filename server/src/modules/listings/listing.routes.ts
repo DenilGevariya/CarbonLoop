@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { ListingController } from './listing.controller';
-import { authenticateUser, optionalAuthenticateUser, forbidRegulatorCommercialActions } from '../../middleware/auth.middleware';
+import { authenticateUser, optionalAuthenticateUser, forbidRegulatorCommercialActions, requireRole } from '../../middleware/auth.middleware';
 
 const router = Router();
 const controller = new ListingController();
@@ -25,6 +25,6 @@ router.post('/:id/pause', authenticateUser, controller.pause.bind(controller));
 router.post('/:id/resume', authenticateUser, controller.resume.bind(controller));
 router.post('/:id/archive', authenticateUser, controller.archive.bind(controller));
 router.post('/:id/mark-exhausted', authenticateUser, controller.markExhausted.bind(controller));
-router.put('/:id/verify', authenticateUser, controller.verifyListing.bind(controller));
+router.put('/:id/verify', authenticateUser, requireRole('platform_admin', 'admin', 'regulator', 'policy_regulator', 'verifier'), controller.verifyListing.bind(controller));
 
 export default router;

@@ -29,16 +29,17 @@ async function request<T>(endpoint: string, options: RequestInit = {}): Promise<
   const res = await apiRequest<any>(endpoint, options);
 
   if (!res.success) {
+    const error = res.error;
     throw new ApiError(
-      res.error?.message || 'An error occurred during API request',
-      401,
-      res.error?.code || 'UNKNOWN_ERROR'
+      error?.message || 'An error occurred during API request',
+      res.status || 500,
+      error?.code || 'UNKNOWN_ERROR'
     );
   }
 
   // Strip only the envelope fields (success, error) and return everything else.
   // This preserves top-level pagination, items, stats, data, etc.
-  const { success: _s, error: _e, ...rest } = res;
+  const { success: _s, error: _e, status: _status, ...rest } = res;
 
   // If there are no extra keys beyond data, return data directly (simple objects/arrays)
   const restKeys = Object.keys(rest);

@@ -6,6 +6,7 @@ import type { CreateRequirementInput } from '@/features/requirements/types/requi
 import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
+import { toast } from '@/components/ui/toast';
 
 export const EditRequirementPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -24,9 +25,21 @@ export const EditRequirementPage: React.FC = () => {
           status: publishNow ? 'PUBLISHED' : requirement?.status || 'DRAFT',
         },
       });
+      toast.add({
+        title: publishNow ? 'Requirement published' : 'Requirement updated',
+        description: publishNow
+          ? 'Your CO₂ demand requirement is now visible to emitters.'
+          : 'Your CO₂ demand requirement was updated successfully.',
+        type: 'success',
+      });
       navigate('/dashboard/requirements');
     } catch (err: any) {
       console.error('Failed to update requirement:', err);
+      toast.add({
+        title: publishNow ? 'Unable to publish requirement' : 'Unable to update requirement',
+        description: err instanceof Error ? err.message : 'Please try again.',
+        type: 'error',
+      });
     }
   };
 

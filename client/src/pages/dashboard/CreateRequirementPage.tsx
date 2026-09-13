@@ -6,6 +6,7 @@ import { RequirementPublishedModal } from '@/features/requirements/components/Re
 import type { CreateRequirementInput, BuyerRequirement } from '@/features/requirements/types/requirement';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { toast } from '@/components/ui/toast';
 
 export const CreateRequirementPage: React.FC = () => {
   const navigate = useNavigate();
@@ -20,12 +21,27 @@ export const CreateRequirementPage: React.FC = () => {
       });
 
       if (publishNow && res) {
+        toast.add({
+          title: 'Requirement published',
+          description: 'Your CO₂ demand requirement is now visible to emitters.',
+          type: 'success',
+        });
         setPublishedReq(res);
       } else {
+        toast.add({
+          title: 'Requirement saved',
+          description: 'Your CO₂ demand requirement was saved as a draft.',
+          type: 'success',
+        });
         navigate('/dashboard/requirements');
       }
     } catch (err: any) {
       console.error('Failed to create requirement:', err);
+      toast.add({
+        title: publishNow ? 'Unable to publish requirement' : 'Unable to save requirement',
+        description: err instanceof Error ? err.message : 'Please try again.',
+        type: 'error',
+      });
     }
   };
 

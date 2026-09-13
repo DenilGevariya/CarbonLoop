@@ -12,27 +12,18 @@ import { ALLOWED_SORT_FIELDS } from './requirements.constants';
 
 export class RequirementRepository {
   // Generate human-readable requirement code CL-REQ-XXXXXX
-  static async generateRequirementCode(): Promise<string> {
-    const { rows } = await query(`
-      SELECT requirement_code 
-      FROM buyer_requirements 
-      WHERE requirement_code LIKE 'CL-REQ-%' 
-      ORDER BY created_at DESC 
-      LIMIT 1;
+  static async generateRequirementCode(database: any = pool): Promise<string> {
+    const { rows } = await database.query(`
+      SELECT COALESCE(
+        MAX(CAST(SUBSTRING(requirement_code FROM '^CL-REQ-([0-9]+)$') AS INTEGER)),
+        0
+      ) + 1 AS next_num
+      FROM buyer_requirements
+      WHERE requirement_code ~ '^CL-REQ-[0-9]+$';
     `);
 
-    if (rows.length === 0 || !rows[0].requirement_code) {
-      return 'CL-REQ-000101';
-    }
-
-    const lastCode = rows[0].requirement_code;
-    const match = lastCode.match(/CL-REQ-(\d+)/);
-    if (match) {
-      const nextNum = parseInt(match[1], 10) + 1;
-      return `CL-REQ-${nextNum.toString().padStart(6, '0')}`;
-    }
-
-    return `CL-REQ-${Date.now().toString().slice(-6)}`;
+    const nextNum = parseInt(rows[0]?.next_num || '1', 10);
+    return `CL-REQ-${nextNum.toString().padStart(6, '0')}`;
   }
 
   // Map raw database row to view-friendly BuyerRequirement object
@@ -359,7 +350,10 @@ export class RequirementRepository {
     try {
       await db.query('BEGIN');
 
-      const requirementCode = await this.generateRequirementCode();
+      // Serialize code allocation inside the same transaction as the insert.
+      // This prevents concurrent buyer submissions from reusing a requirement code.
+      await db.query("SELECT pg_advisory_xact_lock(hashtext('carbonloop.buyer_requirement_code'))");
+      const requirementCode = await this.generateRequirementCode(db);
       const status = (input.status || 'DRAFT').toUpperCase();
 
       const insertSql = `

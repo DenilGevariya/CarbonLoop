@@ -124,7 +124,8 @@ export class ListingService {
     targetStatus: string, 
     userOrgId: string, 
     userId: string, 
-    reason?: string
+    reason?: string,
+    isPlatformAdmin = false
   ): Promise<ListingDTO> {
     const existing = await this.repo.findByCodeOrId(listingId);
     if (!existing) {
@@ -133,7 +134,7 @@ export class ListingService {
       throw err;
     }
 
-    if (existing.organization.id !== userOrgId) {
+    if (!isPlatformAdmin && existing.organization.id !== userOrgId) {
       const err = new Error('You are not authorized to update status for this listing');
       (err as any).statusCode = 403;
       throw err;

@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Factory, ShieldCheck, Search, CheckCircle2, XCircle, FileText, Eye } from 'lucide-react';
-import { useMarketplaceListings, useListingStatusAction } from '@/features/listings/hooks/useListings';
+import { useListingStatusAction } from '@/features/listings/hooks/useListings';
+import { useAdminListings } from '@/features/admin/hooks/useAdmin';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
@@ -12,21 +13,17 @@ export const AdminListingsPage: React.FC = () => {
   const [statusFilter, setStatusFilter] = useState('');
   const [purityFilter, setPurityFilter] = useState('');
 
-  const { data: listingsData, isLoading, refetch } = useMarketplaceListings({
+  const { items: listings, isLoading, error, refresh: refetch } = useAdminListings({
     search,
+    status: statusFilter || undefined,
     minPurity: purityFilter ? parseFloat(purityFilter) : undefined,
+    limit: 50,
   });
 
   const { mutateAsync: performStatusAction } = useListingStatusAction();
 
   const [selectedDoc, setSelectedDoc] = useState<{ code: string; name: string; purity: number } | null>(null);
   const [actionSuccess, setActionSuccess] = useState<string | null>(null);
-
-  const listings = Array.isArray(listingsData?.items)
-    ? listingsData.items
-    : Array.isArray(listingsData?.data)
-      ? listingsData.data
-      : [];
 
   const handleApprove = async (id: string, code: string) => {
     try {
@@ -83,6 +80,12 @@ export const AdminListingsPage: React.FC = () => {
             <CheckCircle2 className="size-4" /> {actionSuccess}
           </span>
           <button onClick={() => setActionSuccess(null)} className="text-xs hover:underline">Dismiss</button>
+        </div>
+      )}
+
+      {error && (
+        <div className="p-4 bg-[#FBF2EF] border border-[#FA896B]/30 text-[#FA896B] rounded-xl text-xs font-medium">
+          {error}
         </div>
       )}
 

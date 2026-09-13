@@ -1,6 +1,8 @@
 import { apiClient } from '@/api/client';
 
 export interface AdminOverviewKPIs {
+  totalUsersCount: number;
+  activeListingsCount: number;
   activeOrganizationsCount: number;
   activeFacilitiesCount: number;
   availableSupplyTonnes: number;
@@ -76,6 +78,25 @@ export interface AdminUserListItem {
   createdAt: string;
   roles: string[];
   organizationName?: string;
+}
+
+export interface AdminListingListItem {
+  id: string;
+  publicCode?: string | null;
+  title: string;
+  organizationName?: string | null;
+  facilityName?: string | null;
+  locationCity?: string | null;
+  locationState?: string | null;
+  purityPercentage: number;
+  physicalForm?: string | null;
+  availableQuantityTonnes: number;
+  remainingQuantityTonnes: number;
+  pricePerTon: number;
+  verificationStatus?: string | null;
+  status: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface UserSessionRecord {
@@ -166,6 +187,18 @@ export const adminApi = {
 
   setOrganizationStatus: (id: string, status: string, reason?: string) =>
     apiClient.patch<any>(`/admin/organizations/${id}/status`, { status, reason }),
+
+  listListings: (params?: { status?: string; search?: string; minPurity?: number; page?: number; limit?: number }) => {
+    const q = new URLSearchParams();
+    if (params?.status) q.append('status', params.status);
+    if (params?.search) q.append('search', params.search);
+    if (params?.minPurity !== undefined) q.append('minPurity', String(params.minPurity));
+    if (params?.page) q.append('page', String(params.page));
+    if (params?.limit) q.append('limit', String(params.limit));
+    return apiClient.get<{ data?: AdminListingListItem[]; items?: AdminListingListItem[]; pagination?: { page: number; limit: number; total: number; totalPages: number } }>(
+      `/admin/listings?${q.toString()}`
+    );
+  },
 
   listUsers: (params?: { role?: string; status?: string; search?: string; page?: number; limit?: number }) => {
     const q = new URLSearchParams();

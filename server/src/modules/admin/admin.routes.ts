@@ -22,6 +22,7 @@ router.post('/alerts/:id/resolve', (req, res, next) => controller.resolveAlert(r
 router.get('/organizations', (req, res, next) => controller.listOrganizations(req, res, next));
 router.get('/organizations/:id', (req, res, next) => controller.getOrganizationDetail(req, res, next));
 router.patch('/organizations/:id/status', (req, res, next) => controller.setOrganizationStatus(req, res, next));
+router.get('/listings', (req, res, next) => controller.listListings(req, res, next));
 
 router.get('/users', (req, res, next) => controller.listUsers(req, res, next));
 router.get('/users/:id', (req, res, next) => controller.getUserDetail(req, res, next));
@@ -35,4 +36,3 @@ router.get('/disputes', (req, res, next) => controller.listDisputes(req, res, ne
 router.patch('/disputes/:id/status', (req, res, next) => controller.updateDisputeStatus(req, res, next));
 
 export default router;
-

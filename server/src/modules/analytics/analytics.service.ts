@@ -28,25 +28,25 @@ export class AnalyticsService {
 
   async getMatching(filters: AnalyticsQueryFilters) {
     const { fromISO, toISO } = parseTimeframeToDates(filters.timeframe, filters.from, filters.to);
-    return this.repo.getMatchingAnalytics(fromISO, toISO);
+    return this.repo.getMatchingAnalytics(fromISO, toISO, filters.organizationId);
   }
 
   async getLogistics(filters: AnalyticsQueryFilters) {
     const { fromISO, toISO } = parseTimeframeToDates(filters.timeframe, filters.from, filters.to);
-    return this.repo.getLogisticsAnalytics(fromISO, toISO);
+    return this.repo.getLogisticsAnalytics(fromISO, toISO, filters.organizationId);
   }
 
-  async getRegions() {
-    return this.repo.getRegionalBalances();
+  async getRegions(organizationId?: string) {
+    return this.repo.getRegionalBalances(organizationId);
   }
 
   async getObservations(filters: AnalyticsQueryFilters) {
     const { fromISO, toISO } = parseTimeframeToDates(filters.timeframe, filters.from, filters.to);
     const [regions, supply, demand, logistics] = await Promise.all([
-      this.repo.getRegionalBalances(),
+      this.repo.getRegionalBalances(filters.organizationId),
       this.repo.getSupplyAnalytics(fromISO, toISO, filters.organizationId),
       this.repo.getDemandAnalytics(fromISO, toISO, filters.organizationId),
-      this.repo.getLogisticsAnalytics(fromISO, toISO),
+      this.repo.getLogisticsAnalytics(fromISO, toISO, filters.organizationId),
     ]);
 
     return generateNetworkObservations(regions, supply, demand, logistics);
@@ -57,7 +57,7 @@ export class AnalyticsService {
     const [funnel, demand, logistics, overview] = await Promise.all([
       this.repo.getCarbonFlowFunnel(fromISO, toISO, filters.organizationId),
       this.repo.getDemandAnalytics(fromISO, toISO, filters.organizationId),
-      this.repo.getLogisticsAnalytics(fromISO, toISO),
+      this.repo.getLogisticsAnalytics(fromISO, toISO, filters.organizationId),
       this.repo.getOverviewKPIs(fromISO, toISO, filters.organizationId),
     ]);
 

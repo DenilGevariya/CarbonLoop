@@ -20,9 +20,16 @@ export const ReportViewerModal: React.FC<ReportViewerModalProps> = ({
 }) => {
   if (!isOpen) return null;
 
+  const isImageReport = [reportUrl, filename]
+    .filter(Boolean)
+    .some((value) => /\.(png|jpe?g)(?:$|[?#])/i.test(value as string) || (value as string).startsWith('data:image/'));
+  const pdfViewerUrl = reportUrl
+    ? `${reportUrl}${reportUrl.includes('#') ? '&' : '#'}toolbar=1&navpanes=0&scrollbar=1&view=FitH`
+    : '';
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-3xl bg-white border border-[#E5EAEF] p-6 rounded-xl overflow-hidden flex flex-col max-h-[90vh]">
+      <DialogContent className="w-[96vw] max-w-[1100px] h-[92vh] max-h-[92vh] bg-white border border-[#E5EAEF] p-6 rounded-xl overflow-hidden flex flex-col">
         <DialogHeader className="border-b border-[#E5EAEF] pb-4 flex flex-row items-center justify-between">
           <div>
             <DialogTitle className="text-base font-bold text-[#2A3547] flex items-center gap-2">
@@ -65,15 +72,17 @@ export const ReportViewerModal: React.FC<ReportViewerModalProps> = ({
         </div>
 
         {/* Embedded Viewer Canvas */}
-        <div className="flex-1 min-h-[400px] border border-[#E5EAEF] rounded-lg overflow-hidden bg-slate-900 relative flex items-center justify-center">
+        <div className="flex-1 min-h-0 border border-[#E5EAEF] rounded-lg overflow-hidden bg-white relative flex items-center justify-center">
           {reportUrl ? (
-            reportUrl.startsWith('data:image/') || reportUrl.endsWith('.png') || reportUrl.endsWith('.jpg') || reportUrl.endsWith('.jpeg') ? (
-              <img src={reportUrl} alt="Purity Report Certificate" className="max-h-full max-w-full object-contain p-4" />
+            isImageReport ? (
+              <div className="w-full h-full overflow-auto bg-slate-100 p-4 flex items-start justify-center">
+                <img src={reportUrl} alt="Purity Report Certificate" className="max-w-full h-auto object-contain shadow-sm" />
+              </div>
             ) : (
               <iframe
-                src={reportUrl}
+                src={pdfViewerUrl}
                 title="Purity Report Document Viewer"
-                className="w-full h-full border-none"
+                className="w-full h-full min-h-0 border-none bg-white"
               />
             )
           ) : (

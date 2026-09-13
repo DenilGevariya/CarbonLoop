@@ -176,12 +176,14 @@ export class ListingController {
       const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
       const orgId = await resolveUserOrgId(req);
       const userId = req.user?.userId;
-      if (!orgId || !userId) {
+      const normalizedRoles = (req.user?.roles || []).map((role) => role.trim().toLowerCase().replace(/[\s-]+/g, '_'));
+      const isPlatformAdmin = normalizedRoles.some((role) => ['platform_admin', 'admin'].includes(role));
+      if ((!orgId && !isPlatformAdmin) || !userId) {
         res.status(403).json({ success: false, error: 'Organization membership required' });
         return;
       }
       const { reason } = statusActionSchema.parse(req.body || {});
-      const updated = await listingService.transitionStatus(id, targetStatus, orgId, userId, reason);
+      const updated = await listingService.transitionStatus(id, targetStatus, orgId || '', userId, reason, isPlatformAdmin);
       res.json({
         success: true,
         message: `Listing status updated to ${targetStatus}`,

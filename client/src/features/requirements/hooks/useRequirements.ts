@@ -103,8 +103,8 @@ export function useCreateRequirement() {
       }
       return (res as any).data;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: REQUIREMENT_KEYS.all });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: REQUIREMENT_KEYS.all, refetchType: 'all' });
     },
   });
 }

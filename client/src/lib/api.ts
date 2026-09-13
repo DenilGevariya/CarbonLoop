@@ -32,7 +32,7 @@ export async function apiRequest<T = any>(
   endpoint: string,
   options: RequestInit = {},
   isRetry = false
-): Promise<{ success: boolean; data?: T; error?: { code: string; message: string } }> {
+): Promise<{ success: boolean; status?: number; data?: T; error?: { code: string; message: string } }> {
   const url = endpoint.startsWith('http') ? endpoint : `${API_BASE_URL}${endpoint.startsWith('/') ? '' : '/'}${endpoint}`;
 
   const headers: Record<string, string> = {
@@ -87,7 +87,13 @@ export async function apiRequest<T = any>(
     }
 
     const data = await response.json();
-    return data;
+    return {
+      ...data,
+      status: response.status,
+      error: typeof data.error === 'string'
+        ? { code: 'API_ERROR', message: data.error }
+        : data.error,
+    };
   } catch (err: any) {
     return {
       success: false,

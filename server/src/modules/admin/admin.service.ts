@@ -37,6 +37,16 @@ export class AdminService {
     return this.repo.listOrganizations(params);
   }
 
+  public async listListings(params: {
+    status?: string;
+    search?: string;
+    minPurity?: number;
+    limit?: number;
+    offset?: number;
+  }) {
+    return this.repo.listListings(params);
+  }
+
   public async getOrganizationDetail(id: string) {
     return this.repo.getOrganizationDetail(id);
   }
@@ -95,4 +105,3 @@ export class AdminService {
     return this.repo.updateDisputeStatus(id, status, adminUserId, resolutionNotes);
   }
 }
-

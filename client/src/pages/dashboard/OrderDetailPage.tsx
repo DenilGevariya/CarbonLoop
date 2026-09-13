@@ -4,6 +4,7 @@ import { useOrder, ORDERS_QUERY_KEY } from '@/features/orders/hooks/useOrders';
 import { orderApi } from '@/features/orders/api/orderApi';
 import { useAuth } from '@/context/AuthContext';
 import { useQueryClient as useTanstackQueryClient } from '@tanstack/react-query';
+import { resolveCarbonRole } from '@/lib/roles';
 import {
   ArrowLeft, Building2, MapPin, CheckCircle2, AlertTriangle, ShieldCheck, Clock, Edit3
 } from 'lucide-react';
@@ -48,11 +49,11 @@ export const OrderDetailPage: React.FC = () => {
   const snapshot = order.commercial_snapshot || {};
   const status = (order.status || '').toUpperCase();
   const activeOrgId = activeOrg?.organizationId;
-  const activeOrgType = activeOrg?.orgType;
+  const resolvedRole = resolveCarbonRole(undefined, activeOrg?.orgType);
 
-  const isSeller = activeOrgId === order.seller_organization_id || activeOrgType === 'EMITTER';
-  const isBuyer = activeOrgId === order.buyer_organization_id || activeOrgType === 'UTILIZER';
-  const isLogistics = activeOrgType === 'LOGISTICS_PROVIDER';
+  const isSeller = activeOrgId === order.seller_organization_id || resolvedRole === 'emitter';
+  const isBuyer = activeOrgId === order.buyer_organization_id || resolvedRole === 'utilizer';
+  const isLogistics = resolvedRole === 'logistics_provider';
 
   const sellerConfirmed = !!order.seller_confirmed_at;
   const buyerConfirmed = !!order.buyer_confirmed_at;

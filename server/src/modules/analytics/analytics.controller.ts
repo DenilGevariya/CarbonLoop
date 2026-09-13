@@ -24,16 +24,29 @@ async function resolveUserOrgId(req: AuthenticatedRequest): Promise<string | nul
   return res.rows[0]?.organization_id || null;
 }
 
+async function getScopedFilters(req: AuthenticatedRequest) {
+  const filters = analyticsQuerySchema.parse(req.query);
+  const roles = (req.user?.roles || []).map((role) => role.trim().toLowerCase().replace(/[\s-]+/g, '_'));
+  const isPlatformAdmin = roles.some((role) => ['platform_admin', 'admin'].includes(role));
+  const isRegulator = roles.some((role) => ['regulator', 'policy_regulator', 'gpcb'].includes(role));
+  if (!isPlatformAdmin && !isRegulator) {
+    const organizationId = await resolveUserOrgId(req);
+    if (!organizationId) {
+      const error = new Error('An active organization is required for analytics.');
+      (error as any).statusCode = 400;
+      throw error;
+    }
+    filters.organization_id = organizationId;
+  }
+  return filters;
+}
+
 export class AnalyticsController {
   private service = new AnalyticsService();
 
   getOverview = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
-      const filters = analyticsQuerySchema.parse(req.query);
-      const userOrgId = await resolveUserOrgId(req);
-      if (userOrgId && !req.user?.roles?.includes('platform_admin')) {
-        filters.organization_id = userOrgId;
-      }
+      const filters = await getScopedFilters(req);
       const data = await this.service.getOverview({
         timeframe: filters.timeframe,
         from: filters.from,
@@ -49,7 +62,7 @@ export class AnalyticsController {
 
   getFunnel = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
-      const filters = analyticsQuerySchema.parse(req.query);
+      const filters = await getScopedFilters(req);
       const data = await this.service.getFunnel(filters);
       res.json({ success: true, data });
     } catch (err) {
@@ -59,7 +72,7 @@ export class AnalyticsController {
 
   getSupply = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
-      const filters = analyticsQuerySchema.parse(req.query);
+      const filters = await getScopedFilters(req);
       const data = await this.service.getSupply(filters);
       res.json({ success: true, data });
     } catch (err) {
@@ -69,7 +82,7 @@ export class AnalyticsController {
 
   getDemand = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
-      const filters = analyticsQuerySchema.parse(req.query);
+      const filters = await getScopedFilters(req);
       const data = await this.service.getDemand(filters);
       res.json({ success: true, data });
     } catch (err) {
@@ -79,7 +92,7 @@ export class AnalyticsController {
 
   getMatching = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
-      const filters = analyticsQuerySchema.parse(req.query);
+      const filters = await getScopedFilters(req);
       const data = await this.service.getMatching(filters);
       res.json({ success: true, data });
     } catch (err) {
@@ -89,7 +102,7 @@ export class AnalyticsController {
 
   getLogistics = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
-      const filters = analyticsQuerySchema.parse(req.query);
+      const filters = await getScopedFilters(req);
       const data = await this.service.getLogistics(filters);
       res.json({ success: true, data });
     } catch (err) {
@@ -99,7 +112,8 @@ export class AnalyticsController {
 
   getRegions = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
-      const data = await this.service.getRegions();
+      const filters = await getScopedFilters(req);
+      const data = await this.service.getRegions(filters.organization_id);
       res.json({ success: true, data });
     } catch (err) {
       next(err);
@@ -108,7 +122,7 @@ export class AnalyticsController {
 
   getObservations = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
-      const filters = analyticsQuerySchema.parse(req.query);
+      const filters = await getScopedFilters(req);
       const data = await this.service.getObservations(filters);
       res.json({ success: true, data });
     } catch (err) {
@@ -118,7 +132,7 @@ export class AnalyticsController {
 
   getImpactReport = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
-      const filters = analyticsQuerySchema.parse(req.query);
+      const filters = await getScopedFilters(req);
       const data = await this.service.getImpactReport(filters);
       res.json({ success: true, data });
     } catch (err) {
@@ -137,11 +151,7 @@ export class AnalyticsController {
 
   getPriceByPurity = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
-      const filters = analyticsQuerySchema.parse(req.query);
-      const userOrgId = await resolveUserOrgId(req);
-      if (userOrgId && !req.user?.roles?.includes('platform_admin')) {
-        filters.organization_id = userOrgId;
-      }
+      const filters = await getScopedFilters(req);
       const data = await this.service.getPriceByPurity({
         timeframe: filters.timeframe,
         from: filters.from,
@@ -156,11 +166,7 @@ export class AnalyticsController {
 
   getTopPricePoints = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
-      const filters = analyticsQuerySchema.parse(req.query);
-      const userOrgId = await resolveUserOrgId(req);
-      if (userOrgId && !req.user?.roles?.includes('platform_admin')) {
-        filters.organization_id = userOrgId;
-      }
+      const filters = await getScopedFilters(req);
       const data = await this.service.getTopPricePoints({
         timeframe: filters.timeframe,
         from: filters.from,

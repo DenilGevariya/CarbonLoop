@@ -4,6 +4,7 @@ import { Search, Building2, Factory, Package, FileText, Truck, ShieldCheck, Shop
 import { useAuth } from '@/context/AuthContext';
 import { adminApi } from '../api/adminApi';
 import type { GlobalSearchResultItem } from '../api/adminApi';
+import { resolveCarbonRole } from '@/lib/roles';
 
 interface GlobalCommandSearchProps {
   isOpen: boolean;
@@ -12,10 +13,8 @@ interface GlobalCommandSearchProps {
 }
 
 export const GlobalCommandSearch: React.FC<GlobalCommandSearchProps> = ({ isOpen, onClose, initialQuery = '' }) => {
-  const { user } = useAuth();
-  const isAdmin = (user?.roles || []).some(
-    (r) => r.toLowerCase() === 'platform_admin' || r.toLowerCase() === 'admin'
-  );
+  const { user, activeOrg } = useAuth();
+  const isAdmin = resolveCarbonRole(user?.roles, activeOrg?.orgType) === 'platform_admin';
 
   const [query, setQuery] = useState(initialQuery);
   const [results, setResults] = useState<GlobalSearchResultItem[]>([]);

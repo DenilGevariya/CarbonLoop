@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { apiRequest, setActiveOrganizationId, setMemoryToken } from '@/lib/api';
 
 export interface UserOrg {
@@ -41,6 +42,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const queryClient = useQueryClient();
   const [user, setUser] = useState<UserProfile | null>(null);
   const [activeOrg, setActiveOrg] = useState<UserOrg | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
@@ -137,6 +139,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setActiveOrg(null);
     setIsAuthenticated(false);
     setOnboardingRequired(false);
+    queryClient.clear();
   };
 
   const completeOnboarding = async (orgData: any) => {
@@ -162,6 +165,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (found) {
         setActiveOrg(found);
         setActiveOrganizationId(found.organizationId);
+        void queryClient.invalidateQueries({ refetchType: 'all' });
       }
     }
   };

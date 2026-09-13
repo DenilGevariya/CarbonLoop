@@ -9,15 +9,19 @@ import {
 export class AdminRepository {
   public async getOverviewKPIs(): Promise<AdminOverviewKPIs> {
     const orgsRes = await query(`SELECT COUNT(id) as count FROM organizations WHERE status IN ('ACTIVE', 'verified')`);
+    const usersRes = await query(`SELECT COUNT(id) as count FROM users WHERE is_active = TRUE`);
+    const listingsRes = await query(`SELECT COUNT(id) as count FROM co2_listings WHERE UPPER(status) IN ('PUBLISHED', 'ACTIVE')`);
     const facsRes = await query(`SELECT COUNT(id) as count FROM facilities`);
-    const supplyRes = await query(`SELECT COALESCE(SUM(COALESCE(remaining_quantity, available_quantity_tons, available_quantity, 0)), 0) as total FROM co2_listings WHERE UPPER(status) = 'ACTIVE'`);
-    const demandRes = await query(`SELECT COALESCE(SUM(COALESCE(required_quantity_tons, required_quantity, 0)), 0) as total FROM buyer_requirements WHERE UPPER(status) = 'ACTIVE'`);
+    const supplyRes = await query(`SELECT COALESCE(SUM(COALESCE(remaining_quantity, available_quantity_tons, available_quantity, 0)), 0) as total FROM co2_listings WHERE UPPER(status) IN ('PUBLISHED', 'ACTIVE')`);
+    const demandRes = await query(`SELECT COALESCE(SUM(COALESCE(required_quantity_tons, required_quantity, 0)), 0) as total FROM buyer_requirements WHERE UPPER(status) IN ('PUBLISHED', 'ACTIVE', 'OPEN')`);
     const matchedRes = await query(`SELECT COALESCE(SUM(COALESCE(available_quantity_tons, available_quantity, 0)), 0) as total FROM matches m JOIN co2_listings l ON m.listing_id = l.id`);
     const ordersRes = await query(`SELECT COUNT(id) as count FROM orders WHERE UPPER(status) NOT IN ('CANCELLED', 'REJECTED')`);
     const shipmentsRes = await query(`SELECT COUNT(id) as count FROM shipments WHERE UPPER(status) IN ('SCHEDULED', 'PICKED_UP', 'IN_TRANSIT', 'ARRIVING')`);
     const verifRes = await query(`SELECT COUNT(id) as count FROM verification_requests WHERE status IN ('SUBMITTED', 'UNDER_REVIEW')`);
 
     return {
+      totalUsersCount: parseInt(usersRes.rows[0]?.count || '0', 10),
+      activeListingsCount: parseInt(listingsRes.rows[0]?.count || '0', 10),
       activeOrganizationsCount: parseInt(orgsRes.rows[0]?.count || '0', 10),
       activeFacilitiesCount: parseInt(facsRes.rows[0]?.count || '0', 10),
       availableSupplyTonnes: parseFloat(supplyRes.rows[0]?.total || '0'),
@@ -30,6 +34,82 @@ export class AdminRepository {
   }
 
   // --- Organizations ---
+  public async listListings(params: {
+    status?: string;
+    search?: string;
+    minPurity?: number;
+    limit?: number;
+    offset?: number;
+  }) {
+    const conditions: string[] = [];
+    const values: any[] = [];
+
+    if (params.status) {
+      if (params.status.toUpperCase() === 'ACTIVE') {
+        conditions.push(`UPPER(l.status) IN ('PUBLISHED', 'ACTIVE')`);
+      } else if (params.status.toUpperCase() === 'PENDING_VERIFICATION') {
+        values.push(params.status.toUpperCase());
+        conditions.push(`UPPER(COALESCE(l.verification_status, 'PENDING_VERIFICATION')) = $${values.length}`);
+      } else {
+        values.push(params.status.toUpperCase());
+        conditions.push(`UPPER(l.status) = $${values.length}`);
+      }
+    }
+
+    if (params.search) {
+      values.push(`%${params.search.trim()}%`);
+      conditions.push(`(l.title ILIKE $${values.length} OR l.listing_code ILIKE $${values.length} OR o.name ILIKE $${values.length} OR f.name ILIKE $${values.length} OR f.city ILIKE $${values.length})`);
+    }
+
+    if (params.minPurity !== undefined && Number.isFinite(params.minPurity)) {
+      values.push(params.minPurity);
+      conditions.push(`l.purity_percentage >= $${values.length}`);
+    }
+
+    const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
+    const countResult = await query(
+      `SELECT COUNT(l.id) as total
+       FROM co2_listings l
+       JOIN organizations o ON o.id = l.organization_id
+       JOIN facilities f ON f.id = l.facility_id
+       ${whereClause}`,
+      values
+    );
+    const total = parseInt(countResult.rows[0]?.total || '0', 10);
+    const limit = Math.min(Math.max(params.limit || 20, 1), 100);
+    const offset = Math.max(params.offset || 0, 0);
+    const dataValues = [...values, limit, offset];
+
+    const result = await query(
+      `SELECT
+         l.id,
+         l.listing_code as "publicCode",
+         l.title,
+         o.name as "organizationName",
+         f.name as "facilityName",
+         f.city as "locationCity",
+         f.state as "locationState",
+         l.purity_percentage as "purityPercentage",
+         COALESCE(l.co2_physical_form, l.state_form) as "physicalForm",
+         COALESCE(l.available_quantity, l.available_quantity_tons, 0) as "availableQuantityTonnes",
+         COALESCE(l.remaining_quantity, l.available_quantity, l.available_quantity_tons, 0) as "remainingQuantityTonnes",
+         COALESCE(l.price_per_unit, l.price_per_ton, 0) as "pricePerTon",
+         l.verification_status as "verificationStatus",
+         l.status,
+         l.created_at as "createdAt",
+         l.updated_at as "updatedAt"
+       FROM co2_listings l
+       JOIN organizations o ON o.id = l.organization_id
+       JOIN facilities f ON f.id = l.facility_id
+       ${whereClause}
+       ORDER BY l.created_at DESC
+       LIMIT $${dataValues.length - 1} OFFSET $${dataValues.length}`,
+      dataValues
+    );
+
+    return { items: result.rows, total, limit, offset };
+  }
+
   public async listOrganizations(params: {
     type?: string;
     status?: string;
@@ -76,8 +156,8 @@ export class AdminRepository {
         o.state,
         o.created_at as "createdAt",
         (SELECT COUNT(id) FROM facilities WHERE organization_id = o.id) as "facilitiesCount",
-        (SELECT COUNT(id) FROM co2_listings WHERE organization_id = o.id AND UPPER(status) = 'ACTIVE') as "activeListingsCount",
-        (SELECT COUNT(id) FROM buyer_requirements WHERE organization_id = o.id AND UPPER(status) = 'ACTIVE') as "activeRequirementsCount"
+        (SELECT COUNT(id) FROM co2_listings WHERE organization_id = o.id AND UPPER(status) IN ('PUBLISHED', 'ACTIVE')) as "activeListingsCount",
+        (SELECT COUNT(id) FROM buyer_requirements WHERE organization_id = o.id AND UPPER(status) IN ('PUBLISHED', 'ACTIVE', 'OPEN')) as "activeRequirementsCount"
       FROM organizations o
       ${whereClause}
       ORDER BY o.created_at DESC
@@ -463,4 +543,3 @@ export class AdminRepository {
     return res.rows[0];
   }
 }
-

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Navigate, useLocation, Outlet } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
+import { getRoleHomePath, hasCarbonRole, resolveCarbonRole } from '@/lib/roles';
 
 export const ProtectedRoute: React.FC = () => {
   const { isAuthenticated, onboardingRequired } = useAuth();
@@ -34,27 +35,16 @@ export const PublicOnlyRoute: React.FC = () => {
 
 interface RoleRouteProps {
   allowedRoles: string[];
+  children?: React.ReactNode;
 }
 
-export const RoleRoute: React.FC<RoleRouteProps> = ({ allowedRoles }) => {
+export const RoleRoute: React.FC<RoleRouteProps> = ({ allowedRoles, children }) => {
   const { user, activeOrg } = useAuth();
-
-  const userRoles = (user?.roles || []).map((r) => r.toLowerCase());
-  const orgType = activeOrg?.orgType?.toLowerCase() || '';
-
-  const isPlatformAdmin = userRoles.includes('platform_admin') || userRoles.includes('admin');
-
-  if (isPlatformAdmin) {
-    return <Outlet />;
-  }
-
-  const hasRoleMatch = allowedRoles.some(
-    (role) => userRoles.includes(role.toLowerCase()) || orgType.includes(role.toLowerCase())
-  );
+  const hasRoleMatch = hasCarbonRole(allowedRoles, user?.roles, activeOrg?.orgType);
 
   if (!hasRoleMatch) {
-    return <Navigate to="/dashboard" replace />;
+    return <Navigate to={getRoleHomePath(resolveCarbonRole(user?.roles, activeOrg?.orgType))} replace />;
   }
 
-  return <Outlet />;
+  return children ? <>{children}</> : <Outlet />;
 };

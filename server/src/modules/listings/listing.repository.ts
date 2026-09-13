@@ -258,7 +258,7 @@ export class ListingRepository {
     // Fetch associated documents
     const docSql = `
       SELECT 
-        d.id, d.file_name, d.document_type, d.mime_type, d.file_size, d.description, d.verification_status, d.created_at
+        d.id, d.file_name, d.document_type, d.mime_type, d.file_size, d.description, d.status as verification_status, d.created_at
       FROM co2_listing_documents cld
       JOIN documents d ON cld.document_id = d.id
       WHERE cld.listing_id = $1;
@@ -361,22 +361,17 @@ export class ListingRepository {
   /**
    * Generate next sequential public listing code
    */
-  async generateListingCode(): Promise<string> {
+  async generateListingCode(database: any = pool): Promise<string> {
     const sql = `
-      SELECT listing_code 
+      SELECT COALESCE(
+        MAX(CAST(SUBSTRING(listing_code FROM '^CL-SUP-([0-9]+)$') AS INTEGER)),
+        0
+      ) + 1 AS next_num
       FROM co2_listings 
-      WHERE listing_code LIKE 'CL-SUP-%' 
-      ORDER BY created_at DESC 
-      LIMIT 1;
+      WHERE listing_code ~ '^CL-SUP-[0-9]+$';
     `;
-    const res = await pool.query(sql);
-    let nextNum = 125;
-    if (res.rows.length > 0 && res.rows[0].listing_code) {
-      const match = res.rows[0].listing_code.match(/CL-SUP-(\d+)/);
-      if (match && match[1]) {
-        nextNum = parseInt(match[1], 10) + 1;
-      }
-    }
+    const res = await database.query(sql);
+    const nextNum = parseInt(res.rows[0]?.next_num || '1', 10);
     return `CL-SUP-${nextNum.toString().padStart(6, '0')}`;
   }
 
@@ -384,7 +379,6 @@ export class ListingRepository {
    * Create a new CO2 listing
    */
   async createListing(organizationId: string, createdByUserId: string, input: CreateListingInput): Promise<ListingDTO> {
-    const listingCode = await this.generateListingCode();
     const initialStatus = input.publishNow ? 'PUBLISHED' : 'DRAFT';
     const remainingQuantity = input.availableQuantity;
 
@@ -412,38 +406,41 @@ export class ListingRepository {
       ) RETURNING id;
     `;
 
-    const values = [
-      organizationId,
-      input.facilityId,
-      listingCode,
-      input.title,
-      input.description || null,
-      input.availableQuantity,
-      remainingQuantity,
-      input.quantityUnit || 'tonne',
-      input.minimumOrderQuantity || 1,
-      input.purityPercentage,
-      input.physicalForm.toUpperCase(),
-      input.captureMethod || null,
-      input.captureSource || null,
-      input.temperatureCelsius !== undefined ? input.temperatureCelsius : null,
-      input.pressureBar !== undefined ? input.pressureBar : null,
-      input.pricePerUnit,
-      input.currency || 'INR',
-      input.availableFrom,
-      input.availableUntil || null,
-      input.deliveryAvailable !== false,
-      input.pickupAvailable !== false,
-      initialStatus,
-      createdByUserId,
-      input.labReportUrl || null,
-      input.labReportFilename || null,
-      'PENDING_VERIFICATION',
-    ];
-
     const client = await pool.connect();
     try {
       await client.query('BEGIN');
+      // Serialize code allocation inside the same transaction as the insert.
+      // This prevents two simultaneous listing submissions from receiving the same code.
+      await client.query("SELECT pg_advisory_xact_lock(hashtext('carbonloop.co2_listing_code'))");
+      const listingCode = await this.generateListingCode(client);
+      const values = [
+        organizationId,
+        input.facilityId,
+        listingCode,
+        input.title,
+        input.description || null,
+        input.availableQuantity,
+        remainingQuantity,
+        input.quantityUnit || 'tonne',
+        input.minimumOrderQuantity || 1,
+        input.purityPercentage,
+        input.physicalForm.toUpperCase(),
+        input.captureMethod || null,
+        input.captureSource || null,
+        input.temperatureCelsius !== undefined ? input.temperatureCelsius : null,
+        input.pressureBar !== undefined ? input.pressureBar : null,
+        input.pricePerUnit,
+        input.currency || 'INR',
+        input.availableFrom,
+        input.availableUntil || null,
+        input.deliveryAvailable !== false,
+        input.pickupAvailable !== false,
+        initialStatus,
+        createdByUserId,
+        input.labReportUrl || null,
+        input.labReportFilename || null,
+        'PENDING_VERIFICATION',
+      ];
       const res = await client.query(sql, values);
       const newListingId = res.rows[0].id;
 

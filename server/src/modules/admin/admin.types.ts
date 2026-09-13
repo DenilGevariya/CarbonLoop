@@ -1,4 +1,6 @@
 export interface AdminOverviewKPIs {
+  totalUsersCount: number;
+  activeListingsCount: number;
   activeOrganizationsCount: number;
   activeFacilitiesCount: number;
   availableSupplyTonnes: number;

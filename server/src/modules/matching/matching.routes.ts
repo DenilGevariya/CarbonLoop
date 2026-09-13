@@ -1,8 +1,11 @@
 import { Router } from 'express';
 import { MatchingController } from './matching.controller';
+import { authenticateUser } from '../../middleware/auth.middleware';
 
 const router = Router();
 const controller = new MatchingController();
+
+router.use(authenticateUser);
 
 router.get('/', (req, res, next) => controller.listMatches(req, res, next));
 router.post('/generate', (req, res, next) => controller.generateMatches(req, res, next));

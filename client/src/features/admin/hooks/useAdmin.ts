@@ -6,6 +6,7 @@ import type {
   SystemAlertRecord,
   AdminOrgListItem,
   AdminUserListItem,
+  AdminListingListItem,
   AuditLogRecord,
 } from '../api/adminApi';
 
@@ -127,6 +128,34 @@ export function useAdminUsers(params?: { role?: string; status?: string; search?
   }, [fetchUsers]);
 
   return { items, pagination, isLoading, error, refresh: fetchUsers };
+}
+
+export function useAdminListings(params?: { status?: string; search?: string; minPurity?: number; page?: number; limit?: number }) {
+  const [items, setItems] = useState<AdminListingListItem[]>([]);
+  const [pagination, setPagination] = useState({ page: 1, limit: 20, total: 0, totalPages: 1 });
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchListings = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      const res = await adminApi.listListings(params);
+      const listingData = (res as any)?.data || (res as any)?.items || (Array.isArray(res) ? res : []);
+      if (Array.isArray(listingData)) setItems(listingData);
+      if ((res as any)?.pagination) setPagination((res as any).pagination);
+    } catch (err: any) {
+      setError(err?.message || 'Failed to load listings.');
+    } finally {
+      setIsLoading(false);
+    }
+  }, [params?.status, params?.search, params?.minPurity, params?.page, params?.limit]);
+
+  useEffect(() => {
+    fetchListings();
+  }, [fetchListings]);
+
+  return { items, pagination, isLoading, error, refresh: fetchListings };
 }
 
 export function useAdminAuditLogs(params?: { actorId?: string; organizationId?: string; entityType?: string; action?: string; search?: string; page?: number; limit?: number }) {

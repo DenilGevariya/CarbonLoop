@@ -111,7 +111,7 @@ export const AdminDashboardPage: React.FC = () => {
             </div>
             <div className="mt-3">
               <span className="text-2xl font-black text-[#2A3547]">
-                {kpis ? kpis.activeOrganizationsCount * 4 + 12 : 28}
+                {kpis?.totalUsersCount || 0}
               </span>
               <span className="text-[11px] text-[#13DEB9] font-semibold block mt-0.5">Across 5 System Roles</span>
             </div>
@@ -145,10 +145,10 @@ export const AdminDashboardPage: React.FC = () => {
             </div>
             <div className="mt-3">
               <span className="text-2xl font-black text-[#2A3547]">
-                {kpis ? kpis.activeFacilitiesCount + 6 : 14}
+                {kpis?.activeListingsCount || 0}
               </span>
               <span className="text-[11px] text-[#5A6A85] font-semibold block mt-0.5">
-                {kpis ? `${(kpis.availableSupplyTonnes || 4200).toLocaleString()} t Listed` : '4,200 t Listed'}
+                {kpis ? `${(kpis.availableSupplyTonnes || 0).toLocaleString()} t Listed` : '0 t Listed'}
               </span>
             </div>
           </CardContent>
@@ -167,7 +167,7 @@ export const AdminDashboardPage: React.FC = () => {
                 {kpis ? kpis.activeOrdersCount : 8}
               </span>
               <span className="text-[11px] text-purple-600 font-semibold block mt-0.5">
-                {kpis ? `${(kpis.matchedVolumeTonnes || 1850).toLocaleString()} t Matched` : '1,850 t Matched'}
+                {kpis ? `${(kpis.matchedVolumeTonnes || 0).toLocaleString()} t Matched` : '0 t Matched'}
               </span>
             </div>
           </CardContent>
@@ -200,7 +200,7 @@ export const AdminDashboardPage: React.FC = () => {
             </div>
             <div className="mt-3">
               <span className="text-2xl font-black text-[#2A3547]">
-                {disputes.length || 1}
+                {disputes.length}
               </span>
               <span className="text-[11px] text-[#FA896B] font-semibold block mt-0.5">Dispute Management</span>
             </div>

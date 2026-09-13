@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { MetricCard } from '@/components/shared/MetricCard';
 import { MatchScoreBadge } from '@/components/shared/MatchScoreBadge';
@@ -11,6 +11,8 @@ import { useMyRequirements } from '@/features/requirements/hooks/useRequirements
 import { useMarketplaceListings } from '@/features/listings/hooks/useListings';
 import type { MatchRecord } from '@/features/matching/types/matching.types';
 import { PriceAnalyticsCharts } from '@/features/analytics/components/PriceAnalyticsCharts';
+import { resolveCarbonRole } from '@/lib/roles';
+import { useAnalyticsOverview } from '@/features/analytics/hooks/useAnalytics';
 
 export const DashboardPage: React.FC = () => {
   const { user, activeOrg } = useAuth();
@@ -27,8 +29,9 @@ export const DashboardPage: React.FC = () => {
   // Fetch real buyer data
   const { data: reqData } = useMyRequirements({ limit: 50 });
   const { data: listingsData } = useMarketplaceListings({ limit: 50 });
+  const { overview } = useAnalyticsOverview('30d');
 
-  const buyerReqs = reqData?.items || [];
+  const buyerReqs = useMemo(() => reqData?.items || [], [reqData?.items]);
   const activeReqs = buyerReqs.filter((r) => r.status === 'PUBLISHED' || r.status === 'ACTIVE');
   const monthlyDemand = activeReqs.reduce((sum, r) => sum + (r.required_quantity || 0), 0);
   const totalMarketListings = listingsData?.items?.length || listingsData?.data?.length || 0;
@@ -41,9 +44,12 @@ export const DashboardPage: React.FC = () => {
 
   useEffect(() => {
     async function loadMatches() {
+      if (buyerReqs.length === 0) {
+        setTopMatches([]);
+        return;
+      }
       try {
-        const targetReqId = buyerReqs.length > 0 ? buyerReqs[0].id : '70000000-0000-4000-a000-000000000001';
-        const matches = await matchingApi.getRequirementMatches(targetReqId, 0);
+        const matches = await matchingApi.getRequirementMatches(buyerReqs[0].id, 0);
         setTopMatches(matches.slice(0, 3));
       } catch (err) {
         console.error('Failed to load dashboard matches:', err);
@@ -52,23 +58,12 @@ export const DashboardPage: React.FC = () => {
     loadMatches();
   }, [buyerReqs]);
 
-  const userRoles = (user?.roles || []).map((r) => r.toLowerCase().replace('-', '_'));
-  const activeOrgType = (activeOrg?.orgType || '').toLowerCase().replace('-', '_');
-
-  const isAdmin = userRoles.some((r) => r === 'platform_admin' || r === 'admin' || r === 'platform_administrator');
-  const isRegulator = !isAdmin && (
-    userRoles.some((r) => r === 'regulator' || r === 'policy_regulator' || r === 'gpcb') ||
-    activeOrgType === 'regulator' || activeOrgType === 'policy_regulator'
-  );
-  const isLogistics = !isAdmin && !isRegulator && (
-    userRoles.some((r) => r === 'logistics_provider' || r === 'logistics' || r === 'transporter') ||
-    activeOrgType === 'logistics_provider' || activeOrgType === 'logistics'
-  );
-  const isUtilizer = !isAdmin && !isRegulator && !isLogistics && (
-    userRoles.some((r) => r === 'utilizer' || r === 'buyer' || r === 'carbon_utilizer') ||
-    activeOrgType === 'buyer' || activeOrgType === 'utilizer'
-  );
-  const isEmitter = !isAdmin && !isRegulator && !isLogistics && !isUtilizer;
+  const resolvedRole = resolveCarbonRole(user?.roles, activeOrg?.orgType);
+  const isAdmin = resolvedRole === 'platform_admin';
+  const isRegulator = resolvedRole === 'regulator';
+  const isLogistics = resolvedRole === 'logistics_provider';
+  const isUtilizer = resolvedRole === 'utilizer';
+  const isEmitter = resolvedRole === 'emitter';
 
   useEffect(() => {
     if (isAdmin) {
@@ -245,16 +240,16 @@ export const DashboardPage: React.FC = () => {
         {isEmitter && (
           <>
             <StaggerItem>
-              <MetricCard label="Active Stream Supply" value={1250} suffix=" t/mo" subtext="Ahmedabad Calcination Unit" icon={Factory} />
+              <MetricCard label="Active Stream Supply" value={Math.round(overview?.stock.activeSupplyTonnes || 0)} suffix=" t" subtext={`${overview?.stock.activeListingsCount || 0} published stream${overview?.stock.activeListingsCount === 1 ? '' : 's'}`} icon={Factory} />
             </StaggerItem>
             <StaggerItem>
-              <MetricCard label="Algorithmic Matches" value={topMatches.length || 4} subtext="Compatibility score ≥ 85%" icon={Cpu} />
+              <MetricCard label="Algorithmic Matches" value={topMatches.length} subtext="Highest-ranked compatibility results" icon={Cpu} />
             </StaggerItem>
             <StaggerItem>
-              <MetricCard label="Contracted Volume" value={500} suffix=" t" subtext="GreenForge Off-Take Contract" icon={RotateCcw} />
+              <MetricCard label="Contracted Volume" value={Math.round(overview?.flow.orderedTonnes || 0)} suffix=" t" subtext="Orders in the selected period" icon={RotateCcw} />
             </StaggerItem>
             <StaggerItem>
-              <MetricCard label="Haulage In Transit" value={112} suffix=" km" subtext="ISO Tanker #SHP-9904 en route" icon={Truck} />
+              <MetricCard label="Haulage In Transit" value={Math.round(overview?.flow.shippedTonnes || 0)} suffix=" t" subtext={`${overview?.stock.activeShipmentsCount || 0} active shipments`} icon={Truck} />
             </StaggerItem>
           </>
         )}
@@ -281,9 +276,9 @@ export const DashboardPage: React.FC = () => {
             <StaggerItem>
               <MetricCard
                 label="Executed Off-Takes"
-                value={1}
-                suffix=" order"
-                subtext="TerraCem Supply #CL-SUP-000001"
+                value={Math.round(overview?.flow.orderedTonnes || 0)}
+                suffix=" t"
+                subtext="Ordered tonnes in the selected period"
                 icon={RotateCcw}
               />
             </StaggerItem>
@@ -303,16 +298,16 @@ export const DashboardPage: React.FC = () => {
         {isLogistics && (
           <>
             <StaggerItem>
-              <MetricCard label="Active Dispatches" value={3} suffix=" fleets" subtext="Pressurized ISO Tankers" icon={Truck} />
+              <MetricCard label="Active Dispatches" value={overview?.stock.activeShipmentsCount || 0} suffix=" shipments" subtext="Assigned or in-transit shipments" icon={Truck} />
             </StaggerItem>
             <StaggerItem>
-              <MetricCard label="In Transit Volume" value={850} suffix=" t" subtext="Corridor: Ahmedabad -> Vadodara" icon={RotateCcw} />
+              <MetricCard label="In Transit Volume" value={Math.round(overview?.flow.shippedTonnes || 0)} suffix=" t" subtext="Shipment volume in the selected period" icon={RotateCcw} />
             </StaggerItem>
             <StaggerItem>
-              <MetricCard label="Fleet Availability" value={8} suffix=" units" subtext="Hazmat Certified Tankers" icon={Factory} />
+              <MetricCard label="Fleet Availability" value={overview?.stock.activeFacilitiesCount || 0} suffix=" facilities" subtext="Operational facilities in scope" icon={Factory} />
             </StaggerItem>
             <StaggerItem>
-              <MetricCard label="Avg Transit Time" value={2.6} suffix=" hrs" subtext="112.5 km average haulage" icon={Cpu} />
+              <MetricCard label="Avg Transit Time" value={overview?.stock.activeShipmentsCount ? Math.round((overview.flow.shippedTonnes / overview.stock.activeShipmentsCount) * 10) / 10 : 0} suffix=" t/shipment" subtext="Average shipped volume per active shipment" icon={Cpu} />
             </StaggerItem>
           </>
         )}
@@ -320,16 +315,16 @@ export const DashboardPage: React.FC = () => {
         {isRegulator && (
           <>
             <StaggerItem>
-              <MetricCard label="Total Listed Supply" value={16050} suffix=" tonnes" subtext="Across regional industrial stack feeds" icon={Factory} />
+              <MetricCard label="Total Listed Supply" value={Math.round(overview?.stock.activeSupplyTonnes || 0)} suffix=" tonnes" subtext="Across network industrial stack feeds" icon={Factory} />
             </StaggerItem>
             <StaggerItem>
-              <MetricCard label="Total Traded Volume" value={1840} suffix=" tonnes" subtext="Verified ISO 14064 custody handoffs" icon={Scale} />
+              <MetricCard label="Total Traded Volume" value={Math.round(overview?.flow.deliveredTonnes || 0)} suffix=" tonnes" subtext="Delivered tonnes in the selected period" icon={Scale} />
             </StaggerItem>
             <StaggerItem>
-              <MetricCard label="Active Transactions" value={14} suffix=" deals" subtext="Commercial off-take agreements" icon={RotateCcw} />
+              <MetricCard label="Active Transactions" value={overview?.stock.activeShipmentsCount || 0} suffix=" shipments" subtext="Active custody movements" icon={RotateCcw} />
             </StaggerItem>
             <StaggerItem>
-              <MetricCard label="Pending Verifications" value={2} suffix=" certs" subtext="Purity chromatography evidence" icon={ShieldCheck} />
+              <MetricCard label="Pending Verifications" value={0} suffix=" certs" subtext="Verification queue is available in Oversight" icon={ShieldCheck} />
             </StaggerItem>
           </>
         )}
@@ -385,14 +380,14 @@ export const DashboardPage: React.FC = () => {
                 <div className="space-y-1.5">
                   <div className="flex items-center gap-3">
                     <span className="text-sm font-bold text-[#2A3547]">
-                      {m.listing?.organization_name || 'TerraCem Industries'} → {m.requirement?.organization_name || 'GreenForge Materials'}
+                      {m.listing?.organization_name || 'Unknown emitter'} → {m.requirement?.organization_name || 'Unknown utilizer'}
                     </span>
                     <span className="text-xs font-semibold text-[#5D87FF] bg-[#ECF2FF] px-2.5 py-0.5 rounded-full border border-[#5D87FF]/20">
                       MATCH-{m.id.substring(0, 6)}
                     </span>
                   </div>
                   <p className="text-xs text-[#5A6A85] font-medium">
-                    Purity: <span className="text-[#2A3547] font-bold">{m.listing?.purity_percentage || 99.5}%</span> • Distance: <span className="text-[#5D87FF] font-bold">{m.estimated_distance_km} km</span> • Delivered: <span className="text-[#13DEB9] font-bold">₹{m.estimated_delivered_cost.toLocaleString()}/t</span>
+                    Purity: <span className="text-[#2A3547] font-bold">{m.listing?.purity_percentage != null ? `${m.listing.purity_percentage}%` : '—'}</span> • Distance: <span className="text-[#5D87FF] font-bold">{m.estimated_distance_km} km</span> • Delivered: <span className="text-[#13DEB9] font-bold">₹{m.estimated_delivered_cost.toLocaleString()}/t</span>
                   </p>
                 </div>
 

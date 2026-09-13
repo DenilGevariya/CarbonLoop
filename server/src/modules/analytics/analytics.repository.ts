@@ -18,6 +18,10 @@ export class AnalyticsRepository {
     let orgConditionReqs = '';
     let orgConditionOrders = '';
     let orgConditionShipments = '';
+    let stockOrgConditionListings = '';
+    let stockOrgConditionReqs = '';
+    let stockOrgConditionShipments = '';
+    let flowMatchOrgCondition = '';
 
     if (orgId) {
       params.push(orgId);
@@ -26,6 +30,10 @@ export class AnalyticsRepository {
       orgConditionReqs = ` AND r.organization_id = $${orgIdx}`;
       orgConditionOrders = ` AND (o.buyer_organization_id = $${orgIdx} OR o.seller_organization_id = $${orgIdx})`;
       orgConditionShipments = ` AND s.logistics_provider_id = $${orgIdx}`;
+      stockOrgConditionListings = ' AND l.organization_id = $1';
+      stockOrgConditionReqs = ' AND r.organization_id = $1';
+      stockOrgConditionShipments = ' AND s.logistics_provider_id = $1';
+      flowMatchOrgCondition = ' AND (l.organization_id = $3 OR r.organization_id = $3)';
     }
 
     // 1. Stock Metrics (Current active inventory & open demand)
@@ -34,7 +42,7 @@ export class AnalyticsRepository {
         COALESCE(SUM(COALESCE(remaining_quantity, available_quantity_tons, 0)), 0) as active_supply,
         COUNT(id) as listings_count
        FROM co2_listings l
-       WHERE UPPER(status) IN ('PUBLISHED', 'ACTIVE')${orgConditionListings}`,
+       WHERE UPPER(status) IN ('PUBLISHED', 'ACTIVE')${stockOrgConditionListings}`,
       orgId ? [orgId] : []
     );
 
@@ -43,17 +51,21 @@ export class AnalyticsRepository {
         COALESCE(SUM(COALESCE(required_quantity_tons, required_quantity, 0)), 0) as active_demand,
         COUNT(id) as reqs_count
        FROM buyer_requirements r
-       WHERE UPPER(status) IN ('PUBLISHED', 'ACTIVE', 'OPEN')${orgConditionReqs}`,
+       WHERE UPPER(status) IN ('PUBLISHED', 'ACTIVE', 'OPEN')${stockOrgConditionReqs}`,
       orgId ? [orgId] : []
     );
 
     const activeShipmentsRes = await query<{ count: string }>(
-      `SELECT COUNT(id) as count FROM shipments s WHERE UPPER(status) IN ('SCHEDULED', 'PICKED_UP', 'IN_TRANSIT', 'ARRIVING')${orgConditionShipments}`,
+      `SELECT COUNT(id) as count FROM shipments s WHERE UPPER(status) IN ('SCHEDULED', 'PICKED_UP', 'IN_TRANSIT', 'ARRIVING')${stockOrgConditionShipments}`,
       orgId ? [orgId] : []
     );
 
-    const activeOrgsRes = await query<{ count: string }>('SELECT COUNT(id) as count FROM organizations WHERE UPPER(verification_status) = \'VERIFIED\'');
-    const activeFacilitiesRes = await query<{ count: string }>('SELECT COUNT(id) as count FROM facilities');
+    const activeOrgsRes = orgId
+      ? await query<{ count: string }>('SELECT COUNT(id) as count FROM organizations WHERE id = $1 AND UPPER(verification_status) = \'VERIFIED\'', [orgId])
+      : await query<{ count: string }>('SELECT COUNT(id) as count FROM organizations WHERE UPPER(verification_status) = \'VERIFIED\'');
+    const activeFacilitiesRes = orgId
+      ? await query<{ count: string }>('SELECT COUNT(id) as count FROM facilities WHERE organization_id = $1', [orgId])
+      : await query<{ count: string }>('SELECT COUNT(id) as count FROM facilities');
 
     // 2. Flow Metrics (Activity within timeframe: listed, requested, matched, ordered, shipped, delivered, reused)
     const flowListingsRes = await query<{ total_listed: string }>(
@@ -74,8 +86,9 @@ export class AnalyticsRepository {
       `SELECT COALESCE(SUM(COALESCE(l.available_quantity_tons, l.available_quantity, 0)), 0) as total_matched
        FROM matches m
        JOIN co2_listings l ON m.listing_id = l.id
-       WHERE m.created_at BETWEEN $1 AND $2 AND UPPER(m.status) IN ('ACTIVE', 'COMPATIBLE', 'EXCELLENT', 'HIGH', 'ACCEPTED')`,
-      [fromISO, toISO]
+       JOIN buyer_requirements r ON m.requirement_id = r.id
+       WHERE m.created_at BETWEEN $1 AND $2 AND UPPER(m.status) IN ('ACTIVE', 'COMPATIBLE', 'EXCELLENT', 'HIGH', 'ACCEPTED')${flowMatchOrgCondition}`,
+      params
     );
 
     const flowOrdersRes = await query<{ total_ordered: string }>(
@@ -133,12 +146,12 @@ export class AnalyticsRepository {
 
   async getCarbonFlowFunnel(fromISO: string, toISO: string, orgId?: string): Promise<CarbonFlowFunnel> {
     const kpis = await this.getOverviewKPIs(fromISO, toISO, orgId);
-    const listed = Math.max(kpis.flow.listedTonnes, kpis.flow.orderedTonnes, 100);
+    const listed = Math.max(kpis.flow.listedTonnes, kpis.flow.orderedTonnes);
 
-    const matched = Math.min(kpis.flow.matchedTonnes || Math.round(listed * 0.85), listed);
-    const ordered = Math.min(kpis.flow.orderedTonnes || Math.round(matched * 0.75), matched);
-    const shipped = Math.min(kpis.flow.shippedTonnes || Math.round(ordered * 0.85), ordered);
-    const delivered = Math.min(kpis.flow.deliveredTonnes || Math.round(shipped * 0.90), shipped);
+    const matched = Math.min(kpis.flow.matchedTonnes, listed);
+    const ordered = Math.min(kpis.flow.orderedTonnes, matched);
+    const shipped = Math.min(kpis.flow.shippedTonnes, ordered);
+    const delivered = Math.min(kpis.flow.deliveredTonnes, shipped);
     const reused = delivered;
 
     const stages = [
@@ -195,25 +208,29 @@ export class AnalyticsRepository {
   }
 
   async getSupplyAnalytics(fromISO: string, toISO: string, orgId?: string): Promise<SupplyAnalytics> {
+    const params: any[] = [fromISO, toISO];
+    const orgCondition = orgId ? ' AND l.organization_id = $3' : '';
+    if (orgId) params.push(orgId);
     const res = await query(
       `SELECT 
         l.purity_percentage as purity,
         l.price_per_ton as price,
         COALESCE(l.available_quantity_tons, l.available_quantity, 0) as quantity,
+        l.facility_id,
         f.state as region
        FROM co2_listings l
        LEFT JOIN facilities f ON l.facility_id = f.id
-       WHERE l.created_at BETWEEN $1 AND $2`,
-      [fromISO, toISO]
+       WHERE l.created_at BETWEEN $1 AND $2${orgCondition}`,
+      params
     );
 
     const rows = res.rows;
     const totalTonnes = rows.reduce((sum, r) => sum + parseFloat(r.quantity || '0'), 0);
-    const purities = rows.map((r) => parseFloat(r.purity || '99.0')).filter((p) => !isNaN(p));
-    const prices = rows.map((r) => parseFloat(r.price || '4500')).filter((p) => !isNaN(p));
+    const purities = rows.map((r) => parseFloat(r.purity)).filter((p) => !isNaN(p));
+    const prices = rows.map((r) => parseFloat(r.price)).filter((p) => !isNaN(p));
 
-    const avgPurity = purities.length ? purities.reduce((a, b) => a + b, 0) / purities.length : 99.2;
-    const avgPrice = prices.length ? prices.reduce((a, b) => a + b, 0) / prices.length : 4500;
+    const avgPurity = purities.length ? purities.reduce((a, b) => a + b, 0) / purities.length : 0;
+    const avgPrice = prices.length ? prices.reduce((a, b) => a + b, 0) / prices.length : 0;
 
     // Purity Bands
     const band95_97 = rows.filter((r) => r.purity >= 95 && r.purity < 97);
@@ -244,27 +261,27 @@ export class AnalyticsRepository {
     }));
 
     return {
-      totalAvailableTonnes: totalTonnes || 4280,
-      activeListingsCount: rows.length || 12,
-      activeFacilitiesCount: Math.max(1, Math.round(rows.length * 0.7)),
+      totalAvailableTonnes: totalTonnes,
+      activeListingsCount: rows.length,
+      activeFacilitiesCount: new Set(rows.map((r) => r.facility_id).filter(Boolean)).size,
       averagePurityPercentage: parseFloat(avgPurity.toFixed(2)),
-      medianPurityPercentage: 99.5,
+      medianPurityPercentage: purities.length ? purities.sort((a, b) => a - b)[Math.floor(purities.length / 2)] : 0,
       averageObservedPricePerTon: Math.round(avgPrice),
-      medianObservedPricePerTon: 4500,
+      medianObservedPricePerTon: prices.length ? prices.sort((a, b) => a - b)[Math.floor(prices.length / 2)] : 0,
       purityBands,
       priceBands: [
         { band: '₹3,000 - ₹4,000 / t', listingsCount: Math.round(rows.length * 0.3) },
         { band: '₹4,001 - ₹5,000 / t', listingsCount: Math.round(rows.length * 0.5) },
         { band: '₹5,001+ / t', listingsCount: Math.round(rows.length * 0.2) },
       ],
-      regionalSupply: regionalSupply.length ? regionalSupply : [
-        { region: 'Gujarat', totalTonnes: 2800, activeListings: 8 },
-        { region: 'Maharashtra', totalTonnes: 1480, activeListings: 4 },
-      ],
+      regionalSupply,
     };
   }
 
   async getDemandAnalytics(fromISO: string, toISO: string, orgId?: string): Promise<DemandAnalytics> {
+    const params: any[] = [fromISO, toISO];
+    const orgCondition = orgId ? ' AND r.organization_id = $3' : '';
+    if (orgId) params.push(orgId);
     const reqRes = await query(
       `SELECT 
         r.required_purity_percentage as purity,
@@ -274,8 +291,8 @@ export class AnalyticsRepository {
         f.state as region
        FROM buyer_requirements r
        LEFT JOIN facilities f ON r.facility_id = f.id
-       WHERE r.created_at BETWEEN $1 AND $2`,
-      [fromISO, toISO]
+       WHERE r.created_at BETWEEN $1 AND $2${orgCondition}`,
+      params
     );
 
     const rows = reqRes.rows;
@@ -296,32 +313,46 @@ export class AnalyticsRepository {
       requirementsCount: val.count,
     }));
 
+    const purities = rows.map((r) => parseFloat(r.purity)).filter((p) => !isNaN(p));
+    const prices = rows.map((r) => parseFloat(r.price)).filter((p) => !isNaN(p));
+    const regionMap: Record<string, { totalTonnes: number; count: number }> = {};
+    rows.forEach((r) => {
+      if (!r.region) return;
+      if (!regionMap[r.region]) regionMap[r.region] = { totalTonnes: 0, count: 0 };
+      regionMap[r.region].totalTonnes += parseFloat(r.quantity || '0');
+      regionMap[r.region].count += 1;
+    });
+
     return {
-      totalRequestedTonnes: totalReqTonnes || 3620,
-      outstandingDemandTonnes: Math.round((totalReqTonnes || 3620) * 0.7),
-      activeRequirementsCount: rows.length || 10,
-      averageMinPurity: 99.1,
-      averageBudgetCeiling: 4800,
-      utilizationBreakdown: utilizationBreakdown.length ? utilizationBreakdown : [
-        { pathway: 'Synthetic Fuel & E-Methanol', requestedTonnes: 1800, percentage: 50, requirementsCount: 4 },
-        { pathway: 'Building Materials & Mineralization', requestedTonnes: 1100, percentage: 30, requirementsCount: 3 },
-        { pathway: 'Greenhouse & Agriculture', requestedTonnes: 720, percentage: 20, requirementsCount: 3 },
-      ],
-      regionalDemand: [
-        { region: 'Gujarat', totalTonnes: 2140, activeRequirements: 6 },
-        { region: 'Maharashtra', totalTonnes: 1480, activeRequirements: 4 },
-      ],
+      totalRequestedTonnes: totalReqTonnes,
+      outstandingDemandTonnes: totalReqTonnes,
+      activeRequirementsCount: rows.length,
+      averageMinPurity: purities.length ? purities.reduce((a, b) => a + b, 0) / purities.length : 0,
+      averageBudgetCeiling: prices.length ? prices.reduce((a, b) => a + b, 0) / prices.length : 0,
+      utilizationBreakdown,
+      regionalDemand: Object.entries(regionMap).map(([region, value]) => ({
+        region,
+        totalTonnes: value.totalTonnes,
+        activeRequirements: value.count,
+      })),
     };
   }
 
-  async getMatchingAnalytics(fromISO: string, toISO: string): Promise<MatchingAnalytics> {
+  async getMatchingAnalytics(fromISO: string, toISO: string, orgId?: string): Promise<MatchingAnalytics> {
+    const params: any[] = [fromISO, toISO];
+    const orgCondition = orgId ? ' AND (l.organization_id = $3 OR r.organization_id = $3)' : '';
+    if (orgId) params.push(orgId);
     const res = await query(
-      `SELECT overall_score as score, status FROM matches WHERE created_at BETWEEN $1 AND $2`,
-      [fromISO, toISO]
+      `SELECT m.overall_score as score, m.status
+       FROM matches m
+       JOIN co2_listings l ON l.id = m.listing_id
+       JOIN buyer_requirements r ON r.id = m.requirement_id
+       WHERE m.created_at BETWEEN $1 AND $2${orgCondition}`,
+      params
     );
 
     const rows = res.rows;
-    const total = rows.length || 15;
+    const total = rows.length;
 
     const excellent = rows.filter((r) => parseFloat(r.score) >= 90).length;
     const strong = rows.filter((r) => parseFloat(r.score) >= 75 && parseFloat(r.score) < 90).length;
@@ -331,26 +362,33 @@ export class AnalyticsRepository {
 
     return {
       totalMatchesGenerated: total,
-      averageMatchScore: 84.5,
-      medianMatchScore: 86.0,
+      averageMatchScore: rows.length ? rows.reduce((sum, row) => sum + parseFloat(row.score || '0'), 0) / rows.length : 0,
+      medianMatchScore: rows.length
+        ? rows.map((row) => parseFloat(row.score || '0')).sort((a, b) => a - b)[Math.floor(rows.length / 2)]
+        : 0,
       qualityDistribution: [
-        { category: 'EXCELLENT', minScore: 90, maxScore: 100, matchCount: excellent || 6, percentage: Math.round(((excellent || 6) / total) * 100) },
-        { category: 'STRONG', minScore: 75, maxScore: 89, matchCount: strong || 5, percentage: Math.round(((strong || 5) / total) * 100) },
-        { category: 'GOOD', minScore: 60, maxScore: 74, matchCount: good || 3, percentage: Math.round(((good || 3) / total) * 100) },
-        { category: 'POSSIBLE', minScore: 40, maxScore: 59, matchCount: possible || 1, percentage: Math.round(((possible || 1) / total) * 100) },
-        { category: 'WEAK', minScore: 0, maxScore: 39, matchCount: weak || 0, percentage: 0 },
+        { category: 'EXCELLENT', minScore: 90, maxScore: 100, matchCount: excellent, percentage: total ? Math.round((excellent / total) * 100) : 0 },
+        { category: 'STRONG', minScore: 75, maxScore: 89, matchCount: strong, percentage: total ? Math.round((strong / total) * 100) : 0 },
+        { category: 'GOOD', minScore: 60, maxScore: 74, matchCount: good, percentage: total ? Math.round((good / total) * 100) : 0 },
+        { category: 'POSSIBLE', minScore: 40, maxScore: 59, matchCount: possible, percentage: total ? Math.round((possible / total) * 100) : 0 },
+        { category: 'WEAK', minScore: 0, maxScore: 39, matchCount: weak, percentage: total ? Math.round((weak / total) * 100) : 0 },
       ],
       conversionFunnel: {
         matchesGenerated: total,
         inquiriesCreated: Math.round(total * 0.6),
         offersSubmitted: Math.round(total * 0.4),
         ordersAccepted: Math.round(total * 0.3),
-        matchToOrderConversionPercent: 30,
+        matchToOrderConversionPercent: total ? Math.round((Math.round(total * 0.3) / total) * 100) : 0,
       },
     };
   }
 
-  async getLogisticsAnalytics(fromISO: string, toISO: string): Promise<LogisticsAnalytics> {
+  async getLogisticsAnalytics(fromISO: string, toISO: string, orgId?: string): Promise<LogisticsAnalytics> {
+    const params: any[] = [fromISO, toISO];
+    const orgCondition = orgId
+      ? ' AND (s.logistics_provider_id = $3 OR o.buyer_organization_id = $3 OR o.seller_organization_id = $3)'
+      : '';
+    if (orgId) params.push(orgId);
     const res = await query(
       `SELECT 
         s.transport_mode,
@@ -359,9 +397,10 @@ export class AnalyticsRepository {
         q.total_cost as cost,
         s.status
        FROM shipments s
+       JOIN orders o ON o.id = s.order_id
        LEFT JOIN logistics_quotes q ON s.quote_id = q.id
-       WHERE s.created_at BETWEEN $1 AND $2`,
-      [fromISO, toISO]
+       WHERE s.created_at BETWEEN $1 AND $2${orgCondition}`,
+      params
     );
 
     const rows = res.rows;
@@ -410,21 +449,26 @@ export class AnalyticsRepository {
     };
   }
 
-  async getRegionalBalances(): Promise<RegionalBalanceRow[]> {
+  async getRegionalBalances(orgId?: string): Promise<RegionalBalanceRow[]> {
+    const params = orgId ? [orgId] : [];
+    const supplyOrgCondition = orgId ? ' AND l.organization_id = $1' : '';
+    const demandOrgCondition = orgId ? ' AND r.organization_id = $1' : '';
     const supplyRes = await query(
       `SELECT f.state as region, SUM(COALESCE(l.remaining_quantity, l.available_quantity_tons, 0)) as supply
        FROM co2_listings l
        JOIN facilities f ON l.facility_id = f.id
-       WHERE UPPER(l.status) IN ('PUBLISHED', 'ACTIVE')
+       WHERE UPPER(l.status) IN ('PUBLISHED', 'ACTIVE')${supplyOrgCondition}
        GROUP BY f.state`
+      , params
     );
 
     const demandRes = await query(
       `SELECT f.state as region, SUM(COALESCE(r.required_quantity_tons, r.required_quantity, 0)) as demand
        FROM buyer_requirements r
        JOIN facilities f ON r.facility_id = f.id
-       WHERE UPPER(r.status) IN ('PUBLISHED', 'ACTIVE', 'OPEN')
+       WHERE UPPER(r.status) IN ('PUBLISHED', 'ACTIVE', 'OPEN')${demandOrgCondition}
        GROUP BY f.state`
+      , params
     );
 
     const regionsSet = new Set<string>(['Gujarat', 'Maharashtra', 'Rajasthan']);
@@ -435,15 +479,15 @@ export class AnalyticsRepository {
     const demandMap = new Map(demandRes.rows.map((r) => [r.region, parseFloat(r.demand || '0')]));
 
     return Array.from(regionsSet).map((region) => {
-      const s = supplyMap.get(region) || (region === 'Gujarat' ? 2800 : 1200);
-      const d = demandMap.get(region) || (region === 'Gujarat' ? 2140 : 1500);
+      const s = supplyMap.get(region) || 0;
+      const d = demandMap.get(region) || 0;
       return {
         region,
         supplyTonnes: s,
         demandTonnes: d,
         netBalanceTonnes: s - d,
-        ordersCount: 4,
-        shipmentsCount: 3,
+        ordersCount: 0,
+        shipmentsCount: 0,
       };
     });
   }
@@ -520,15 +564,6 @@ export class AnalyticsRepository {
       params
     );
 
-    const defaultPoints = [
-      { date: 'Jan 2026', price: 5800, purity: 99.9, company: 'Gujarat BioRefinery' },
-      { date: 'Feb 2026', price: 5400, purity: 99.5, company: 'TerraCem Emitters' },
-      { date: 'Mar 2026', price: 5100, purity: 99.2, company: 'Dahej Petrochemical' },
-      { date: 'Apr 2026', price: 4800, purity: 99.0, company: 'Hazira Power Hub' },
-    ];
-
-    if (res.rows.length === 0) return defaultPoints;
-
     return res.rows.map((r) => ({
       date: new Date(r.created_at).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }),
       price: parseFloat(r.price || '4500'),
@@ -539,17 +574,17 @@ export class AnalyticsRepository {
 
   async getPublicImpactSummary(): Promise<PublicImpactSummary> {
     const kpis = await this.getOverviewKPIs(new Date(2020, 0, 1).toISOString(), new Date().toISOString());
+    const [completedRes, regionsRes, pathwaysRes] = await Promise.all([
+      query<{ count: string }>("SELECT COUNT(id) as count FROM orders WHERE UPPER(status) IN ('COMPLETED', 'DELIVERED')"),
+      query<{ region: string }>('SELECT DISTINCT state as region FROM facilities WHERE state IS NOT NULL'),
+      query<{ pathway: string }>('SELECT DISTINCT intended_use as pathway FROM buyer_requirements WHERE intended_use IS NOT NULL LIMIT 3'),
+    ]);
     return {
-      co2ProcessedTonnes: kpis.flow.deliveredTonnes || 1840,
-      completedTransactionsCount: 14,
-      activeRegionsCount: 6,
-      participatingOrganizationsCount: kpis.stock.activeOrganizationsCount || 28,
-      topUtilizationPathways: [
-        'Synthetic Fuel & E-Methanol',
-        'Building Materials & Concrete Mineralization',
-        'Algae Cultivation & Bio-products',
-      ],
+      co2ProcessedTonnes: kpis.flow.deliveredTonnes,
+      completedTransactionsCount: parseInt(completedRes.rows[0]?.count || '0', 10),
+      activeRegionsCount: regionsRes.rows.length,
+      participatingOrganizationsCount: kpis.stock.activeOrganizationsCount,
+      topUtilizationPathways: pathwaysRes.rows.map((row) => row.pathway),
     };
   }
 }
-

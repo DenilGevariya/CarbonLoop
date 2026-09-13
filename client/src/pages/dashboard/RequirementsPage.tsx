@@ -16,6 +16,7 @@ import { FulfillDialog } from '@/features/requirements/components/FulfillDialog'
 import type { BuyerRequirement, RequirementFilterParams } from '@/features/requirements/types/requirement';
 import { Button } from '@/components/ui/button';
 import { Plus, Factory, Layers, CheckCircle2, Clock } from 'lucide-react';
+import { toast } from '@/components/ui/toast';
 
 export const RequirementsPage: React.FC = () => {
   const navigate = useNavigate();
@@ -52,8 +53,21 @@ export const RequirementsPage: React.FC = () => {
 
   const handlePublishConfirm = async () => {
     if (!publishTarget) return;
-    await publishMutation.mutateAsync(publishTarget.id);
-    setPublishTarget(null);
+    try {
+      await publishMutation.mutateAsync(publishTarget.id);
+      toast.add({
+        title: 'Requirement published',
+        description: 'Your CO₂ demand requirement is now visible to emitters.',
+        type: 'success',
+      });
+      setPublishTarget(null);
+    } catch (error) {
+      toast.add({
+        title: 'Unable to publish requirement',
+        description: error instanceof Error ? error.message : 'Please try again.',
+        type: 'error',
+      });
+    }
   };
 
   const handlePauseConfirm = async (reason?: string) => {
@@ -63,7 +77,20 @@ export const RequirementsPage: React.FC = () => {
   };
 
   const handleResume = async (req: BuyerRequirement) => {
-    await resumeMutation.mutateAsync(req.id);
+    try {
+      await resumeMutation.mutateAsync(req.id);
+      toast.add({
+        title: 'Requirement resumed',
+        description: 'Your CO₂ demand requirement is visible to emitters again.',
+        type: 'success',
+      });
+    } catch (error) {
+      toast.add({
+        title: 'Unable to resume requirement',
+        description: error instanceof Error ? error.message : 'Please try again.',
+        type: 'error',
+      });
+    }
   };
 
   const handleArchiveConfirm = async (reason?: string) => {

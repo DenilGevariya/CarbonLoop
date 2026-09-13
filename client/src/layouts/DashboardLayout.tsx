@@ -38,6 +38,7 @@ import {
 } from 'lucide-react';
 import { useNotifications } from '@/features/notifications/hooks/useNotifications';
 import { cn } from '@/lib/utils';
+import { resolveCarbonRole } from '@/lib/roles';
 
 const DashboardInner: React.FC = () => {
   const { user, activeOrg, logout, switchOrganization } = useAuth();
@@ -65,22 +66,11 @@ const DashboardInner: React.FC = () => {
     setIsSearchOpen(true);
   };
 
-  const userRoles = (user?.roles || []).map((r) => r.toLowerCase().replace('-', '_'));
-  const activeOrgType = (activeOrg?.orgType || '').toLowerCase().replace('-', '_');
-
-  const isAdmin = userRoles.some((r) => r === 'platform_admin' || r === 'admin' || r === 'platform_administrator');
-  const isRegulator = !isAdmin && (
-    userRoles.some((r) => r === 'regulator' || r === 'policy_regulator' || r === 'gpcb') ||
-    activeOrgType === 'regulator' || activeOrgType === 'policy_regulator'
-  );
-  const isLogistics = !isAdmin && !isRegulator && (
-    userRoles.some((r) => r === 'logistics_provider' || r === 'logistics' || r === 'transporter') ||
-    activeOrgType === 'logistics_provider' || activeOrgType === 'logistics'
-  );
-  const isUtilizer = !isAdmin && !isRegulator && !isLogistics && (
-    userRoles.some((r) => r === 'utilizer' || r === 'buyer' || r === 'carbon_utilizer') ||
-    activeOrgType === 'buyer' || activeOrgType === 'utilizer'
-  );
+  const resolvedRole = resolveCarbonRole(user?.roles, activeOrg?.orgType);
+  const isAdmin = resolvedRole === 'platform_admin';
+  const isRegulator = resolvedRole === 'regulator';
+  const isLogistics = resolvedRole === 'logistics_provider';
+  const isUtilizer = resolvedRole === 'utilizer';
   let navSections: {
     group: string;
     items: { label: string; icon: React.ElementType; path: string }[];
@@ -135,7 +125,7 @@ const DashboardInner: React.FC = () => {
           { label: 'Dashboard', icon: LayoutDashboard, path: '/dashboard' },
           { label: 'Buy CO₂', icon: PlusCircle, path: '/dashboard/requirements/new' },
           { label: 'My Requirements', icon: ShoppingBag, path: '/dashboard/requirements' },
-          { label: 'CO₂ Marketplace', icon: Search, path: '/dashboard/marketplace' },
+          { label: 'Seller Marketplace', icon: Search, path: '/dashboard/marketplace' },
           { label: 'Inquiries & Offers', icon: Handshake, path: '/dashboard/offers' },
           { label: 'Shipment Tracking', icon: Truck, path: '/dashboard/shipments' },
           { label: 'Impact Reports', icon: BarChart3, path: '/dashboard/impact' },
@@ -151,6 +141,7 @@ const DashboardInner: React.FC = () => {
           { label: 'Dashboard', icon: LayoutDashboard, path: '/dashboard' },
           { label: 'Sell CO₂', icon: PlusCircle, path: '/dashboard/listings/new' },
           { label: 'My Listings', icon: Factory, path: '/dashboard/listings' },
+          { label: 'Buyer Demand', icon: Search, path: '/dashboard/requirements/marketplace' },
           { label: 'Inquiries & Offers', icon: Handshake, path: '/dashboard/offers' },
           { label: 'Transporters', icon: Truck, path: '/dashboard/logistics' },
           { label: 'Shipment Tracking', icon: Truck, path: '/dashboard/shipments' },

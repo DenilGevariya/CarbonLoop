@@ -45,20 +45,36 @@ export function optionalAuthenticateUser(req: AuthenticatedRequest, res: Respons
 }
 
 export function requireRole(...allowedRoles: string[]) {
-  return (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+  return async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     if (!req.user) {
       return res.status(401).json({ success: false, error: AUTH_ERRORS.UNAUTHORIZED });
     }
 
-    const userRoles = (req.user.roles || []).map((r) => r.toLowerCase());
+    const normalizeRole = (role: string) => role.trim().toLowerCase().replace(/[\s-]+/g, '_');
+    const userRoles = (req.user.roles || []).map(normalizeRole);
+    const normalizedAllowedRoles = allowedRoles.map(normalizeRole);
     const isPlatformAdmin = userRoles.includes('platform_admin') || userRoles.includes('admin');
 
-    if (isPlatformAdmin) {
+    if (isPlatformAdmin && normalizedAllowedRoles.some((role) => ['platform_admin', 'admin'].includes(role))) {
       return next();
     }
 
-    const hasRole = allowedRoles.some((r) => userRoles.includes(r.toLowerCase()));
+    const hasRole = normalizedAllowedRoles.some((role) => userRoles.includes(role));
     if (!hasRole) {
+      try {
+        const orgResult = await query(
+          `SELECT o.org_type
+           FROM organization_members om
+           JOIN organizations o ON o.id = om.organization_id
+           WHERE om.user_id = $1 AND COALESCE(om.is_active, TRUE) = TRUE`,
+          [req.user.userId]
+        );
+        const orgTypes = orgResult.rows.map((row) => normalizeRole(row.org_type));
+        const hasOrganizationRole = normalizedAllowedRoles.some((role) => orgTypes.includes(role));
+        if (hasOrganizationRole) return next();
+      } catch (error) {
+        return next(error);
+      }
       return res.status(403).json({ success: false, error: AUTH_ERRORS.FORBIDDEN });
     }
 
@@ -100,14 +116,17 @@ export function forbidRegulatorCommercialActions(req: AuthenticatedRequest, res:
   if (!userId) return next();
 
   query(
-    `SELECT o.org_type 
+    `SELECT o.org_type
      FROM organization_members om
      JOIN organizations o ON om.organization_id = o.id
-     WHERE om.user_id = $1 AND UPPER(o.org_type) = 'REGULATOR'`,
+     WHERE om.user_id = $1 AND UPPER(o.org_type) IN ('REGULATOR', 'POLICY_REGULATOR')`,
     [userId]
   )
     .then((result) => {
-      if (result.rows.length > 0 && !(req.user?.roles || []).some((r) => r.toLowerCase() === 'platform_admin' || r.toLowerCase() === 'admin')) {
+      const normalizedRoles = (req.user?.roles || []).map((role) => role.trim().toLowerCase().replace(/[\s-]+/g, '_'));
+      const isPlatformAdmin = normalizedRoles.some((role) => ['platform_admin', 'admin'].includes(role));
+      const isRegulator = normalizedRoles.some((role) => ['regulator', 'policy_regulator', 'gpcb'].includes(role));
+      if ((result.rows.length > 0 || isRegulator) && !isPlatformAdmin) {
         return res.status(403).json({
           success: false,
           error: {

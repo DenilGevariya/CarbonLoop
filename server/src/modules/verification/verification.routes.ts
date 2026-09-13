@@ -9,10 +9,10 @@ const controller = new VerificationController();
 router.use(authenticateUser);
 
 router.post('/requests', controller.submitRequest);
-router.get('/requests', controller.listQueue);
-router.get('/requests/:id', controller.getById);
+router.get('/requests', requireRole('platform_admin', 'admin', 'regulator', 'policy_regulator', 'verifier'), controller.listQueue);
+router.get('/requests/:id', requireRole('platform_admin', 'admin', 'regulator', 'policy_regulator', 'verifier'), controller.getById);
 
 // Admin / Reviewer Endpoints
-router.post('/requests/:id/review', requireRole('platform_admin', 'admin', 'verifier'), controller.processReview);
+router.post('/requests/:id/review', requireRole('platform_admin', 'admin', 'regulator', 'policy_regulator', 'verifier'), controller.processReview);
 
 export default router;
