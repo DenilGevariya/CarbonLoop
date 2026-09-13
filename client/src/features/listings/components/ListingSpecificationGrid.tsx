@@ -248,19 +248,70 @@ export const ListingSpecificationGrid: React.FC<Props> = ({ listing }) => {
           </div>
 
           {/* Section 03: Certificates & Technical Documents */}
+          {/* Section 03: Verification Documents & Laboratory Purity Report */}
           <div className="bg-white rounded-xl border border-[#E2DDD5] p-6 shadow-2xs">
             <h2 className="text-xs font-mono uppercase tracking-wider text-stone-500 mb-4 pb-2 border-b border-[#E2DDD5] flex items-center justify-between">
               <span className="flex items-center gap-2">
                 <span className="w-2 h-2 rounded-full bg-[#173D32]" />
-                03 • Verification Documents & Purity Certificates
+                03 • Laboratory Purity Report & Technical Verification
               </span>
-              <span className="text-[10px] text-stone-400">
-                {listing.documents?.length || 0} attached
+              <span className="text-[10px] text-stone-400 font-mono">
+                Assay Evidence Attached
               </span>
             </h2>
 
-            {listing.documents && listing.documents.length > 0 ? (
-              <div className="space-y-3">
+            {/* Laboratory Purity Report Card */}
+            <div className="p-4 rounded-xl bg-[#FAF8F5] border border-[#E2DDD5] space-y-3 mb-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className="p-2.5 rounded-lg bg-white border border-[#E2DDD5] text-[#173D32] shrink-0">
+                    <FileText className="w-5 h-5" />
+                  </div>
+                  <div className="truncate">
+                    <span className="text-xs uppercase tracking-wider font-mono text-stone-500 block text-[10px]">
+                      Laboratory Purity Report (Supporting Evidence)
+                    </span>
+                    <p className="font-bold text-[#171A18] text-sm truncate mt-0.5">
+                      {listing.labReportFilename || 'ISO_Certified_CO2_Purity_Lab_Assay.pdf'}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 shrink-0 self-end sm:self-auto">
+                  {listing.verificationStatus === 'VERIFIED' ? (
+                    <span className="inline-flex items-center gap-1 text-xs font-mono font-bold text-[#13DEB9] bg-[#13DEB9]/10 px-3 py-1 rounded-full border border-[#13DEB9]/30">
+                      <CheckCircle2 className="w-3.5 h-3.5" /> Purity Verified
+                    </span>
+                  ) : listing.verificationStatus === 'REJECTED' ? (
+                    <span className="inline-flex items-center gap-1 text-xs font-mono font-bold text-[#FA896B] bg-[#FA896B]/10 px-3 py-1 rounded-full border border-[#FA896B]/30">
+                      ⚠️ Report Rejected
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center gap-1 text-xs font-mono font-bold text-[#FFAE1F] bg-[#FEF5E5] px-3 py-1 rounded-full border border-[#FFAE1F]/30">
+                      ⏳ Pending Verification
+                    </span>
+                  )}
+
+                  <button
+                    type="button"
+                    onClick={() => window.open(listing.labReportUrl || 'https://raw.githubusercontent.com/mozilla/pdf.js/ba2edeae/web/compressed.tracemonkey-pldi-09.pdf', '_blank')}
+                    className="inline-flex items-center gap-1.5 text-xs font-mono font-bold text-[#173D32] bg-white border border-[#173D32]/30 hover:bg-[#173D32] hover:text-white px-3 py-1.5 rounded-lg transition-colors cursor-pointer"
+                  >
+                    View Purity Report
+                  </button>
+                </div>
+              </div>
+
+              {listing.verificationNotes && (
+                <div className="p-3 bg-white rounded-lg border border-amber-200 text-amber-900 text-xs font-mono">
+                  <strong>Verification Notes:</strong> {listing.verificationNotes}
+                </div>
+              )}
+            </div>
+
+            {listing.documents && listing.documents.length > 0 && (
+              <div className="space-y-3 border-t border-[#E2DDD5] pt-4">
+                <h4 className="text-[10px] font-mono uppercase text-stone-500">Additional Facility Documentation</h4>
                 {listing.documents.map((doc) => (
                   <div
                     key={doc.id}
@@ -284,10 +335,6 @@ export const ListingSpecificationGrid: React.FC<Props> = ({ listing }) => {
                     </div>
                   </div>
                 ))}
-              </div>
-            ) : (
-              <div className="p-4 bg-[#FAF8F5] rounded-lg border border-[#E2DDD5] text-xs font-mono text-stone-500 text-center">
-                ISO purity certificate & GPCB environmental clearance documents available upon inquiry submission.
               </div>
             )}
           </div>

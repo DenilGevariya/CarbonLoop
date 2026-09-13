@@ -41,6 +41,8 @@ export const createListingSchema = z.object({
   availableUntil: z.string().optional().refine((val) => !val || !isNaN(Date.parse(val)), { message: 'Provide a valid available until date' }),
   deliveryAvailable: z.boolean().default(true),
   pickupAvailable: z.boolean().default(true),
+  labReportUrl: z.string().optional(),
+  labReportFilename: z.string().optional(),
   publishNow: z.boolean().default(false),
 }).refine((data) => {
   if (data.minimumOrderQuantity && data.minimumOrderQuantity > data.availableQuantity) {
@@ -77,6 +79,10 @@ export const updateListingSchema = z.object({
   availableUntil: z.string().optional(),
   deliveryAvailable: z.boolean().optional(),
   pickupAvailable: z.boolean().optional(),
+  labReportUrl: z.string().optional(),
+  labReportFilename: z.string().optional(),
+  verificationStatus: z.string().optional(),
+  verificationNotes: z.string().optional(),
 });
 
 export const statusActionSchema = z.object({

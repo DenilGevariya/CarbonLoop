@@ -197,4 +197,22 @@ export class ListingController {
   resume = (req: AuthenticatedRequest, res: Response, next: NextFunction) => this.executeStatusChange(req, res, next, 'PUBLISHED');
   archive = (req: AuthenticatedRequest, res: Response, next: NextFunction) => this.executeStatusChange(req, res, next, 'ARCHIVED');
   markExhausted = (req: AuthenticatedRequest, res: Response, next: NextFunction) => this.executeStatusChange(req, res, next, 'EXHAUSTED');
+
+  /**
+   * Regulator/Admin Verification Action
+   */
+  async verifyListing(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+      const { verificationStatus, notes } = req.body;
+      const updated = await listingService.verifyListing(id, verificationStatus, notes);
+      res.json({
+        success: true,
+        message: `Listing verification status updated to ${verificationStatus}`,
+        data: updated,
+      });
+    } catch (err) {
+      next(err);
+    }
+  }
 }

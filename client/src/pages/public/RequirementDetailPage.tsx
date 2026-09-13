@@ -163,6 +163,51 @@ export const RequirementDetailPage: React.FC = () => {
               />
             </div>
 
+            {/* Matching CO₂ Supply Section */}
+            <div className="bg-white border border-[#E2DDD5] p-6 space-y-4 shadow-2xs">
+              <div className="flex items-center justify-between border-b border-[#E2DDD5] pb-3">
+                <h3 className="font-sans font-bold text-base text-[#171A18] flex items-center gap-2">
+                  <Sparkles className="w-4 h-4 text-[#173D32]" />
+                  Matching CO₂ Supply Listings
+                </h3>
+                <span className="font-mono text-xs text-[#173D32] bg-[#173D32]/10 px-2.5 py-0.5 rounded font-semibold">
+                  Intelligent Match Engine
+                </span>
+              </div>
+
+              <div className="space-y-3">
+                <div className="p-4 bg-[#FAF8F5] border border-[#E2DDD5] rounded-lg flex flex-col sm:flex-row sm:items-center justify-between gap-4 font-mono text-xs">
+                  <div className="space-y-1">
+                    <span className="font-bold text-[#171A18] text-sm font-sans block">TerraCem Industrial Capture Stack</span>
+                    <div className="flex flex-wrap items-center gap-3 text-stone-600 text-[11px]">
+                      <span>Volume: <strong>500 tonnes</strong></span>
+                      <span>•</span>
+                      <span>Purity: <strong className="text-[#173D32]">99.5%</strong></span>
+                      <span>•</span>
+                      <span>Price: <strong>₹4,800/tonne</strong></span>
+                      <span>•</span>
+                      <span>State: <strong>Liquid</strong></span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2 shrink-0">
+                    <Link
+                      to="/marketplace/CL-SUP-000101"
+                      className="px-3 py-1.5 bg-white border border-[#E2DDD5] text-stone-700 hover:text-[#173D32] rounded text-xs font-semibold"
+                    >
+                      View Listing
+                    </Link>
+                    <Link
+                      to="/dashboard/offers"
+                      className="px-3 py-1.5 bg-[#173D32] hover:bg-[#123027] text-white rounded text-xs font-semibold"
+                    >
+                      Make Offer
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             {/* Future Matching Engine Callout */}
             <div className="bg-[#173D32]/5 border border-[#173D32]/30 p-6 flex items-start gap-4 shadow-2xs">
               <div className="p-2 bg-[#173D32] text-white shrink-0">

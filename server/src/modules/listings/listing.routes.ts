@@ -25,5 +25,6 @@ router.post('/:id/pause', authenticateUser, controller.pause.bind(controller));
 router.post('/:id/resume', authenticateUser, controller.resume.bind(controller));
 router.post('/:id/archive', authenticateUser, controller.archive.bind(controller));
 router.post('/:id/mark-exhausted', authenticateUser, controller.markExhausted.bind(controller));
+router.put('/:id/verify', authenticateUser, controller.verifyListing.bind(controller));
 
 export default router;

@@ -59,6 +59,10 @@ export interface ListingDTO {
   };
   deliveryAvailable: boolean;
   pickupAvailable: boolean;
+  verificationStatus?: string;
+  labReportUrl?: string | null;
+  labReportFilename?: string | null;
+  verificationNotes?: string | null;
   status: ListingStatus;
   createdAt: string;
   updatedAt: string;
@@ -146,6 +150,8 @@ export interface CreateListingInput {
   availableUntil?: string;
   deliveryAvailable?: boolean;
   pickupAvailable?: boolean;
+  labReportUrl?: string;
+  labReportFilename?: string;
   publishNow?: boolean;
 }
 
@@ -166,4 +172,8 @@ export interface UpdateListingInput {
   availableUntil?: string;
   deliveryAvailable?: boolean;
   pickupAvailable?: boolean;
+  labReportUrl?: string;
+  labReportFilename?: string;
+  verificationStatus?: string;
+  verificationNotes?: string;
 }

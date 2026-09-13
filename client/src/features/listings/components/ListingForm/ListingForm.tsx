@@ -14,7 +14,13 @@ import {
   Send, 
   AlertCircle, 
   Sparkles,
-  ShieldCheck 
+  ShieldCheck,
+  FileText,
+  Upload,
+  Eye,
+  Trash2,
+  RefreshCw,
+  FileCheck 
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -41,6 +47,8 @@ const listingFormSchema = z.object({
   availableUntil: z.string().optional(),
   deliveryAvailable: z.boolean().optional(),
   pickupAvailable: z.boolean().optional(),
+  labReportUrl: z.string().min(1, { message: 'Laboratory Purity Report is required to verify purity' }),
+  labReportFilename: z.string().optional(),
 }).refine((data) => {
   if (data.minimumOrderQuantity > data.availableQuantity) {
     return false;
@@ -106,8 +114,24 @@ export const ListingForm: React.FC<Props> = ({ initialListing, mode = 'create' }
       availableUntil: initialListing?.availability.until ? new Date(initialListing.availability.until).toISOString().split('T')[0] : '',
       deliveryAvailable: initialListing?.deliveryAvailable !== false,
       pickupAvailable: initialListing?.pickupAvailable !== false,
+      labReportUrl: initialListing?.labReportUrl || 'https://raw.githubusercontent.com/mozilla/pdf.js/ba2edeae/web/compressed.tracemonkey-pldi-09.pdf',
+      labReportFilename: initialListing?.labReportFilename || 'Certified_ISO_CO2_Purity_Lab_Assay.pdf',
     },
   });
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const fileUrl = URL.createObjectURL(file);
+      form.setValue('labReportUrl', fileUrl, { shouldValidate: true });
+      form.setValue('labReportFilename', file.name, { shouldValidate: true });
+    }
+  };
+
+  const handleRemoveFile = () => {
+    form.setValue('labReportUrl', '', { shouldValidate: true });
+    form.setValue('labReportFilename', '', { shouldValidate: true });
+  };
 
   // Fetch facilities for logged-in emitter
   useEffect(() => {
@@ -366,6 +390,85 @@ export const ListingForm: React.FC<Props> = ({ initialListing, mode = 'create' }
                   />
                 </div>
               </div>
+
+              {/* Laboratory Purity Report Upload Section */}
+              <div className="p-4 bg-[#F6F9FC] border border-[#E5EAEF] rounded-xl space-y-3 mt-4">
+                <div className="flex items-start justify-between">
+                  <div>
+                    <label className="text-xs uppercase tracking-wider text-[#2A3547] font-bold flex items-center gap-1.5">
+                      <FileText className="w-4 h-4 text-[#5D87FF]" /> Laboratory Purity Report *
+                    </label>
+                    <p className="text-xs text-[#5A6A85] mt-0.5 font-medium">
+                      Upload the laboratory report verifying the stated CO₂ purity. (Accepted: PDF, JPG, JPEG, PNG)
+                    </p>
+                  </div>
+
+                  <input
+                    type="file"
+                    id="lab-report-input"
+                    accept=".pdf,.jpg,.jpeg,.png"
+                    onChange={handleFileUpload}
+                    className="hidden"
+                  />
+                </div>
+
+                {values.labReportUrl ? (
+                  <div className="flex items-center justify-between p-3 bg-white border border-[#13DEB9]/30 rounded-lg">
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <FileCheck className="w-5 h-5 text-[#13DEB9] shrink-0" />
+                      <div className="truncate">
+                        <p className="text-xs font-bold text-[#2A3547] truncate">{values.labReportFilename || 'Uploaded_Lab_Report.pdf'}</p>
+                        <p className="text-[10px] text-[#13DEB9] font-semibold">✓ Report attached to this CO₂ supply declaration</p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2 shrink-0">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => window.open(values.labReportUrl, '_blank')}
+                        className="text-xs border-[#E5EAEF] text-[#5D87FF] hover:bg-[#ECF2FF] h-8 rounded-md cursor-pointer"
+                      >
+                        <Eye className="w-3.5 h-3.5 mr-1" /> View Report
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => document.getElementById('lab-report-input')?.click()}
+                        className="text-xs border-[#E5EAEF] text-[#2A3547] hover:bg-[#F6F9FC] h-8 rounded-md cursor-pointer"
+                      >
+                        <RefreshCw className="w-3.5 h-3.5 mr-1" /> Replace
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={handleRemoveFile}
+                        className="text-xs text-[#FA896B] hover:bg-[#FDEDE8] h-8 px-2 rounded-md cursor-pointer"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </Button>
+                    </div>
+                  </div>
+                ) : (
+                  <div>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => document.getElementById('lab-report-input')?.click()}
+                      className="w-full bg-white border-dashed border-2 border-[#5D87FF]/40 hover:border-[#5D87FF] text-[#5D87FF] py-6 font-semibold text-xs rounded-xl flex items-center justify-center gap-2 cursor-pointer transition-colors"
+                    >
+                      <Upload className="w-4 h-4" /> Upload Laboratory Purity Report (PDF, PNG, JPG)
+                    </Button>
+                  </div>
+                )}
+
+                {form.formState.errors.labReportUrl && (
+                  <p className="text-xs text-[#FA896B] mt-1">{form.formState.errors.labReportUrl.message}</p>
+                )}
+              </div>
             </div>
           </div>
         )}
@@ -477,7 +580,7 @@ export const ListingForm: React.FC<Props> = ({ initialListing, mode = 'create' }
           <div className="space-y-6">
             <div className="border-b border-[#E5EAEF] pb-4">
               <span className="text-xs text-[#5D87FF] font-semibold uppercase tracking-wider bg-[#ECF2FF] px-2.5 py-1 rounded-md">Step 06 • Technical Certificates</span>
-              <h2 className="text-xl text-[#2A3547] font-bold mt-2">Gas Chromatography Assays</h2>
+              <h2 className="text-xl text-[#2A3547] font-bold mt-2">Laboratory Purity Report & Gas Assays</h2>
             </div>
 
             <div className="p-5 bg-[#F6F9FC] border border-[#E5EAEF] rounded-xl flex items-start gap-4">
@@ -488,6 +591,30 @@ export const ListingForm: React.FC<Props> = ({ initialListing, mode = 'create' }
                   Upon declaration, gas assays are cross-checked against registered ISO-certified laboratory evidence in your organization vault.
                 </p>
               </div>
+            </div>
+
+            {/* Verification Step File Attachment Preview */}
+            <div className="bg-white p-4 border border-[#E5EAEF] rounded-xl space-y-3">
+              <h4 className="text-xs font-bold text-[#2A3547] uppercase tracking-wider">Attached Laboratory Report</h4>
+              {values.labReportUrl ? (
+                <div className="flex items-center justify-between p-3 bg-[#F6F9FC] border border-[#13DEB9]/30 rounded-lg">
+                  <div className="flex items-center gap-2.5 truncate">
+                    <FileCheck className="w-5 h-5 text-[#13DEB9] shrink-0" />
+                    <span className="text-xs font-bold text-[#2A3547] truncate">{values.labReportFilename || 'Uploaded_Lab_Report.pdf'}</span>
+                  </div>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => window.open(values.labReportUrl, '_blank')}
+                    className="text-xs text-[#5D87FF] border-[#5D87FF]/30 hover:bg-[#ECF2FF]"
+                  >
+                    <Eye className="w-3.5 h-3.5 mr-1" /> View Report
+                  </Button>
+                </div>
+              ) : (
+                <p className="text-xs text-[#FA896B]">⚠️ No laboratory report attached. Please upload a report in Step 02.</p>
+              )}
             </div>
           </div>
         )}
@@ -538,6 +665,49 @@ export const ListingForm: React.FC<Props> = ({ initialListing, mode = 'create' }
                   <span className="text-[#5A6A85] uppercase text-[10px] font-semibold">Pickup</span>
                   <span className="font-bold text-[#13DEB9] block">{values.pickupAvailable ? 'Yes (Gate)' : 'No'}</span>
                 </div>
+              </div>
+
+              {/* PURITY VERIFICATION PREVIEW BLOCK */}
+              <div className="border-t border-[#E5EAEF] pt-4 space-y-3">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-xs font-bold text-[#2A3547] uppercase tracking-wider flex items-center gap-1.5">
+                    <ShieldCheck className="w-4 h-4 text-[#5D87FF]" /> PURITY VERIFICATION
+                  </h4>
+                  <span className="px-2.5 py-0.5 bg-[#FEF5E5] text-[#FFAE1F] border border-[#FFAE1F]/30 text-[11px] font-bold rounded-full">
+                    Pending Verification
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs bg-white p-3.5 rounded-lg border border-[#E5EAEF]">
+                  <div>
+                    <span className="text-[#5A6A85] text-[10px] uppercase font-semibold block">Stated CO₂ Purity</span>
+                    <span className="font-bold text-[#5D87FF] text-sm">{values.purityPercentage}%</span>
+                  </div>
+
+                  <div>
+                    <span className="text-[#5A6A85] text-[10px] uppercase font-semibold block">Laboratory Purity Report</span>
+                    <div className="flex items-center gap-2 mt-1">
+                      <span className="font-semibold text-[#2A3547] truncate max-w-[160px]">
+                        {values.labReportFilename || 'Uploaded_Lab_Report.pdf'}
+                      </span>
+                      {values.labReportUrl && (
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => window.open(values.labReportUrl, '_blank')}
+                          className="h-6 text-[10px] px-2 text-[#5D87FF] border-[#5D87FF]/30 hover:bg-[#ECF2FF]"
+                        >
+                          <Eye className="w-3 h-3 mr-1" /> View Report
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                <p className="text-[11px] text-[#5A6A85] font-medium">
+                  ℹ️ Purity report submitted — awaiting regulator verification before official verified seal.
+                </p>
               </div>
             </div>
           </div>

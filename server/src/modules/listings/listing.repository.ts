@@ -58,6 +58,10 @@ export class ListingRepository {
       },
       deliveryAvailable: row.delivery_available !== false,
       pickupAvailable: row.pickup_available !== false,
+      verificationStatus: row.verification_status || 'PENDING_VERIFICATION',
+      labReportUrl: row.lab_report_url || null,
+      labReportFilename: row.lab_report_filename || null,
+      verificationNotes: row.verification_notes || null,
       status: row.status,
       createdAt: new Date(row.created_at).toISOString(),
       updatedAt: new Date(row.updated_at).toISOString(),
@@ -388,21 +392,23 @@ export class ListingRepository {
       INSERT INTO co2_listings (
         organization_id, facility_id, listing_code, title, description,
         available_quantity, remaining_quantity, available_quantity_tons, quantity_unit,
-        minimum_order_quantity, minimum_order_tons, purity_percentage,
+        minimum_order_quantity, minimum_order_tons, purity_percentage, declared_purity,
         co2_physical_form, state_form, capture_method, capture_source,
         temperature_c, temperature_celsius, pressure_bar,
         price_per_unit, price_per_ton, currency,
         available_from, availability_start_date, available_until, availability_end_date,
-        delivery_available, pickup_available, status, created_by
+        delivery_available, pickup_available, status, created_by,
+        lab_report_url, lab_report_filename, verification_status
       ) VALUES (
         $1, $2, $3, $4, $5,
         $6, $7, $6, $8,
-        $9, $9, $10,
+        $9, $9, $10, $10,
         $11, $11, $12, $13,
         $14, $14, $15,
         $16, $16, $17,
         $18::timestamptz, $18::date, $19::timestamptz, $19::date,
-        $20, $21, $22, $23
+        $20, $21, $22, $23,
+        $24, $25, $26
       ) RETURNING id;
     `;
 
@@ -430,6 +436,9 @@ export class ListingRepository {
       input.pickupAvailable !== false,
       initialStatus,
       createdByUserId,
+      input.labReportUrl || null,
+      input.labReportFilename || null,
+      'PENDING_VERIFICATION',
     ];
 
     const client = await pool.connect();
@@ -552,6 +561,26 @@ export class ListingRepository {
     if (input.pickupAvailable !== undefined) {
       setClauses.push(`pickup_available = $${paramIndex}`);
       values.push(input.pickupAvailable);
+      paramIndex++;
+    }
+    if (input.labReportUrl !== undefined) {
+      setClauses.push(`lab_report_url = $${paramIndex}`);
+      values.push(input.labReportUrl);
+      paramIndex++;
+    }
+    if (input.labReportFilename !== undefined) {
+      setClauses.push(`lab_report_filename = $${paramIndex}`);
+      values.push(input.labReportFilename);
+      paramIndex++;
+    }
+    if (input.verificationStatus !== undefined) {
+      setClauses.push(`verification_status = $${paramIndex}`);
+      values.push(input.verificationStatus);
+      paramIndex++;
+    }
+    if (input.verificationNotes !== undefined) {
+      setClauses.push(`verification_notes = $${paramIndex}`);
+      values.push(input.verificationNotes);
       paramIndex++;
     }
 

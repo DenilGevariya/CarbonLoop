@@ -156,4 +156,21 @@ export class ListingService {
 
     return this.repo.updateStatus(existing.id, currentStatus, desiredStatus, userId, reason);
   }
+
+  /**
+   * Verify or reject listing purity lab report (Regulator/Admin action)
+   */
+  async verifyListing(listingId: string, verificationStatus: string, notes?: string): Promise<ListingDTO> {
+    const existing = await this.repo.findByCodeOrId(listingId);
+    if (!existing) {
+      const err = new Error('Listing not found');
+      (err as any).statusCode = 404;
+      throw err;
+    }
+
+    return this.repo.updateListing(existing.id, {
+      verificationStatus,
+      verificationNotes: notes || undefined,
+    });
+  }
 }
